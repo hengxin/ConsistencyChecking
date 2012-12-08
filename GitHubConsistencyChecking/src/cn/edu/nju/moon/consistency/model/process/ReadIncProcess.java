@@ -41,4 +41,22 @@ public class ReadIncProcess extends RawProcess
 		}
 	}
 
+	/**
+	 * establish "program order" between {@link ReadIncOperation}s 
+	 * in the same {@link ReadIncProcess}
+	 */
+	public void establishProgramOrder()
+	{
+		ReadIncOperation preOp = (ReadIncOperation) this.opList.get(0);
+		ReadIncOperation curOp = null;
+		int size = this.opList.size();
+		
+		for (int index = 1; index < size; index++)
+		{
+			curOp = (ReadIncOperation) this.opList.get(index);
+			preOp.setProgramOrder(curOp);
+			preOp = curOp;
+		}
+	}
+	
 }

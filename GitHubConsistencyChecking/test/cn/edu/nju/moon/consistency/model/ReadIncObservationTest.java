@@ -13,7 +13,7 @@ import cn.edu.nju.moon.consistency.model.observation.RawObservation;
  * @author hengxin
  * @date 2012-12-7
  */
-public class FilterObservationTest
+public class ReadIncObservationTest
 {
 	RawObservation rob = null;
 	ReadIncObservation fob = null;
@@ -26,7 +26,7 @@ public class FilterObservationTest
 	}
 
 	@Test
-	public void testFilterObservation()
+	public void testReadIncObservation()
 	{
 		this.fob = new ReadIncObservation(0, this.rob);
 		System.out.println(this.fob);
