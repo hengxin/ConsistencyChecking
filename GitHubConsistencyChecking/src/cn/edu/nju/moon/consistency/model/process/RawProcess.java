@@ -14,8 +14,13 @@ import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
  */
 public class RawProcess
 {
-	private int pid = -1;
-	private List<BasicOperation> opList = null;
+	protected int pid = -1;
+	protected List<BasicOperation> opList = null;
+	
+	public RawProcess()
+	{
+		this.opList = new ArrayList<BasicOperation>();
+	}
 	
 	public RawProcess(int pid)
 	{
@@ -26,8 +31,30 @@ public class RawProcess
 	public void addOperation(BasicOperation op)
 	{
 		op.setPid(pid);
-		op.setIndex(this.opList.size());
 		
 		this.opList.add(op);
+	}
+	
+	public int getPid()
+	{
+		return this.pid;
+	}
+	
+	/**
+	 * @return the immutable field {@link #opList}
+	 * @see {@link #getOpListCopy()} 
+	 */
+	public final List<BasicOperation> getOpList()
+	{
+		return this.opList;
+	}
+	
+	/**
+	 * @return the mutable copy of field {@link #opList}
+	 * @see {@link #getOpList()}
+	 */
+	public List<BasicOperation> getOpListCopy()
+	{
+		return new ArrayList<BasicOperation>(this.opList);
 	}
 }

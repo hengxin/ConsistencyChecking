@@ -1,10 +1,13 @@
-package cn.edu.nju.moon.consistency.model;
+package cn.edu.nju.moon.consistency.model.observation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import cn.edu.nju.moon.consistency.model.GlobalData;
+import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.GenericOperation;
 
 /**
@@ -24,7 +27,6 @@ public class RandomRawObservationConstructor
 	// number of operations in all (Operation)
 	private int opNum = 30;
 
-
 	/**
 	 * Default value:
 	 * variableNum = 5;
@@ -32,6 +34,11 @@ public class RandomRawObservationConstructor
 	 * opNum = 30; (number of processes)
 	 * processNum = 5;
 	 */
+	public RandomRawObservationConstructor()
+	{
+		
+	}
+
 	public RandomRawObservationConstructor(int processNum, int variableNum, int valueRange, int opNum)
 	{
 		this.processNum = processNum;
@@ -40,9 +47,24 @@ public class RandomRawObservationConstructor
 		this.opNum = opNum;
 	}
 	
-	public void construct()
+	/**
+	 * construct RawObservation randomly
+	 * 
+	 * @return RawObservation object
+	 */
+	public RawObservation construct()
 	{
-		
+		RawObservation rob = new RawObservation();
+
+		// distribute a list of Operation (s) into #processNum processes randomly
+		Random pRandom = new Random();
+		Iterator<GenericOperation> iter = this.constructOperationList().iterator();
+		while(iter.hasNext())
+		{
+			rob.addOperation(pRandom.nextInt(this.processNum), new BasicOperation(iter.next()));
+		}
+
+		return rob;
 	}
 	
 	/**
@@ -100,10 +122,6 @@ public class RandomRawObservationConstructor
 //		System.out.println("#" + loop + " loop for " + this.opNum + " Operations");
 
 		Collections.shuffle(opList);
-
-		for(GenericOperation gop : opList)
-			if(! gop.isReadOp())
-				GlobalData.WRITEPOOL.put(gop.toString(), gop);
 
 		return opList;
 

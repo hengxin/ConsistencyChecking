@@ -1,10 +1,7 @@
 package cn.edu.nju.moon.consistency.model;
 
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Set;
-
-import cn.edu.nju.moon.consistency.model.operation.GenericOperation;
 
 /**
  * @author hengxin
@@ -20,9 +17,4 @@ public final class GlobalData
 	
 	// set of all possible variables in the form of String 
 	public static Set<String> VARSET = new HashSet<String>();
-	/**
-	 *  pool of all WRITE operations
-	 *  in the PRAM-distinct problem, WRITE operations are distinct.
-	 */
-	public static Hashtable<String, GenericOperation> WRITEPOOL = new Hashtable<String, GenericOperation>();	
 }
