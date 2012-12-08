@@ -26,18 +26,27 @@ public class ReadIncProcess extends RawProcess
 	public ReadIncProcess(int masterPid, RawProcess proc)
 	{
 		this.pid = proc.getPid();
-		
+
 		List<BasicOperation> opListTemp = proc.getOpListCopy();
-		
-		if(proc.getPid() != masterPid)	// not the process with masterPid
-		{
-			for (BasicOperation bop : opListTemp)
-				if (! bop.isReadOp())	// filter READ BasicOperation
+
+		for (BasicOperation bop : opListTemp)
+		{	
+			if (bop.isReadOp())	// READ {@link ReadIncOperation}
+			{
+				if (this.pid == masterPid)	// the {@link ReadIncProcess} with masterPid	
 				{
-					ReadIncOperation riop = new ReadIncOperation(bop);
-					this.opList.add(riop);
-					ReadIncObservation.WRITEPOOL.put(riop.toString(), riop);
+					ReadIncOperation rriop = new ReadIncOperation(bop);
+					rriop.setIndex(this.opList.size());
+					this.opList.add(rriop);	// transform to READ {@link ReadIncOperation}
 				}
+			}
+			else	// WRITE {@link ReadIncOperation}
+			{
+				ReadIncOperation wriop = new ReadIncOperation(bop);
+				wriop.setIndex(this.opList.size());
+				this.opList.add(wriop);
+				ReadIncObservation.WRITEPOOL.put(wriop.toString(), wriop);
+			}
 		}
 	}
 
@@ -57,6 +66,53 @@ public class ReadIncProcess extends RawProcess
 			preOp.setProgramOrder(curOp);
 			preOp = curOp;
 		}
+	}
+	
+	/**
+	 * @see ReadIncObservation private method #establishWritetoOrder()
+	 */
+	public void establishWritetoOrder()
+	{
+		List<BasicOperation> opList = this.opList;
+		ReadIncOperation rriop = null;
+		ReadIncOperation wriop = null;
+		int size = opList.size();
+		for (int index = 0; index < size; index++)
+		{	
+			rriop = (ReadIncOperation) opList.get(index);
+			if(rriop.isReadOp())	
+			{
+				wriop = rriop.fetchDictatingWrite();
+				rriop.setRid(index);
+				wriop.setWid(index);
+				wriop.addWritetoOrder(rriop);
+			}
+		}
+	}
+	
+	/**
+	 * does some READ {@link ReadIncOperation} read value from later WRITE
+	 * {@link ReadIncOperation} on the same {@link ReadIncProcess}
+	 * 
+	 * @return true, if it does; false, o.w..
+	 * 
+	 * @see ReadIncObservation#readLaterWrite()
+	 */
+	public boolean readLaterWrite()
+	{
+		ReadIncOperation rriop = null;
+		ReadIncOperation wriop = null;
+		for (BasicOperation riop : this.opList)
+		{
+			if (riop.isReadOp())	// check every READ
+			{
+				rriop = (ReadIncOperation) riop;
+				wriop = rriop.getReadfromWrite();
+				if (rriop.getPid() == wriop.getPid() && rriop.getIndex() > wriop.getIndex())
+					return true;
+			}
+		}
+		return false;
 	}
 	
 }

@@ -14,6 +14,10 @@ import static org.junit.Assert.*;
  */
 public class ReadIncOperation extends BasicOperation
 {
+	private int index = -1;	// index in {@link ReadIncProcess}
+	private int rid = -1;	// id of READ {@link ReadIncOperation}
+	private int wid = -1;	// id of WRITE {@link ReadIncOperation}
+	
 	private ReadIncOperation programOrder = null;		// program order
 	private ReadIncOperation reProgramOrder = null;		// reverse program order
 	private ReadIncOperation readfromOrder = null; 		// read from order
@@ -30,15 +34,41 @@ public class ReadIncOperation extends BasicOperation
 	 * @return dictating WRITE {@link ReadIncOperation} for this one
 	 * 	if this is a READ {link ReadIncOperation}
 	 */
-	public ReadIncOperation getDictatingWrite()
+	public ReadIncOperation fetchDictatingWrite()
 	{
 		assertTrue("Only READ operation has corresponding dictating WRITE", this.isReadOp());
 		
-		return ReadIncObservation.WRITEPOOL.get(this.toString());
+		return ReadIncObservation.WRITEPOOL.get(this.toString().replaceAll("r", "w"));
 	}
 	
-	/************ order related methods ****************/
+	public void setIndex(int index)
+	{
+		this.index = index;
+	}
 	
+	public int getIndex()
+	{
+		return this.index;
+	}
+	
+	/************* BEGIN: rid and wid **************/
+	public void setRid(int id)
+	{
+		assertTrue("Only READ operation has rid", this.isReadOp());
+		
+		this.rid = id;
+	}
+	
+	public void setWid(int id)
+	{
+		assertTrue("Only WRITE operation has wid", ! this.isReadOp());
+		
+		if (this.wid == -1)	// keep the same with the earliest dictating READ {@link ReadIncOperation}
+			this.wid = id;
+	}
+	/************* END: rid and wid **************/
+	
+	/*********** BEGIN: order related methods ************/
 	public void setProgramOrder(ReadIncOperation riop)
 	{
 		this.programOrder = riop;
@@ -52,4 +82,13 @@ public class ReadIncOperation extends BasicOperation
 		this.writetoOrder.add(riop);
 		riop.readfromOrder = this;
 	}
+	
+	public ReadIncOperation getReadfromWrite()
+	{
+		assertTrue("READ reads from WRITE", this.isReadOp());
+		
+		return this.readfromOrder;
+	}
+	/************ END: order related methods *************/
+
 }

@@ -14,11 +14,15 @@ public class BasicOperation extends GenericOperation
 	 * on which the BasicOperation reside
 	 */
     private int pid = -1;
-//    private int index = -1;
     
 	public BasicOperation(GenericOperation otherOp)
 	{
 		super(otherOp);
+	}
+	
+	public BasicOperation(String opStr)
+	{
+		super(opStr);
 	}
 	
 	public int getPid()

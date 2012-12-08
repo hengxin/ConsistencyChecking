@@ -1,4 +1,4 @@
-package cn.edu.nju.moon.consistency.model;
+package cn.edu.nju.moon.consistency.model.observation;
 
 import org.junit.Before;
 import org.junit.Test;

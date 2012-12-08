@@ -9,5 +9,5 @@ package cn.edu.nju.moon.consistency.checker;
  */
 public interface IChecker
 {
-
+	public abstract boolean check();
 }

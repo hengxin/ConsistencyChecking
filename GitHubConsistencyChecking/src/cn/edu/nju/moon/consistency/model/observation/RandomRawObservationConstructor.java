@@ -16,7 +16,7 @@ import cn.edu.nju.moon.consistency.model.operation.GenericOperation;
  * 
  * @description construct a raw observation (RawObservation) randomly
  */
-public class RandomRawObservationConstructor
+public class RandomRawObservationConstructor implements IRawObservationConstructor
 {
 	// number of processes (RawProcess)
 	private int processNum = 5;
@@ -52,6 +52,7 @@ public class RandomRawObservationConstructor
 	 * 
 	 * @return RawObservation object
 	 */
+	@Override
 	public RawObservation construct()
 	{
 		RawObservation rob = new RawObservation();

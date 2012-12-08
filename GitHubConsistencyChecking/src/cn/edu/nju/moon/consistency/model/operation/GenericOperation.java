@@ -41,26 +41,26 @@ public class GenericOperation
 		GlobalData.VARSET.add(var);
 	}
 
-//	/**
-//	 * constructor for {@link Operation}
-//	 *
-//	 * @param opStr operation in String format: rx1
-//	 */
-//	public Operation(String opStr)
-//	{
-//		this.opStr = opStr;
-//
-//		char type = opStr.charAt(0);
-//		this.var = String.valueOf(opStr.charAt(1));
-//		this.val = Integer.parseInt(opStr.substring(2));
-//
-//		if(type == 'r')
-//			this.type = Operation.READ;
-//		else
-//			this.type = Operation.WRITE;
-//
-//		Operation.VarSet.add(var);
-//	}
+	/**
+	 * constructor {@link GenericOperation} from String
+	 *
+	 * @param opStr operation in String format: rx1
+	 */
+	public GenericOperation(String opStr)
+	{
+		this.opStr = opStr;
+
+		char type = opStr.charAt(0);
+		this.var = String.valueOf(opStr.charAt(1));
+		this.val = Integer.parseInt(opStr.substring(2));
+
+		if(type == 'r')
+			this.type = GlobalData.READ;
+		else
+			this.type = GlobalData.WRITE;
+
+		GlobalData.VARSET.add(var);
+	}
 
 	/**
 	 * copy constructor

@@ -28,10 +28,15 @@ public class RawProcess
 		this.opList = new ArrayList<BasicOperation>();
 	}
 	
+	/**
+	 * add the {@link BasicOperation} to the {@link RawProcess}
+	 * and set its pid to the id of {@link RawProcess}
+	 * 
+	 * @param op {@link BasicOperation} to be added
+	 */
 	public void addOperation(BasicOperation op)
 	{
 		op.setPid(pid);
-		
 		this.opList.add(op);
 	}
 	

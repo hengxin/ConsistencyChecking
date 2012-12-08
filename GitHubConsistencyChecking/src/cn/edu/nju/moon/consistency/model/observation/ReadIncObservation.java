@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
@@ -60,7 +61,23 @@ public class ReadIncObservation extends RawObservation
 	}
 	
 	/**
-	 * establishing "program order" between {@link ReadIncOperation}
+	 * does some READ {@link ReadIncOperation} read value from later WRITE
+	 * {@link ReadIncOperation} on the same {@link ReadIncProcess} with masterPid
+	 * 
+	 * @return true, if some READ {@link ReadIncOperation} read value from later WRITE
+	 * 	{@link ReadIncOperation} on the same {@link ReadIncProcess} with masterPid;
+	 * 		   false, o.w..
+	 * 
+	 * @see ReadIncProcess#readLaterWrite()
+	 * @see ReadIncChecker#check()
+	 */
+	public boolean readLaterWrite()
+	{
+		return ((ReadIncProcess) this.procMap.get(this.masterPid)).readLaterWrite();
+	}
+	
+	/**
+	 * establishing "program order" between {@link ReadIncOperation}s
 	 */
 	private void establishProgramOrder()
 	{
@@ -70,18 +87,13 @@ public class ReadIncObservation extends RawObservation
 	}
 	
 	/**
-	 * establishing "write to order" between {@link ReadIncOperation} 
+	 * establishing "write to order" between {@link ReadIncOperation}s 
+	 * and set rid for READ {@link ReadIncOperation} and wid for corresponding
+	 * WRITE {@link ReadIncOperation} 
 	 */
 	private void establishWritetoOrder()
 	{
 		// all READ {@link ReadIncOperation}s are in the {@link ReadIncProcess} with #masterPid
-		List<BasicOperation> opList = this.procMap.get(this.masterPid).getOpList();
-		ReadIncOperation rriop = null;
-		for (BasicOperation bop : opList)
-			if(bop.isReadOp())
-			{  
-				rriop = (ReadIncOperation) bop;
-				rriop.getDictatingWrite().addWritetoOrder(rriop);
-			}
+		((ReadIncProcess) this.procMap.get(this.masterPid)).establishWritetoOrder();
 	}
 }
