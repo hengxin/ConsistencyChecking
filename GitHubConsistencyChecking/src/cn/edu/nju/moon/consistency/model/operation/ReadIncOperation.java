@@ -1,10 +1,14 @@
 package cn.edu.nju.moon.consistency.model.operation;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
+import cn.edu.nju.moon.consistency.datastructure.EarliestRead;
+import cn.edu.nju.moon.consistency.datastructure.LatestWriteMap;
 import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
-import static org.junit.Assert.*;
 
 /**
  * @description {@link ReadIncOperation} is specifically designed for {@link ReadIncChecker} algorithm.
@@ -14,16 +18,23 @@ import static org.junit.Assert.*;
  */
 public class ReadIncOperation extends BasicOperation
 {
+	/* basic information related */
 	private int index = -1;	// index in {@link ReadIncProcess}
 	private int rid = -1;	// id of READ {@link ReadIncOperation}
 	private int wid = -1;	// id of WRITE {@link ReadIncOperation}
 	
+	/* precede order related */
 	private ReadIncOperation programOrder = null;		// program order
 	private ReadIncOperation reProgramOrder = null;		// reverse program order
 	private ReadIncOperation readfromOrder = null; 		// read from order
 	private List<ReadIncOperation> writetoOrder 
 				= new ArrayList<ReadIncOperation>();	// write to relation 
 	private ReadIncOperation wprimewrOrder = null;		// w'wr order
+
+	/* {@link ReadIncChecker} related */
+	private EarliestRead earlistRead = new EarliestRead();	// earliest READ reachable 
+	private LatestWriteMap lwMap = new LatestWriteMap();	// latest WRITE for each variable
+
 	
 	public ReadIncOperation(GenericOperation otherOp)
 	{

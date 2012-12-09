@@ -56,6 +56,9 @@ public class ReadIncProcess extends RawProcess
 	 */
 	public void establishProgramOrder()
 	{
+		if (this.opList.size() == 0)
+			return ;
+		
 		ReadIncOperation preOp = (ReadIncOperation) this.opList.get(0);
 		ReadIncOperation curOp = null;
 		int size = this.opList.size();

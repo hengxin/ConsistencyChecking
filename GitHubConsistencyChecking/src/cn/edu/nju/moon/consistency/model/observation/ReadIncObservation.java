@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
+import cn.edu.nju.moon.consistency.datastructure.GlobalActiveWritesMap;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
@@ -20,14 +21,17 @@ import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
  */
 public class ReadIncObservation extends RawObservation
 {
-	// {@link ReadIncProcess} with masterPid is to be checked against PRAM consistency
-	private int masterPid = -1;
-	
 	/**
 	 *  pool of all WRITE operations
 	 *  in the PRAM-distinct problem, WRITE operations are distinct.
 	 */
 	public static Map<String, ReadIncOperation> WRITEPOOL = new HashMap<String, ReadIncOperation>();	
+	
+	// {@link ReadIncProcess} with masterPid is to be checked against PRAM consistency
+	private int masterPid = -1;
+	
+	// global active WRITEs for each variable; used by {@link ReadIncChecker}
+	private GlobalActiveWritesMap gawsMap = new GlobalActiveWritesMap();
 	
 	/**
 	 * get the filtered observation in which READ operations

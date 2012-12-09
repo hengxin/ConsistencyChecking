@@ -13,8 +13,7 @@ public class GenericOperation
 	private final String var;
 	private final int val;
 	
-	// String form of operation, such as rx1
-	private String opStr;
+	private String opStr;	// String form of operation, such as rx1
 	
 	/**
 	 * constructor for Operation
