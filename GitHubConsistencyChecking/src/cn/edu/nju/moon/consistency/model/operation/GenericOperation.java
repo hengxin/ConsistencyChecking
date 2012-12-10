@@ -9,10 +9,9 @@ import cn.edu.nju.moon.consistency.model.GlobalData;
  */
 public class GenericOperation
 {
-	private final int type;
-	private final String var;
-	private final int val;
-	
+	private int type;
+	private String var;
+	private int val;
 	private String opStr;	// String form of operation, such as rx1
 	
 	/**
@@ -24,20 +23,23 @@ public class GenericOperation
 	 */
 	public GenericOperation(int type, String var, int val)
 	{
-		this.type = type;
-		this.var = var;
-		this.val = val;
-
-		// get the String format of GenericOperation
-		StringBuilder sb = new StringBuilder();
-		if(this.isReadOp())
-			sb.append('r');
-		else
-			sb.append('w');
-		sb.append(var).append(val);
-		this.opStr = sb.toString();
-		
-		GlobalData.VARSET.add(var);
+		if (type != GlobalData.DUMMY)
+		{
+			this.type = type;
+			this.var = var;
+			this.val = val;
+	
+			// get the String format of GenericOperation
+			StringBuilder sb = new StringBuilder();
+			if(this.isReadOp())
+				sb.append('r');
+			else
+				sb.append('w');
+			sb.append(var).append(val);
+			this.opStr = sb.toString();
+			
+			GlobalData.VARSET.add(var);
+		}
 	}
 
 	/**

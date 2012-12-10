@@ -1,13 +1,11 @@
 package cn.edu.nju.moon.consistency.model.observation;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
 import cn.edu.nju.moon.consistency.datastructure.GlobalActiveWritesMap;
-import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
 
@@ -31,7 +29,7 @@ public class ReadIncObservation extends RawObservation
 	private int masterPid = -1;
 	
 	// global active WRITEs for each variable; used by {@link ReadIncChecker}
-	private GlobalActiveWritesMap gawsMap = new GlobalActiveWritesMap();
+	private GlobalActiveWritesMap globalActiveWritesMap = new GlobalActiveWritesMap();
 	
 	/**
 	 * get the filtered observation in which READ operations
@@ -53,6 +51,25 @@ public class ReadIncObservation extends RawObservation
 		}
 	}
 
+	/**
+	 * @return the {@link ReadIncProcess} with masterPid
+	 * 	which is also the process to be checked against PRAM consistency
+	 * 
+	 * @see {@link ReadIncChecker}
+	 */
+	public ReadIncProcess getMasterProcess()
+	{
+		return (ReadIncProcess) this.procMap.get(this.masterPid);
+	}
+	
+	/**
+	 * @return {@link #globalActiveWritesMap}
+	 */
+	public GlobalActiveWritesMap getGlobalActiveWritesMap()
+	{
+		return this.globalActiveWritesMap;
+	}
+	
 	/**
 	 * preprocessing the {@link ReadIncObservation}, including
 	 * (1) establishing "program order" between {@link ReadIncOperation}
@@ -81,6 +98,20 @@ public class ReadIncObservation extends RawObservation
 	}
 	
 	/**
+	 * is there no {@link ReadIncOperation} at all in the {@link ReadIncProcess}
+	 * with masterPid. if it is the case, PRAM consistency is satisfied trivially.
+	 * 
+	 * @return true, if no {@link ReadIncOperation} 
+	 * 	in {@link ReadIncProcess} with masterPid;	false, o.w..
+	 */
+	public boolean nullCheck()
+	{
+		if (this.procMap.get(this.masterPid).size() == 0)
+			return true;
+		return false;
+	}
+	
+	/**
 	 * establishing "program order" between {@link ReadIncOperation}s
 	 */
 	private void establishProgramOrder()
@@ -97,6 +128,8 @@ public class ReadIncObservation extends RawObservation
 	 */
 	private void establishWritetoOrder()
 	{
+		// FIXME: NullPointer exception
+		
 		// all READ {@link ReadIncOperation}s are in the {@link ReadIncProcess} with #masterPid
 		((ReadIncProcess) this.procMap.get(this.masterPid)).establishWritetoOrder();
 	}

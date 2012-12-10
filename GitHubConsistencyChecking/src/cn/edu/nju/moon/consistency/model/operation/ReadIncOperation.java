@@ -33,9 +33,9 @@ public class ReadIncOperation extends BasicOperation
 
 	/* {@link ReadIncChecker} related */
 	private EarliestRead earlistRead = new EarliestRead();	// earliest READ reachable 
-	private LatestWriteMap lwMap = new LatestWriteMap();	// latest WRITE for each variable
+	private LatestWriteMap latestWriteMap = new LatestWriteMap();	// latest WRITE for each variable
 
-	
+
 	public ReadIncOperation(GenericOperation otherOp)
 	{
 		super(otherOp);
@@ -63,11 +63,21 @@ public class ReadIncOperation extends BasicOperation
 	}
 	
 	/************* BEGIN: rid and wid **************/
+	public int getRid()
+	{
+		return this.rid;
+	}
+	
 	public void setRid(int id)
 	{
 		assertTrue("Only READ operation has rid", this.isReadOp());
 		
 		this.rid = id;
+	}
+	
+	public int getWid()
+	{
+		return this.getWid();
 	}
 	
 	public void setWid(int id)
@@ -94,12 +104,41 @@ public class ReadIncOperation extends BasicOperation
 		riop.readfromOrder = this;
 	}
 	
+	/**
+	 * @return dictating WRITE {@link ReadIncOperation} from this READ reads
+	 * 
+	 * @constraints this must be READ {@link ReadIncOperation}
+	 */
 	public ReadIncOperation getReadfromWrite()
 	{
 		assertTrue("READ reads from WRITE", this.isReadOp());
 		
 		return this.readfromOrder;
 	}
+	
+	/**
+	 * @return dictated READ {@link ReadIncOperation}s for this WRITE one
+	 * 
+	 * @constraints this must be WRITE {@link ReadIncOperation}
+	 */
+	public List<ReadIncOperation> getWritetoOrder()
+	{
+		assertTrue("WRITE writes to READ", ! this.isReadOp());
+		
+		return this.writetoOrder;
+	}
 	/************ END: order related methods *************/
 
+	/********** BEGIN: {@link ReadIncChecker} related **********/
+	public EarliestRead getEarliestRead()
+	{
+		return this.earlistRead;
+	}
+	
+	public LatestWriteMap getLatestWriteMap()
+	{
+		return this.latestWriteMap;
+	}
+	/*********** END: {@link ReadIncChecker} related ***********/
+	
 }

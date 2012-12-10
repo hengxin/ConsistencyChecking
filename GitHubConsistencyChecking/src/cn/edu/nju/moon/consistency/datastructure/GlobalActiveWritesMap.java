@@ -1,5 +1,7 @@
 package cn.edu.nju.moon.consistency.datastructure;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -28,6 +30,9 @@ public class GlobalActiveWritesMap
 	 */
 	private HashMap<String,ArrayList<ReadIncOperation>> globalActiveWritesMap = null;
 	
+	/**
+	 * @constructor initialize {@link #globalActiveWritesMap}
+	 */
 	public GlobalActiveWritesMap()
 	{
 		this.globalActiveWritesMap = new HashMap<String, ArrayList<ReadIncOperation>>();
@@ -36,5 +41,21 @@ public class GlobalActiveWritesMap
 		{
 			this.globalActiveWritesMap.put(var, new ArrayList<ReadIncOperation>());
 		}
+	}
+	
+	/**
+	 * replace the value of appropriate <wriop.variable, operations> 
+	 * with a singleton set containing @param wriop 
+	 * 
+	 * @param wriop WRITE {@link ReadIncOperation} to be replaced
+	 * 
+	 * @constraints @param wriop must be WRITE {@link ReadIncOperation} 
+	 */
+	public void replace(ReadIncOperation wriop)
+	{
+		assertTrue("Can only be replaced with WRITE ReadIncOperation", ! wriop.isReadOp());
+		ArrayList<ReadIncOperation> wriop_list = new ArrayList<ReadIncOperation>();
+		wriop_list.add(wriop);
+		this.globalActiveWritesMap.put(wriop.getVariable(), wriop_list);
 	}
 }

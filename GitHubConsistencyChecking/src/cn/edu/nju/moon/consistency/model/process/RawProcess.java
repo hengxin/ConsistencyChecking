@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
+import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 
 /**
  * @author hengxin
@@ -46,6 +47,15 @@ public class RawProcess
 	}
 	
 	/**
+	 * return the {@link BasicOperation} with index
+	 * @param index index of {@link BasicOperation} to return
+	 */
+	public BasicOperation getOperation(int index)
+	{
+		return this.opList.get(index);
+	}
+	
+	/**
 	 * @return the immutable field {@link #opList}
 	 * @see {@link #getOpListCopy()} 
 	 */
@@ -61,5 +71,13 @@ public class RawProcess
 	public List<BasicOperation> getOpListCopy()
 	{
 		return new ArrayList<BasicOperation>(this.opList);
+	}
+	
+	/**
+	 * @return number of {@link BasicOperation} in this {@link RawProcess}
+	 */
+	public int size()
+	{
+		return this.opList.size();
 	}
 }

@@ -4,17 +4,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * @description global data or resource
+ * 
  * @author hengxin
  * @date 2012-12-6
- * 
- * @description global data or resource
  */
 public final class GlobalData
 {
-	// type of Operation
+	// type of {@link GenericOperation}
+	public static final int DUMMY = -1;
 	public static final int READ = 0;
 	public static final int WRITE = 1;
 	
-	// set of all possible variables in the form of String 
+	// set of variables 
 	public static Set<String> VARSET = new HashSet<String>();
 }

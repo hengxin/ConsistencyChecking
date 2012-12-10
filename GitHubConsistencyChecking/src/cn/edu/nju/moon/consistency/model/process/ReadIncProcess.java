@@ -2,8 +2,10 @@ package cn.edu.nju.moon.consistency.model.process;
 
 import java.util.List;
 
+import cn.edu.nju.moon.consistency.model.GlobalData;
 import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
+import cn.edu.nju.moon.consistency.model.operation.GenericOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 
 /**
@@ -17,6 +19,10 @@ import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
  */
 public class ReadIncProcess extends RawProcess
 {
+	/* {@link ReadIncChecker} related */ 
+	private ReadIncOperation pre_riop = new ReadIncOperation(
+			new GenericOperation(GlobalData.DUMMY, "", -1));
+	
 	/**
 	 * filter {@link RawProcess} for specific purpose
 	 * 
@@ -118,4 +124,11 @@ public class ReadIncProcess extends RawProcess
 		return false;
 	}
 	
+	/**
+	 * @return {@link #pre_riop}
+	 */
+	public ReadIncOperation get_pre_riop()
+	{
+		return this.pre_riop;
+	}
 }
