@@ -77,12 +77,12 @@ public class ReadIncOperation extends BasicOperation
 	
 	public int getWid()
 	{
-		return this.getWid();
+		return this.wid;
 	}
 	
 	public void setWid(int id)
 	{
-		assertTrue("Only WRITE operation has wid", ! this.isReadOp());
+		assertTrue("Only WRITE operation has wid", this.isWriteOp());
 		
 		if (this.wid == -1)	// keep the same with the earliest dictating READ {@link ReadIncOperation}
 			this.wid = id;
@@ -98,7 +98,7 @@ public class ReadIncOperation extends BasicOperation
 	
 	public void addWritetoOrder(ReadIncOperation riop)
 	{
-		assertTrue("WRITE writes to READ", (! this.isReadOp()) && riop.isReadOp());
+		assertTrue("WRITE writes to READ", this.isWriteOp() && riop.isReadOp());
 		
 		this.writetoOrder.add(riop);
 		riop.readfromOrder = this;
@@ -123,7 +123,7 @@ public class ReadIncOperation extends BasicOperation
 	 */
 	public List<ReadIncOperation> getWritetoOrder()
 	{
-		assertTrue("WRITE writes to READ", ! this.isReadOp());
+		assertTrue("WRITE writes to READ", this.isWriteOp());
 		
 		return this.writetoOrder;
 	}

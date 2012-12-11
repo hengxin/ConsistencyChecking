@@ -1,5 +1,7 @@
 package cn.edu.nju.moon.consistency.model.process;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import cn.edu.nju.moon.consistency.model.GlobalData;
@@ -20,8 +22,10 @@ import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 public class ReadIncProcess extends RawProcess
 {
 	/* {@link ReadIncChecker} related */ 
-	private ReadIncOperation pre_riop = new ReadIncOperation(
-			new GenericOperation(GlobalData.DUMMY, "", -1));
+	private ReadIncOperation pre_rriop = new ReadIncOperation(
+			new GenericOperation(GlobalData.READ, "", -1));		// for {@link ReadIncProcess} with masterPid
+	private ReadIncOperation pre_wriop = new ReadIncOperation(
+			new GenericOperation(GlobalData.WRITE, "", -1));	// for other {@link ReadIncProcess}es
 	
 	/**
 	 * filter {@link RawProcess} for specific purpose
@@ -43,14 +47,16 @@ public class ReadIncProcess extends RawProcess
 				{
 					ReadIncOperation rriop = new ReadIncOperation(bop);
 					rriop.setIndex(this.opList.size());
-					this.opList.add(rriop);	// transform to READ {@link ReadIncOperation}
+//					this.opList.add(rriop);	// transform to READ {@link ReadIncOperation}
+					this.addOperation(rriop);	// transform to READ {@link ReadIncOperation}
 				}
 			}
 			else	// WRITE {@link ReadIncOperation}
 			{
 				ReadIncOperation wriop = new ReadIncOperation(bop);
 				wriop.setIndex(this.opList.size());
-				this.opList.add(wriop);
+//				this.opList.add(wriop);
+				this.addOperation(wriop);	// transform to READ {@link ReadIncOperation}
 				ReadIncObservation.WRITEPOOL.put(wriop.toString(), wriop);
 			}
 		}
@@ -117,7 +123,7 @@ public class ReadIncProcess extends RawProcess
 			{
 				rriop = (ReadIncOperation) riop;
 				wriop = rriop.getReadfromWrite();
-				if (rriop.getPid() == wriop.getPid() && rriop.getIndex() > wriop.getIndex())
+				if (rriop.getPid() == wriop.getPid() && rriop.getIndex() < wriop.getIndex())
 					return true;
 			}
 		}
@@ -125,10 +131,56 @@ public class ReadIncProcess extends RawProcess
 	}
 	
 	/**
-	 * @return {@link #pre_riop}
+	 * @return {@link #pre_wriop}
+	 * 
+	 * @constraints for {@link ReadIncProcess} other than that with masterPid 
+	 * 		{@link ReadIncObservation#masterPid}, it is a WRITE.
 	 */
-	public ReadIncOperation get_pre_riop()
+	public ReadIncOperation get_pre_wriop()
 	{
-		return this.pre_riop;
+		return this.pre_wriop;
+	}
+	
+	/**
+	 * advance {@link #pre_wriop} to be new WRITE {@link ReadIncOperation} (@param cur_wriop)
+	 * 
+	 * @param cur_wriop new WRITE {@link ReadIncOperation}
+	 * 
+	 * @constraints @param cur_wriop must be WRITE {@link ReadIncOperation}
+	 * 		and @param cur_wriop must be in this {@link ReadIncProcess}
+	 */
+	public void advance_pre_wriop(ReadIncOperation cur_wriop)
+	{
+		assertTrue("for ReadIncProcess with no masterPid, cur_wriop must be WRITE", cur_wriop.isWriteOp());
+		assertTrue("new WRITE cur_wriop must be in this ReadIncProcess", cur_wriop.getPid() == this.pid);
+		
+		this.pre_wriop = cur_wriop;
+	}
+	
+	/**
+	 * @return {@link #pre_rriop}
+	 * 
+	 * @constraints for {@link ReadIncProcess} with masterPid 
+	 * 		{@link ReadIncObservation#masterPid}, it is a READ.
+	 */
+	public ReadIncOperation get_pre_rriop()
+	{
+		return this.pre_rriop;
+	}
+	
+	/**
+	 * advance {@link #pre_rriop} to be new READ {@link ReadIncOperation} (@param cur_rriop)
+	 * 
+	 * @param cur_rriop new READ {@link ReadIncOperation}
+	 * 
+	 * @constraints @param cur_rriop must be READ {@link ReadIncOperation}
+	 * 		and @param cur_rriop must be in this {@link ReadIncProcess}
+	 */
+	public void advance_pre_rriop(ReadIncOperation cur_rriop)
+	{
+		assertTrue("for ReadIncProcess with masterPid, cur_rriop must be READ", cur_rriop.isReadOp());
+		assertTrue("new WRITE cur_rriop must be in this ReadIncProcess", cur_rriop.getPid() == this.pid);
+		
+		this.pre_rriop = cur_rriop;
 	}
 }

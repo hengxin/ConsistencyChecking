@@ -50,11 +50,12 @@ public class LatestWriteMap
 		for (String var : GlobalData.VARSET)	// variable by variable
 		{
 			riop_var_wriop = riop.getLatestWriteMap().getLatestWrite(var);
-			if (this.getLatestWrite(var).getWid() < riop_var_wriop.getWid())
-				this.latestWriteMap.put(var, riop_var_wriop);	// update to the most latest one 
+			if (riop_var_wriop != null)
+				if (this.getLatestWrite(var) == null || this.getLatestWrite(var).getWid() < riop_var_wriop.getWid())
+					this.latestWriteMap.put(var, riop_var_wriop);	// update to the most latest one 
 		}
 		
-		if (! riop.isReadOp() && ! riop.getWritetoOrder().isEmpty())	// there is some READ reads from @param riop
+		if (riop.isWriteOp() && ! riop.getWritetoOrder().isEmpty())	// there is some READ reads from @param riop
 			this.latestWriteMap.put(riop.getVariable(), riop);
 	}
 	
@@ -62,8 +63,10 @@ public class LatestWriteMap
 	 * get the latest WRITE {@link ReadIncOperation} on variable @param var
 	 * @param var variable
 	 * @return latest WRITE {@link ReadIncOperation} on @param var
+	 * 
+	 * @warning You SHOULD check whether the result is NULL.
 	 */
-	private ReadIncOperation getLatestWrite(String var)
+	public ReadIncOperation getLatestWrite(String var)
 	{
 		return this.latestWriteMap.get(var);
 	}
@@ -80,7 +83,7 @@ public class LatestWriteMap
 	 */
 	private ReadIncOperation maxWrite(ReadIncOperation wriop1, ReadIncOperation wriop2)
 	{
-		assertTrue("Only WRITEs on the same variable can be compared", ! wriop1.isReadOp() && ! wriop2.isReadOp());
+		assertTrue("Only WRITEs on the same variable can be compared", wriop1.isWriteOp() && wriop2.isWriteOp());
 		
 		if (wriop1.getWid() < wriop2.getWid())
 			return wriop2;

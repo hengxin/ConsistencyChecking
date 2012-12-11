@@ -33,7 +33,7 @@ public class GenericOperation
 			StringBuilder sb = new StringBuilder();
 			if(this.isReadOp())
 				sb.append('r');
-			else
+			else if (this.isWriteOp())
 				sb.append('w');
 			sb.append(var).append(val);
 			this.opStr = sb.toString();
@@ -83,6 +83,11 @@ public class GenericOperation
 		return this.type == GlobalData.READ;
 	}
 
+	public boolean isWriteOp()
+	{
+		return this.type == GlobalData.WRITE;
+	}
+	
 	public String getVariable()
 	{
 		return this.var;

@@ -37,6 +37,16 @@ public class RawObservation
 	}
 	
 	/**
+	 * process with pid
+	 * @param pid id of process
+	 * @return process with @param pid
+	 */
+	public RawProcess getProcess(int pid)
+	{
+		return this.procMap.get(pid);
+	}
+	
+	/**
 	 * @return field {@link #procMap}
 	 */
 	public Map<Integer, RawProcess> getProcMap()
