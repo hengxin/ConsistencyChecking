@@ -22,8 +22,10 @@ public class ReadIncObservation extends RawObservation
 	/**
 	 *  pool of all WRITE operations
 	 *  in the PRAM-distinct problem, WRITE operations are distinct.
+	 *  
+	 *  @warning public static field cannot be shared in multiple test cases
 	 */
-	public static Map<String, ReadIncOperation> WRITEPOOL = new HashMap<String, ReadIncOperation>();	
+	public static Map<String, ReadIncOperation> WRITEPOOL = null;	
 	
 	// {@link ReadIncProcess} with masterPid is to be checked against PRAM consistency
 	private int masterPid = -1;
@@ -42,6 +44,8 @@ public class ReadIncObservation extends RawObservation
 	 */
 	public ReadIncObservation(int masterPid, RawObservation rob)
 	{
+		ReadIncObservation.WRITEPOOL = new HashMap<String, ReadIncOperation>();
+		
 		this.masterPid = masterPid;
 		
 		Set<Integer> pids = rob.getProcMap().keySet();

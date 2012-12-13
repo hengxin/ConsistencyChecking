@@ -64,6 +64,7 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 		{
 			System.err.println("Failed to read this file: " + fileName);
 			ioe.printStackTrace();
+			System.exit(1);  
 		}
 
 		return rob;

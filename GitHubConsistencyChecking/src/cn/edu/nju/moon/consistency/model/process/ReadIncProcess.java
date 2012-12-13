@@ -146,13 +146,15 @@ public class ReadIncProcess extends RawProcess
 	 * 
 	 * @param cur_wriop new WRITE {@link ReadIncOperation}
 	 * 
-	 * @constraints @param cur_wriop must be WRITE {@link ReadIncOperation}
-	 * 		and @param cur_wriop must be in this {@link ReadIncProcess}
+	 * @constraints @param cur_wriop must be WRITE {@link ReadIncOperation};
+	 * 		@param cur_wriop must be in this {@link ReadIncProcess};
+	 * 		and @param cur_wriop should not precede {@link #pre_wriop} in program order
 	 */
 	public void advance_pre_wriop(ReadIncOperation cur_wriop)
 	{
 		assertTrue("for ReadIncProcess with no masterPid, cur_wriop must be WRITE", cur_wriop.isWriteOp());
 		assertTrue("new WRITE cur_wriop must be in this ReadIncProcess", cur_wriop.getPid() == this.pid);
+		assertTrue("you should advance forward", this.pre_wriop.getIndex() < cur_wriop.getIndex());
 		
 		this.pre_wriop = cur_wriop;
 	}
@@ -173,13 +175,15 @@ public class ReadIncProcess extends RawProcess
 	 * 
 	 * @param cur_rriop new READ {@link ReadIncOperation}
 	 * 
-	 * @constraints @param cur_rriop must be READ {@link ReadIncOperation}
-	 * 		and @param cur_rriop must be in this {@link ReadIncProcess}
+	 * @constraints @param cur_rriop must be READ {@link ReadIncOperation};
+	 * 		@param cur_rriop must be in this {@link ReadIncProcess};
+	 * 		and {@link #pre_wriop} precedes @param cur_rriop
 	 */
 	public void advance_pre_rriop(ReadIncOperation cur_rriop)
 	{
 		assertTrue("for ReadIncProcess with masterPid, cur_rriop must be READ", cur_rriop.isReadOp());
 		assertTrue("new WRITE cur_rriop must be in this ReadIncProcess", cur_rriop.getPid() == this.pid);
+		assertTrue("you should advance forward in the ReadIncProcess with masterPid", this.pre_rriop.getIndex() < cur_rriop.getIndex());
 		
 		this.pre_rriop = cur_rriop;
 	}

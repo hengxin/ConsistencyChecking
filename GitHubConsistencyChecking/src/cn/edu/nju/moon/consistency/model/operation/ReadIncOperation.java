@@ -1,6 +1,7 @@
 package cn.edu.nju.moon.consistency.model.operation;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +30,20 @@ public class ReadIncOperation extends BasicOperation
 	private ReadIncOperation readfromOrder = null; 		// read from order
 	private List<ReadIncOperation> writetoOrder 
 				= new ArrayList<ReadIncOperation>();	// write to relation 
-	private ReadIncOperation wprimewrOrder = null;		// w'wr order
+	private ReadIncOperation wprimewrOrder = null;		// w'wr order TODO: ArrayList<ReadIncOperation> ?
+	private List<ReadIncOperation> reWprimewrOrder 
+				= new ArrayList<ReadIncOperation>();	// reverse w'wr order
 
 	/* {@link ReadIncChecker} related */
 	private EarliestRead earlistRead = new EarliestRead();	// earliest READ reachable 
 	private LatestWriteMap latestWriteMap = new LatestWriteMap();	// latest WRITE for each variable
 
-
+	/* {@link ReadIncChecker} reschedule related */
+	private boolean isCandidate = false;
+	private List<ReadIncOperation> predecessors = null;
+	private List<ReadIncOperation> successors = null;
+	
+	
 	public ReadIncOperation(GenericOperation otherOp)
 	{
 		super(otherOp);
@@ -49,7 +57,7 @@ public class ReadIncOperation extends BasicOperation
 	{
 		assertTrue("Only READ operation has corresponding dictating WRITE", this.isReadOp());
 		
-		return ReadIncObservation.WRITEPOOL.get(this.toString().replaceAll("r", "w"));
+		return ReadIncObservation.WRITEPOOL.get(this.toString().replaceFirst("r", "w"));
 	}
 	
 	public void setIndex(int index)
@@ -105,7 +113,7 @@ public class ReadIncOperation extends BasicOperation
 	}
 	
 	/**
-	 * @return dictating WRITE {@link ReadIncOperation} from this READ reads
+	 * @return dictating WRITE {@link ReadIncOperation} from which this READ reads
 	 * 
 	 * @constraints this must be READ {@link ReadIncOperation}
 	 */
@@ -127,6 +135,37 @@ public class ReadIncOperation extends BasicOperation
 		
 		return this.writetoOrder;
 	}
+	
+	/**
+	 * applying Rule (c): W'WR order; 
+	 * return <a>true</a> if cycle emerges; <a>false</a>, otherwise.
+	 * 
+	 * @param wriop WRITE {@ReadIncOperation} to be pointed to
+	 * @return <a>true</a> if cycle emerges; <a>false</a>, otherwise.
+	 */
+	public boolean apply_wprimew_order(ReadIncOperation wriop)
+	{
+		assertTrue("W'WR order: WRITE pointing to WRITE", this.isWriteOp() && wriop.isWriteOp());
+		assertTrue("pointing to the WRITE ReadIncOperation which has corresponding READs", ! wriop.getWritetoOrder().isEmpty());
+		assertTrue("W'WR order: on two operations performing on the same variable", this.getVariable().equals(wriop.getVariable()));
+		
+		this.wprimewrOrder = wriop;
+		wriop.reWprimewrOrder.add(this);
+		
+		// cycle detection
+		String var = wriop.getVariable();
+		ReadIncOperation latest_wriop = this.getLatestWriteMap().getLatestWrite(var);
+		if (latest_wriop != null && latest_wriop.getWid() >= wriop.getWid())
+			return true;
+		
+		// update earlist read
+		this.earlistRead.updateEarliestRead(wriop);
+		
+		// TODO: forward propagation: this => wriop
+		
+		return false;
+	}
+	
 	/************ END: order related methods *************/
 
 	/********** BEGIN: {@link ReadIncChecker} related **********/
@@ -141,4 +180,47 @@ public class ReadIncOperation extends BasicOperation
 	}
 	/*********** END: {@link ReadIncChecker} related ***********/
 	
+	/*********** BEGIN: {@link ReadIncChecker} reschedule related ************/
+	/**
+	 * set {@link #isCandidate} to be true
+	 */
+	public void setCandidate()
+	{
+		this.isCandidate = true;
+	}
+	
+	/**
+	 * @return list of predecessor {@link ReadIncOperation}s
+	 */
+	public List<ReadIncOperation> getPredecessors()
+	{
+		if (this.predecessors != null)
+			return this.predecessors;
+		
+		// identify predecessors
+		this.predecessors = new ArrayList<ReadIncOperation>();
+		if (this.reProgramOrder != null)				// reverse program order
+			this.predecessors.add(this.reProgramOrder);	
+		if (this.isReadOp())							// read from order
+			this.predecessors.add(this.readfromOrder);
+		else											// w'wr order
+			this.predecessors.addAll(reWprimewrOrder);
+		
+		return this.predecessors;
+	}
+	
+	/**
+	 * @return list of successor {@link ReadIncOperation}
+	 */
+//	public List<ReadIncOperation> getSuccessors()
+//	{
+//		if (this.successors != null)
+//			return this.successors;
+//		
+//		// identify successors
+//		if (this.programOrder)
+//		this.successors.add(this.programOrder);
+//		
+//	}
+	/************ END: {@link ReadIncChecker} reschedule related *************/
 }
