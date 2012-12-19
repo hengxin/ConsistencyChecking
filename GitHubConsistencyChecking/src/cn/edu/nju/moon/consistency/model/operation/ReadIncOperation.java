@@ -21,7 +21,7 @@ public class ReadIncOperation extends BasicOperation
 {
 	/* basic information related */
 	private int index = -1;	// index in {@link ReadIncProcess}
-	private int rid = -1;	// id of READ {@link ReadIncOperation}
+//	private int rid = -1;	// id of READ {@link ReadIncOperation}
 	private int wid = -1;	// id of WRITE {@link ReadIncOperation}
 	
 	/* precede order related */
@@ -40,6 +40,7 @@ public class ReadIncOperation extends BasicOperation
 
 	/* {@link ReadIncChecker} reschedule related */
 	private boolean isCandidate = false;
+	private boolean isDone = false;
 	private List<ReadIncOperation> predecessors = null;
 	private List<ReadIncOperation> successors = null;
 	
@@ -71,17 +72,17 @@ public class ReadIncOperation extends BasicOperation
 	}
 	
 	/************* BEGIN: rid and wid **************/
-	public int getRid()
-	{
-		return this.rid;
-	}
+//	public int getRid()
+//	{
+//		return this.rid;
+//	}
 	
-	public void setRid(int id)
-	{
-		assertTrue("Only READ operation has rid", this.isReadOp());
-		
-		this.rid = id;
-	}
+//	public void setRid(int id)
+//	{
+//		assertTrue("Only READ operation has rid", this.isReadOp());
+//		
+//		this.rid = id;
+//	}
 	
 	public int getWid()
 	{
@@ -182,11 +183,49 @@ public class ReadIncOperation extends BasicOperation
 	
 	/*********** BEGIN: {@link ReadIncChecker} reschedule related ************/
 	/**
-	 * set {@link #isCandidate} to be true
+	 * set {@link #isCandidate} true
 	 */
 	public void setCandidate()
 	{
 		this.isCandidate = true;
+	}
+	
+	/**
+	 * set {@link #isCandidate} false
+	 */
+	public void resetCandidate()
+	{
+		this.isCandidate = false;
+	}
+	
+	/**
+	 * Is it a candidate to be rescheduled? 
+	 * @return {@link #isCandidate}
+	 */
+	public boolean isCandidate()
+	{
+		return this.isCandidate;
+	}
+	
+	/**
+	 * set {@link #isDone} false
+	 */
+	public void resetDone()
+	{
+		this.isDone = false;
+	}
+	
+	/**
+	 * set {@link #isDone} true
+	 */
+	public void setDone()
+	{
+		this.isDone = true;
+	}
+	
+	public boolean isDone()
+	{
+		return this.isDone;
 	}
 	
 	/**
@@ -203,7 +242,7 @@ public class ReadIncOperation extends BasicOperation
 			this.predecessors.add(this.reProgramOrder);	
 		if (this.isReadOp())							// read from order
 			this.predecessors.add(this.readfromOrder);
-		else											// w'wr order
+		else											// reverse w'wr order
 			this.predecessors.addAll(reWprimewrOrder);
 		
 		return this.predecessors;
@@ -212,15 +251,21 @@ public class ReadIncOperation extends BasicOperation
 	/**
 	 * @return list of successor {@link ReadIncOperation}
 	 */
-//	public List<ReadIncOperation> getSuccessors()
-//	{
-//		if (this.successors != null)
-//			return this.successors;
-//		
-//		// identify successors
-//		if (this.programOrder)
-//		this.successors.add(this.programOrder);
-//		
-//	}
+	public List<ReadIncOperation> getSuccessors()
+	{
+		if (this.successors != null)
+			return this.successors;
+		
+		// identify successors
+		this.successors = new ArrayList<ReadIncOperation>();
+		if (this.programOrder != null)					// program order
+			this.successors.add(this.programOrder);
+		if (this.isWriteOp())
+			this.successors.addAll(this.writetoOrder);	// write to order
+		if (this.wprimewrOrder != null)					// w'wr order
+			this.successors.add(this.wprimewrOrder);
+		
+		return this.successors;
+	}
 	/************ END: {@link ReadIncChecker} reschedule related *************/
 }

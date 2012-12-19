@@ -98,7 +98,8 @@ public class ReadIncProcess extends RawProcess
 			if(rriop.isReadOp())	
 			{
 				wriop = rriop.fetchDictatingWrite();
-				rriop.setRid(index);
+//				rriop.setRid(index);  // replaced by the following statement: setEarliestReadInt(index)
+				rriop.getEarliestRead().setEarlistReadInt(index);
 				wriop.setWid(index);
 				wriop.addWritetoOrder(rriop);
 			}

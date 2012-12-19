@@ -177,12 +177,32 @@ public class ReadIncChecker implements IChecker
 			assertTrue("W' in W'WR must be WRITE", wprime_riop.isWriteOp());
 			
 			// identify the possible W'WR order
-			// TODO: Fig4 case 2b) Rz1 & WZ1 updateEarliestRead wrong (successors ?)
-			int oldEarlistRead = wprime_riop.getEarliestRead().updateEarliestRead(wprime_riop.getPredecessors());
+			int oldEarlistRead = wprime_riop.getEarliestRead().updateEarliestRead(wprime_riop.getSuccessors());
 			ReadIncOperation wriop = wprime_riop.getEarliestRead().identify_wrPair(oldEarlistRead, wprime_riop, this.riob.getMasterProcess());
 			
 			if (wriop != null)
-				wprime_riop.apply_wprimew_order(wriop);
+				if (wprime_riop.apply_wprimew_order(wriop))
+					return true;
+			wprime_riop.setDone();
+			
+			if (wriop != null && wriop.isCandidate())
+			{
+				// TODO: to check is it OK to reset #isCandidate false here
+				wriop.resetCandidate();		
+				
+				// depending on UNDONE operation
+				if (! wriop.isDone())
+				{
+					
+				}
+				else
+				{
+					
+				}
+			}
+			
+			// delete dependency and identify operations ready to check
+			
 		}
 		
 //		fail();
@@ -224,6 +244,7 @@ public class ReadIncChecker implements IChecker
 		{
 			ReadIncOperation cur_op = pending.poll();
 			cur_op.setCandidate();	// mark the possible rescheduled operation
+			cur_op.resetDone();		// reset to be undone
 			pending.addAll(cur_op.getPredecessors());
 		}
 	}

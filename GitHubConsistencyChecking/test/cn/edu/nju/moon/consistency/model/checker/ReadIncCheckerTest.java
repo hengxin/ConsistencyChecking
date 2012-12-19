@@ -25,20 +25,19 @@ public class ReadIncCheckerTest
 	@Test
 	public void testCheck()
 	{
-		// from Fig 4. Case 2b): R and D(R) are in the same process and D(R) is in R'-downset
-		IRawObservationConstructor frobcons_fig4_2b = new FileRawObservationConstructor("./test/testset/obfig4case2b");
-		ri_checker_fig4_2b = new ReadIncChecker(new ReadIncObservation(0, frobcons_fig4_2b.construct()));
-		this.ri_checker_fig4_2b.check();
+//		// from Fig 4. Case 2b): R and D(R) are in the same process and D(R) is in R'-downset
+//		IRawObservationConstructor frobcons_fig4_2b = new FileRawObservationConstructor("./test/testset/obfig4case2b");
+//		ri_checker_fig4_2b = new ReadIncChecker(new ReadIncObservation(0, frobcons_fig4_2b.construct()));
+//		this.ri_checker_fig4_2b.check();
 		
 		// from Fig 5. Case 1b): R and D(R) are in different processes and D(R) is in R'-downset
 		IRawObservationConstructor frobcons_fig5_1b = new FileRawObservationConstructor("./test/testset/obfig5case1b");
 		ri_checker_fig5_1b = new ReadIncChecker(new ReadIncObservation(0, frobcons_fig5_1b.construct()));
-		
+		this.ri_checker_fig5_1b.check();
+
 		// from file: rescheduleread
-		IRawObservationConstructor frobcons_rescheduleread = new FileRawObservationConstructor("./test/testset/rescheduleread");
-		ri_checker_rescheduleread = new ReadIncChecker(new ReadIncObservation(0, frobcons_rescheduleread.construct()));
-		
-//		this.ri_checker_fig5_1b.check();
+//		IRawObservationConstructor frobcons_rescheduleread = new FileRawObservationConstructor("./test/testset/rescheduleread");
+//		ri_checker_rescheduleread = new ReadIncChecker(new ReadIncObservation(0, frobcons_rescheduleread.construct()));
 //		this.ri_checker_rescheduleread.check();
 	}
 

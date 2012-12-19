@@ -32,24 +32,21 @@ public class EarliestRead
 	{
 		assertTrue("Using READ ReadIncOperation as initial value", rriop.isReadOp());
 		
-		this.earlistRead = rriop.getRid();
+		this.earlistRead = rriop.getEarliestRead().earlistRead;
 	}
 	
 	/**
 	 * update the earlist read {@link #earlistRead} according to @param wriop
-	 * @param wriop used to update {@link #earlistRead};
+	 * 
+	 * @param riop used to update {@link #earlistRead};
 	 * the new earlist read is the smaller between two
 	 * @return old {@link #earlistRead}
-	 * 
-	 * @constraints @param wriop must be WRITE
 	 */
-	public int updateEarliestRead(ReadIncOperation wriop)
+	public int updateEarliestRead(ReadIncOperation riop)
 	{
-		assertTrue("using WRITE ReadIncOperation to update earliest read: " + wriop.toString(), wriop.isWriteOp());
-		
 		int oldEarlistRead = this.earlistRead;
-		int toEarlistRead = wriop.getEarliestRead().earlistRead;
-		if (this.earlistRead < toEarlistRead)	// take the smaller one
+		int toEarlistRead = riop.getEarliestRead().getEarlistReadInt();
+		if (this.earlistRead > toEarlistRead)	// take the smaller one
 			this.earlistRead = toEarlistRead;
 		
 		return oldEarlistRead;
@@ -97,5 +94,15 @@ public class EarliestRead
 		}
 		
 		return rriop;
+	}
+	
+	public int getEarlistReadInt()
+	{
+		return this.earlistRead;
+	}
+	
+	public void setEarlistReadInt(int er)
+	{
+		this.earlistRead = er;
 	}
 }
