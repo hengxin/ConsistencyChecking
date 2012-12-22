@@ -180,10 +180,10 @@ public class ReadIncChecker implements IChecker
 			int oldEarlistRead = wprime_riop.getEarliestRead().updateEarliestRead(wprime_riop.getSuccessors());
 			ReadIncOperation wriop = wprime_riop.getEarliestRead().identify_wrPair(oldEarlistRead, wprime_riop, this.riob.getMasterProcess());
 			
+			// apply W'WR order: wprime_riop => wriop
 			if (wriop != null)
 				if (wprime_riop.apply_wprimew_order(wriop))
 					return true;
-			wprime_riop.setDone();
 			
 			if (wriop != null && wriop.isCandidate())
 			{
@@ -193,19 +193,29 @@ public class ReadIncChecker implements IChecker
 				// depending on UNDONE operation
 				if (! wriop.isDone())
 				{
-					
+					wprime_riop.getSuccessors().add(wriop);
+					wriop.getPredecessors().add(wprime_riop);
+					wprime_riop.incCount();
 				}
 				else
 				{
-					
+					wprime_riop.getEarliestRead().updateEarliestRead(wriop);
 				}
 			}
 			
 			// delete dependency and identify operations ready to check
-			
+			if (wprime_riop.getCount() == 0)
+			{
+				wprime_riop.setDone();
+				for (ReadIncOperation riop : wprime_riop.getPredecessors())
+				{
+					riop.decCount();
+					if (riop.getCount() == 0)
+						zeroQueue.offer(riop);
+				}
+			}
 		}
 		
-//		fail();
 		return false;
 	}
 	

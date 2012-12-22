@@ -43,7 +43,7 @@ public class ReadIncOperation extends BasicOperation
 	private boolean isDone = false;
 	private List<ReadIncOperation> predecessors = null;
 	private List<ReadIncOperation> successors = null;
-	
+	private int count = -1;		// for topological sorting in ReadIncChecker
 	
 	public ReadIncOperation(GenericOperation otherOp)
 	{
@@ -223,9 +223,45 @@ public class ReadIncOperation extends BasicOperation
 		this.isDone = true;
 	}
 	
+	/**
+	 * @return {@link #isDone()}
+	 */
 	public boolean isDone()
 	{
 		return this.isDone;
+	}
+	
+	/**
+	 * @return {@link #count}
+	 */
+	public int getCount()
+	{
+		return this.count;
+	}
+	
+	/**
+	 * increment {@link #count} by 1
+	 */
+	public void incCount()
+	{
+		this.count = this.count + 1;
+	}
+	
+	/**
+	 * decrement {@link #count} by 1
+	 */
+	public void decCount()
+	{
+		this.count = this.count - 1;
+	}
+	
+	/**
+	 * set {@link #count} to @param val
+	 * @param val value to be set
+	 */
+	public void initCount(int val)
+	{
+		this.count = val;
 	}
 	
 	/**
@@ -264,6 +300,9 @@ public class ReadIncOperation extends BasicOperation
 			this.successors.addAll(this.writetoOrder);	// write to order
 		if (this.wprimewrOrder != null)					// w'wr order
 			this.successors.add(this.wprimewrOrder);
+
+		// initialize #count field (for topological sorting in ReadIncChecker) 
+		this.initCount(this.successors.size());
 		
 		return this.successors;
 	}
