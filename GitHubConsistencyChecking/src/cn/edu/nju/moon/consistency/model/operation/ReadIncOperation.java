@@ -1,15 +1,17 @@
 package cn.edu.nju.moon.consistency.model.operation;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
 import cn.edu.nju.moon.consistency.datastructure.EarliestRead;
 import cn.edu.nju.moon.consistency.datastructure.LatestWriteMap;
 import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
+import cn.edu.nju.moon.consistency.ui.DotUI;
 
 /**
  * @description {@link ReadIncOperation} is specifically designed for {@link ReadIncChecker} algorithm.
@@ -35,7 +37,7 @@ public class ReadIncOperation extends BasicOperation
 				= new ArrayList<ReadIncOperation>();	// reverse w'wr order
 
 	/* {@link ReadIncChecker} related */
-	private EarliestRead earlistRead = new EarliestRead();	// earliest READ reachable 
+	private EarliestRead earliestRead = new EarliestRead();	// earliest READ reachable 
 	private LatestWriteMap latestWriteMap = new LatestWriteMap();	// latest WRITE for each variable
 
 	/* {@link ReadIncChecker} reschedule related */
@@ -103,6 +105,9 @@ public class ReadIncOperation extends BasicOperation
 	{
 		this.programOrder = riop;
 		riop.reProgramOrder = this;
+		
+		// ui
+		DotUI.getInstance().addPOEdge(this, riop);
 	}
 	
 	public void addWritetoOrder(ReadIncOperation riop)
@@ -111,6 +116,9 @@ public class ReadIncOperation extends BasicOperation
 		
 		this.writetoOrder.add(riop);
 		riop.readfromOrder = this;
+		
+		// ui
+		DotUI.getInstance().addWritetoEdge(this, riop);
 	}
 	
 	/**
@@ -142,9 +150,11 @@ public class ReadIncOperation extends BasicOperation
 	 * return <a>true</a> if cycle emerges; <a>false</a>, otherwise.
 	 * 
 	 * @param wriop WRITE {@ReadIncOperation} to be pointed to
+	 * @param riob {@ReadIncObservation} 
+	 * 
 	 * @return <a>true</a> if cycle emerges; <a>false</a>, otherwise.
 	 */
-	public boolean apply_wprimew_order(ReadIncOperation wriop)
+	public boolean apply_wprimew_order(ReadIncOperation wriop, ReadIncObservation riob)
 	{
 		assertTrue("W'WR order: WRITE pointing to WRITE", this.isWriteOp() && wriop.isWriteOp());
 		assertTrue("pointing to the WRITE ReadIncOperation which has corresponding READs", ! wriop.getWritetoOrder().isEmpty());
@@ -153,16 +163,33 @@ public class ReadIncOperation extends BasicOperation
 		this.wprimewrOrder = wriop;
 		wriop.reWprimewrOrder.add(this);
 		
+		// ui
+		DotUI.getInstance().addWprimeWREdge(this, wriop);
+		
 		// cycle detection
 		String var = wriop.getVariable();
 		ReadIncOperation latest_wriop = this.getLatestWriteMap().getLatestWrite(var);
 		if (latest_wriop != null && latest_wriop.getWid() >= wriop.getWid())
 			return true;
 		
-		// update earlist read
-		this.earlistRead.updateEarliestRead(wriop);
+		// update earliest read
+		this.earliestRead.updateEarliestRead(wriop);
 		
-		// TODO: forward propagation: this => wriop
+		// TODO: forward propagation by BFS: this => wriop; w->r case 
+		Queue<ReadIncOperation> propQueue = new LinkedList<ReadIncOperation>();
+		propQueue.offer(wriop);	// starting point
+		
+		ReadIncOperation riop = null;
+		while (! propQueue.isEmpty())
+		{
+			riop = propQueue.poll();
+			riop.getLatestWriteMap().updateLatestWrite(this);	// update latest WRITE
+			riob.getGlobalActiveWritesMap().deactivateFrom(wriop, riop.getVariable());	// deactivate some WRITE
+
+			// propagation until the current ReadIncOperation being checked
+			if (riob.getMasterProcess().get_cur_rriop() != riop)
+				propQueue.addAll(riop.getSuccessors());
+		}
 		
 		return false;
 	}
@@ -172,7 +199,7 @@ public class ReadIncOperation extends BasicOperation
 	/********** BEGIN: {@link ReadIncChecker} related **********/
 	public EarliestRead getEarliestRead()
 	{
-		return this.earlistRead;
+		return this.earliestRead;
 	}
 	
 	public LatestWriteMap getLatestWriteMap()

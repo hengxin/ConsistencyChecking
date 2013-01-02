@@ -21,11 +21,13 @@ import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
  */
 public class ReadIncProcess extends RawProcess
 {
-	/* {@link ReadIncChecker} related */ 
+	/* {@link ReadIncChecker} related */
+	private ReadIncOperation cur_rriop = null;	// the current READ {@link ReadIncOperation} to be check
+	
 	private ReadIncOperation pre_rriop = new ReadIncOperation(
-			new GenericOperation(GlobalData.READ, "", -1));		// for {@link ReadIncProcess} with masterPid
+			new GenericOperation(GlobalData.READ, GlobalData.DUMMYVAR, -1));		// for {@link ReadIncProcess} with masterPid
 	private ReadIncOperation pre_wriop = new ReadIncOperation(
-			new GenericOperation(GlobalData.WRITE, "", -1));	// for other {@link ReadIncProcess}es
+			new GenericOperation(GlobalData.WRITE, GlobalData.DUMMYVAR, -1));	// for other {@link ReadIncProcess}es
 	
 	/**
 	 * filter {@link RawProcess} for specific purpose
@@ -129,6 +131,25 @@ public class ReadIncProcess extends RawProcess
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * set {@link #cur_rriop} to @param riop
+	 * @param riop current {@link ReadIncOperation} to be check
+	 */
+	public void set_cur_rriop(ReadIncOperation riop)
+	{
+		assertTrue("READ operation is to check", riop.isReadOp());
+		
+		this.cur_rriop = riop;
+	}
+	
+	/**
+	 * get the current {@link ReadIncOperation} being checked {@link #cur_rriop}
+	 */
+	public ReadIncOperation get_cur_rriop()
+	{
+		return this.cur_rriop;
 	}
 	
 	/**

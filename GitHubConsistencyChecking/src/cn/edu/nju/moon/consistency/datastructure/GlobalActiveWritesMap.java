@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
 import cn.edu.nju.moon.consistency.model.GlobalData;
@@ -70,7 +71,7 @@ public class GlobalActiveWritesMap
 	}
 	
 	/**
-	 * deactivate some WRITEs in @param wriop from {@link #globalActiveWritesMap}
+	 * deactivate some WRITE in @param wriop from {@link #globalActiveWritesMap}
 	 *  
 	 * @param ReadIncOperation WRITE {@link ReadIncOperation} whose LatestWrite may be removed
 	 * 	from {@link #globalActiveWritesMap}
@@ -88,6 +89,17 @@ public class GlobalActiveWritesMap
 	}
 	
 	/**
+	 * deactive (remove) @param wriop.LatestWrite[@param var] from {@link #globalActiveWritesMap}
+	 * 
+	 * @param wriop WRITE {@link ReadIncOperation} be deactived (removed) from
+	 * @param var variable
+	 */
+	public void deactivateFrom(ReadIncOperation wriop, String var)
+	{
+		this.globalActiveWritesMap.get(var).remove(wriop.getLatestWriteMap().getLatestWrite(var));
+	}
+	
+	/**
 	 * add new active WRITE into {@link #globalActiveWritesMap}
 	 * 
 	 * @param wriop new active WRITE {@link ReadIncOperation} to be added
@@ -100,5 +112,51 @@ public class GlobalActiveWritesMap
 		
 		String var = wriop.getVariable();
 		this.globalActiveWritesMap.get(var).add(wriop);
+	}
+	
+	/**
+	 * String format of {@link #globalActiveWritesMap}
+	 * [x={}; y={}; z={}; ...]
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		
+		List<ReadIncOperation> riops = null;
+		for (String var : GlobalData.VARSET)
+		{
+			riops = this.globalActiveWritesMap.get(var);
+			sb.append(var).append('=');
+			sb.append(this.getRiopListStr(riops));
+			sb.append(';');
+		}
+		sb.deleteCharAt(sb.length() - 1);	// delete the extra ';'
+		sb.append(']');
+		
+		return sb.toString();
+	}
+	
+	/**
+	 * String form of a list of {@link ReadIncOperation}:
+	 * {wx1,wx3...,wx8}
+	 * 
+	 * @param riopList list of {@link ReadIncOperation}
+	 * @return String form of a list of {@link ReadIncOperation} 
+	 */
+	private String getRiopListStr(List<ReadIncOperation> riopList)
+	{
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append('{');
+		for (ReadIncOperation riop : riopList)
+			sb.append(riop.toString()).append(',');
+			
+		if (riopList.size() != 0)
+			sb.deleteCharAt(sb.length() - 1);	// delete the extra ','
+		sb.append('}');
+		
+		return sb.toString();
 	}
 }

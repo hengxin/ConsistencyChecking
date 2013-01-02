@@ -23,8 +23,6 @@ public class GenericOperation
 	 */
 	public GenericOperation(int type, String var, int val)
 	{
-		if (type != GlobalData.DUMMY)
-		{
 			this.type = type;
 			this.var = var;
 			this.val = val;
@@ -38,8 +36,9 @@ public class GenericOperation
 			sb.append(var).append(val);
 			this.opStr = sb.toString();
 			
-			GlobalData.VARSET.add(var);
-		}
+			if (! this.var.equals(GlobalData.DUMMYVAR))
+				GlobalData.VARSET.add(var);
+
 	}
 
 	/**
@@ -57,10 +56,11 @@ public class GenericOperation
 
 		if(type == 'r')
 			this.type = GlobalData.READ;
-		else
+		else if (type == 'w')
 			this.type = GlobalData.WRITE;
-
-		GlobalData.VARSET.add(var);
+		
+		if (! this.var.equals(GlobalData.DUMMYVAR))
+			GlobalData.VARSET.add(var);
 	}
 
 	/**

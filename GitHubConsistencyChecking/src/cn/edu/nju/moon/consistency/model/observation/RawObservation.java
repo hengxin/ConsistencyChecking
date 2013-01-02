@@ -53,4 +53,12 @@ public class RawObservation
 	{
 		return this.procMap;
 	}
+	
+	/**
+	 * @return number of Processes in this Observation
+	 */
+	public int getSize()
+	{
+		return this.procMap.size();
+	}
 }

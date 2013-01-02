@@ -19,15 +19,15 @@ public class ReadIncObservationTest
 	{
 	}
 	
-	@Test
-	public void testPreprocessing()
-	{
-		IRawObservationConstructor rrobcons = new RandomRawObservationConstructor();
-		this.random_riob = new ReadIncObservation(0, rrobcons.construct());
-		this.random_riob.preprocessing();
-		
-		IRawObservationConstructor frobcons = new FileRawObservationConstructor("./test/testset/filerawobservation0");
-		this.file_riob = new ReadIncObservation(0, frobcons.construct());
-		this.file_riob.preprocessing();
-	}
+//	@Test
+//	public void testPreprocessing()
+//	{
+//		IRawObservationConstructor rrobcons = new RandomRawObservationConstructor();
+//		this.random_riob = new ReadIncObservation(0, rrobcons.construct());
+//		this.random_riob.preprocessing();
+//		
+//		IRawObservationConstructor frobcons = new FileRawObservationConstructor("./test/testset/filerawobservation0");
+//		this.file_riob = new ReadIncObservation(0, frobcons.construct());
+//		this.file_riob.preprocessing();
+//	}
 }

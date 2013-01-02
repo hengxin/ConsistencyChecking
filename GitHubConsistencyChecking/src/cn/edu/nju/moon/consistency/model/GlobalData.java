@@ -12,10 +12,11 @@ import java.util.Set;
 public final class GlobalData
 {
 	// type of {@link GenericOperation}
-	public static final int DUMMY = -1;
+//	public static final int DUMMY = -1;
 	public static final int READ = 0;
 	public static final int WRITE = 1;
 	
+	public static final String DUMMYVAR = "DUMMYVAR";
 	// set of variables 
 	public static Set<String> VARSET = new HashSet<String>();
 }

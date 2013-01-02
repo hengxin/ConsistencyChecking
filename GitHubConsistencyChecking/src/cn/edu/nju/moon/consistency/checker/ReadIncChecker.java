@@ -13,14 +13,22 @@ import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.GenericOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
+import cn.edu.nju.moon.consistency.ui.DotUI;
 
 public class ReadIncChecker implements IChecker
 {
 	private ReadIncObservation riob = null;
+	private String name = "";	// for test (e.g., DotUI)
 	
 	public ReadIncChecker(ReadIncObservation riob)
 	{
 		this.riob = riob;
+	}
+	
+	public ReadIncChecker(ReadIncObservation riob, String name)
+	{
+		this.riob = riob;
+		this.name = name;
 	}
 	
 	/**
@@ -48,10 +56,12 @@ public class ReadIncChecker implements IChecker
 			if (bop.isReadOp())	// "ReadIncremental" checking algorithm is READ centric.
 			{
 				master_cur_rriop = (ReadIncOperation) bop;
+				master_proc.set_cur_rriop(master_cur_rriop);	// set the current {@link ReadIncOperation} to check
+				
 				// (1) compute global active WRITEs
 				boolean dominated = this.compute_globalActiveWritesMap(master_proc, master_proc.get_pre_rriop(), master_cur_rriop);	
 				// (2) master_cur_rriop must read value from dw; apply Rule (c): W'WR order
-				if (this.readFromDW(master_cur_rriop, master_cur_rriop.getReadfromWrite()))	
+				if (this.readFromDW(master_cur_rriop, master_cur_rriop.getReadfromWrite(), this.riob))
 					return false;	// cycle emerges
 				// (3) reschedule operations in r'-downset (i.e., master_pre_rriop-downset)
 				if (dominated)
@@ -60,6 +70,9 @@ public class ReadIncChecker implements IChecker
 				master_proc.advance_pre_rriop(master_cur_rriop);	// iterate over the next (R,R) pair
 			}
 		}
+		
+		// ui
+		DotUI.getInstance().execute(name);
 		
 		return true;
 	}
@@ -148,9 +161,12 @@ public class ReadIncChecker implements IChecker
 		 *  	the same variable are scheduled before "dw" and LatestWrite are updated 
 		 *  	accordingly 
 		 */
-		ReadIncOperation temp_riop = new ReadIncOperation(new GenericOperation(GlobalData.WRITE, "", -1));	// temp 
+		ReadIncOperation temp_riop = new ReadIncOperation(new GenericOperation(GlobalData.WRITE, GlobalData.DUMMYVAR, -1));	// temp 
 		for (ReadIncOperation active_wriop : this.riob.getGlobalActiveWritesMap().getActiveWrites(master_cur_rriop.getVariable()))
 			temp_riop.getLatestWriteMap().updateLatestWrite(active_wriop);
+		
+		// for test
+		System.out.println(this.riob.getGlobalActiveWritesMap().toString());
 		
 		return dominated;
 	}
@@ -182,7 +198,7 @@ public class ReadIncChecker implements IChecker
 			
 			// apply W'WR order: wprime_riop => wriop
 			if (wriop != null)
-				if (wprime_riop.apply_wprimew_order(wriop))
+				if (wprime_riop.apply_wprimew_order(wriop, this.riob))
 					return true;
 			
 			if (wriop != null && wriop.isCandidate())
@@ -225,16 +241,18 @@ public class ReadIncChecker implements IChecker
 	 * 
 	 * @param master_cur_rriop READ {@link ReadIncOperation}
 	 * @param dw READ {@link ReadIncOperation}
+	 * @param riob {@link ReadIncObservation}
+	 * 
 	 * @return true, if cycle emerges; false, otherwise.
 	 */
-	private boolean readFromDW(ReadIncOperation master_cur_rriop, ReadIncOperation dw)
+	private boolean readFromDW(ReadIncOperation master_cur_rriop, ReadIncOperation dw, ReadIncObservation riob)
 	{
 		assertTrue("READ reads from some WRITE", master_cur_rriop.isReadOp() && dw.isWriteOp());
 		
 		String var = master_cur_rriop.getVariable();
 		for (ReadIncOperation wriop : this.riob.getGlobalActiveWritesMap().getActiveWrites(var))
 		{
-			if (! wriop.toString().equals(dw.toString()) && wriop.apply_wprimew_order(dw))	// apply Rule (c): W'WR order (i.e., wriop => dw => master_cur_rriop)
+			if (! wriop.toString().equals(dw.toString()) && wriop.apply_wprimew_order(dw,riob))	// apply Rule (c): W'WR order (i.e., wriop => dw => master_cur_rriop)
 				return true;
 		}
 		

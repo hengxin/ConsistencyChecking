@@ -8,6 +8,7 @@ import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
 import cn.edu.nju.moon.consistency.datastructure.GlobalActiveWritesMap;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
+import cn.edu.nju.moon.consistency.ui.DotUI;
 
 /**
  * @description filtered RawObservation:
@@ -53,6 +54,9 @@ public class ReadIncObservation extends RawObservation
 		{
 			this.procMap.put(pid, new ReadIncProcess(masterPid, rob.getProcMap().get(pid)));
 		}
+		
+		// ui
+		DotUI.getInstance().visual_ob(this);
 	}
 
 	/**

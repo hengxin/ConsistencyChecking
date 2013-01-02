@@ -7,17 +7,17 @@ public class FileRawObservationConstructorTest
 {
 	IRawObservationConstructor frobcons = null;
 	
-	@Before
-	public void setUp() throws Exception
-	{
-		this.frobcons = 
-			new FileRawObservationConstructor("./test/testset/filerawobservation0");
-	}
-
-	@Test
-	public void testConstruct()
-	{
-		this.frobcons.construct();
-	}
+//	@Before
+//	public void setUp() throws Exception
+//	{
+//		this.frobcons = 
+//			new FileRawObservationConstructor("./test/testset/filerawobservation0");
+//	}
+//
+//	@Test
+//	public void testConstruct()
+//	{
+//		this.frobcons.construct();
+//	}
 
 }

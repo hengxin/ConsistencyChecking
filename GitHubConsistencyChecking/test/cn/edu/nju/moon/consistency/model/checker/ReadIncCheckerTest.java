@@ -43,7 +43,7 @@ public class ReadIncCheckerTest
 		
 		// from file: obfib6
 		IRawObservationConstructor frobcons_fig6 = new FileRawObservationConstructor("./test/testset/obfig6");
-		ri_checker_fig6 = new ReadIncChecker(new ReadIncObservation(0, frobcons_fig6.construct()));
+		ri_checker_fig6 = new ReadIncChecker(new ReadIncObservation(0, frobcons_fig6.construct()), "obfib6");
 		this.ri_checker_fig6.check();
 	}
 
