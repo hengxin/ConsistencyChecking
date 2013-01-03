@@ -85,15 +85,15 @@ public class EarliestRead
 		String var = wriop.getVariable();
 		int newEarlistRead = wriop.getEarliestRead().earlistRead;
 		ReadIncOperation rriop = null;
-		// identify R: the first READ with var(R) = var && r.rid is in [oldEarlistRead, newEarlistRead)
+		// identify R: the first READ with var(R) = var && r.index is in [oldEarlistRead, newEarlistRead)
 		for (int index = newEarlistRead; index < oldEarlistRead; index++)
 		{
 			rriop = (ReadIncOperation) master_proc.getOperation(index);
 			if (rriop.isReadOp() && rriop.getVariable().equals(var))
-				return rriop;
+				return rriop.getReadfromWrite();	// return the dictating WRITE
 		}
 		
-		return rriop;
+		return null;
 	}
 	
 	public int getEarlistReadInt()

@@ -41,11 +41,14 @@ public class ReadIncOperation extends BasicOperation
 	private LatestWriteMap latestWriteMap = new LatestWriteMap();	// latest WRITE for each variable
 
 	/* {@link ReadIncChecker} reschedule related */
-	private boolean isCandidate = false;
-	private boolean isDone = false;
+	private boolean isCandidate = false;	/** candidate for reschedule {@link ReadIncChecker}#draw_reschedule_boundary **/ 
+	private boolean isDone = false;			/** done for reschedule {@link ReadIncChecker}#reschedule**/
+	private boolean isCovered = false; 		/** is involved in propagation in {@link #apply_wprimew_order}**/
+	
+	private int count = 0;		/** related to and manipulated together with {@link #isCandidate} and {@link #isDone}**/
+
 	private List<ReadIncOperation> predecessors = null;
 	private List<ReadIncOperation> successors = null;
-	private int count = -1;		// for topological sorting in ReadIncChecker
 	
 	public ReadIncOperation(GenericOperation otherOp)
 	{
@@ -175,7 +178,7 @@ public class ReadIncOperation extends BasicOperation
 		// update earliest read
 		this.earliestRead.updateEarliestRead(wriop);
 		
-		// TODO: forward propagation by BFS: this => wriop; w->r case 
+		// TODO: forward propagation by BFS: this => wriop
 		Queue<ReadIncOperation> propQueue = new LinkedList<ReadIncOperation>();
 		propQueue.offer(wriop);	// starting point
 		
@@ -185,10 +188,15 @@ public class ReadIncOperation extends BasicOperation
 			riop = propQueue.poll();
 			riop.getLatestWriteMap().updateLatestWrite(this);	// update latest WRITE
 			riob.getGlobalActiveWritesMap().deactivateFrom(wriop, riop.getVariable());	// deactivate some WRITE
-
+			riop.setCovered();	// propagation related to this operation is done 
+			
 			// propagation until the current ReadIncOperation being checked
 			if (riob.getMasterProcess().get_cur_rriop() != riop)
-				propQueue.addAll(riop.getSuccessors());
+			{
+				for (ReadIncOperation op : riop.getSuccessors())	// rule out the Write -> (unchecked) Read case
+					if (! op.isCovered() && (riop.isWriteOp() || op.getIndex() <= riop.getIndex()))
+						propQueue.add(op);
+			}
 		}
 		
 		return false;
@@ -256,6 +264,30 @@ public class ReadIncOperation extends BasicOperation
 	public boolean isDone()
 	{
 		return this.isDone;
+	}
+	
+	/**
+	 * set {@link #isCovered} true
+	 */
+	public void setCovered()
+	{
+		this.isCovered = true;
+	}
+	
+	/**
+	 * reset {@link #isCovered} false
+	 */
+	public void resetCovered()
+	{
+		this.isCovered = false;
+	}
+	
+	/**
+	 * @return {@link #isCovered}
+	 */
+	public boolean isCovered()
+	{
+		return this.isCovered;
 	}
 	
 	/**
@@ -327,9 +359,6 @@ public class ReadIncOperation extends BasicOperation
 			this.successors.addAll(this.writetoOrder);	// write to order
 		if (this.wprimewrOrder != null)					// w'wr order
 			this.successors.add(this.wprimewrOrder);
-
-		// initialize #count field (for topological sorting in ReadIncChecker) 
-		this.initCount(this.successors.size());
 		
 		return this.successors;
 	}

@@ -38,7 +38,7 @@ public class ReadIncCheckerTest
 
 		// from file: rescheduleread
 //		IRawObservationConstructor frobcons_rescheduleread = new FileRawObservationConstructor("./test/testset/rescheduleread");
-//		ri_checker_rescheduleread = new ReadIncChecker(new ReadIncObservation(0, frobcons_rescheduleread.construct()));
+//		ri_checker_rescheduleread = new ReadIncChe0cker(new ReadIncObservation(0, frobcons_rescheduleread.construct()));
 //		this.ri_checker_rescheduleread.check();
 		
 		// from file: obfib6

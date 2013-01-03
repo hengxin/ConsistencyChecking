@@ -226,7 +226,7 @@ public class ReadIncChecker implements IChecker
 				for (ReadIncOperation riop : wprime_riop.getPredecessors())
 				{
 					riop.decCount();
-					if (riop.getCount() == 0)
+					if (riop.getCount() == 0 && ! riop.isDone())	/** TODO£º is it necessary to check riop.isDone() **/
 						zeroQueue.offer(riop);
 				}
 			}
@@ -267,13 +267,22 @@ public class ReadIncChecker implements IChecker
 		assertTrue("perform DFS from D(r)", wriop.isWriteOp());
 		
 		Queue<ReadIncOperation> pending = new LinkedList<ReadIncOperation>();	// pending queue for BFS framework
+		wriop.initCount(0);		// the first operation to consider in reschedule (topological sorting) 
 		pending.offer(wriop);	// enqueue the start operation
 		while (! pending.isEmpty())
 		{
-			ReadIncOperation cur_op = pending.poll();
+			ReadIncOperation cur_op = pending.poll();	// it is a possible rescheduled operation
 			cur_op.setCandidate();	// mark the possible rescheduled operation
 			cur_op.resetDone();		// reset to be undone
-			pending.addAll(cur_op.getPredecessors());
+			
+			for (ReadIncOperation riop: cur_op.getPredecessors())
+			{
+				riop.incCount();	// one more dependency operation
+				if (! riop.isCandidate())
+					pending.add(riop);
+			}
+			// @modified by hengxin 2013-01-03
+//			pending.addAll(cur_op.getPredecessors());
 		}
 	}
 	
