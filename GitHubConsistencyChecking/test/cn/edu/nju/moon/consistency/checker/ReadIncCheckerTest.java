@@ -1,4 +1,4 @@
-package cn.edu.nju.moon.consistency.model.checker;
+package cn.edu.nju.moon.consistency.checker;
 
 import static org.junit.Assert.fail;
 

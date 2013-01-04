@@ -3,8 +3,10 @@ package cn.edu.nju.moon.consistency.ui;
 import java.io.File;
 
 import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
+import cn.edu.nju.moon.consistency.datastructure.GlobalActiveWritesMap;
 import cn.edu.nju.moon.consistency.model.observation.RawObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
+import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.RawProcess;
 
 /**
@@ -20,7 +22,7 @@ import cn.edu.nju.moon.consistency.model.process.RawProcess;
 public class DotUI
 {
 	private GraphViz viz = null;
-	private final String type = "pdf";
+	private final String type = "png";
 	private File out = null;
 	
 	private static DotUI instance = null;
@@ -66,6 +68,7 @@ public class DotUI
     	viz.addln("ranksep = 1.0; size = \"10,10\";");	// drawing with constrained ranks
     	viz.addln("{");	// pids
     		viz.addln("node [shape = plaintext, fontsize = 20];");
+    		viz.add("GAWM1 -> GAWM2 -> ");
     		for (int i = 0; i < size - 1; i++)
     			viz.add(i + " -> ");
     		viz.addln((size - 1) + ";");
@@ -126,9 +129,53 @@ public class DotUI
     	this.viz.addln(from_op.toString() + " -> " + to_op.toString() + "[color = blue];");
     }
     
+    /**
+     * add W'WR edge from @param from_op to @param to_op
+     * @param from_op source of edge
+     * @param to_op	  target of edge
+     */
     public void addWprimeWREdge(BasicOperation from_op, BasicOperation to_op)
     {
     	this.viz.addComment("W'WR Order:");
     	this.viz.addln(from_op.toString() + " -> " + to_op.toString() + "[style = dashed, color = red];");
+    }
+    
+    /**
+     * visualization for {@link GlobalActiveWritesMap} @param gawm
+     * 
+     * @param gawm {@link GlobalActiveWritesMap} to visualized
+     * @param name string form of READ {@link ReadIncOperation} being checked
+     * @param id   1: after computing interval; 2: after applying W'WR order	 	
+     */
+    public void addGAWM(GlobalActiveWritesMap gawm, String name, int id)
+    {
+    	if (id == 1)
+    		this.viz.addln("{rank = same; GAWM1; \"" + this.constructGAWMRecord(gawm, name, id) + "\";}");
+    	else
+    		this.viz.addln("{rank = same; GAWM2; \"" + this.constructGAWMRecord(gawm, name, id) + "\";}");
+    }
+    
+    /**
+     * construct struct (i.e., shape = record) for @param gawm 
+     * @param gawm {@link GlobalActiveWritesMap} to be visualized
+     * @param name
+     * @param id
+     * 
+     * @param identifier for struct
+     */
+    private String constructGAWMRecord(GlobalActiveWritesMap gawm, String name, int id)
+    {
+    	String identifier = name + id;
+    	String newline = " \\" + "n ";
+    	String structLbl = gawm.toString().replace(";", newline);
+    	
+    	this.viz.addln("subgraph struct");
+    	this.viz.addln("{");
+    		this.viz.addln("\t" + "node [shape = record];");
+    		this.viz.addln("\t" + identifier + 
+    				" [shape = record, label = \"" + name + " | " + structLbl + "\"];");
+    	this.viz.addln("}");
+    	
+    	return identifier;
     }
 }

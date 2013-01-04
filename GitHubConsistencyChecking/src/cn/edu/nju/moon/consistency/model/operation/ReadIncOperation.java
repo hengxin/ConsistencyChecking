@@ -3,9 +3,11 @@ package cn.edu.nju.moon.consistency.model.operation;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
 import cn.edu.nju.moon.consistency.datastructure.EarliestRead;
@@ -77,18 +79,6 @@ public class ReadIncOperation extends BasicOperation
 	}
 	
 	/************* BEGIN: rid and wid **************/
-//	public int getRid()
-//	{
-//		return this.rid;
-//	}
-	
-//	public void setRid(int id)
-//	{
-//		assertTrue("Only READ operation has rid", this.isReadOp());
-//		
-//		this.rid = id;
-//	}
-	
 	public int getWid()
 	{
 		return this.wid;
@@ -175,10 +165,12 @@ public class ReadIncOperation extends BasicOperation
 		if (latest_wriop != null && latest_wriop.getWid() >= wriop.getWid())
 			return true;
 		
-		// update earliest read
-		this.earliestRead.updateEarliestRead(wriop);
+		this.earliestRead.updateEarliestRead(wriop);	// update earliest read
+		
+		riob.getGlobalActiveWritesMap().deactivate(this);	// deactivate some WRITE
 		
 		// TODO: forward propagation by BFS: this => wriop
+		Set<ReadIncOperation> coveredSet = new HashSet<ReadIncOperation>();
 		Queue<ReadIncOperation> propQueue = new LinkedList<ReadIncOperation>();
 		propQueue.offer(wriop);	// starting point
 		
@@ -187,17 +179,21 @@ public class ReadIncOperation extends BasicOperation
 		{
 			riop = propQueue.poll();
 			riop.getLatestWriteMap().updateLatestWrite(this);	// update latest WRITE
-			riob.getGlobalActiveWritesMap().deactivateFrom(wriop, riop.getVariable());	// deactivate some WRITE
 			riop.setCovered();	// propagation related to this operation is done 
+			coveredSet.add(riop);	// for reset
 			
 			// propagation until the current ReadIncOperation being checked
-			if (riob.getMasterProcess().get_cur_rriop() != riop)
+			if (! riob.getMasterProcess().get_cur_rriop().equals(riop))
 			{
 				for (ReadIncOperation op : riop.getSuccessors())	// rule out the Write -> (unchecked) Read case
 					if (! op.isCovered() && (riop.isWriteOp() || op.getIndex() <= riop.getIndex()))
 						propQueue.add(op);
 			}
 		}
+		
+		/** reset {#isCovered} for reuse **/
+		for (ReadIncOperation coveredOp : coveredSet)
+			coveredOp.resetCovered();
 		
 		return false;
 	}
@@ -363,4 +359,19 @@ public class ReadIncOperation extends BasicOperation
 		return this.successors;
 	}
 	/************ END: {@link ReadIncChecker} reschedule related *************/
+	
+	/**
+	 * if the {@link ReadIncOperation}s are both READ, they may be differentiated from
+	 * each other with respect to the field {@link #index}.
+	 */
+	@Override
+	public boolean equals(Object obj)
+	{
+		boolean basicComparison = super.equals(obj);
+		
+		if (basicComparison && this.isReadOp())
+			return this.index == ((ReadIncOperation) obj).index;
+		
+		return basicComparison;
+	}
 }

@@ -45,12 +45,27 @@ public class GlobalActiveWritesMap
 	}
 	
 	/**
-	 * @param var varaible
-	 * @return active WRITE {@link ReadIncOperation} performing on variable @param var
+	 * @param var variable
+	 * @return active WRITE {@link ReadIncOperation}s performing on variable @param var
 	 */
 	public ArrayList<ReadIncOperation> getActiveWrites(String var)
 	{
 		return this.globalActiveWritesMap.get(var);
+	}
+	
+	/**
+	 * @param var	variable
+	 * @return		String form of active WRITE {@link ReadIncOperation}s performing on variable @param var
+	 * 
+	 * @reason used in {@link ReadIncChecker#readFromDW()}
+	 */
+	public List<String> getActiveWritesPool(String var)
+	{
+		List<String> gawmPool = new ArrayList<String>();
+		for (ReadIncOperation riop : this.globalActiveWritesMap.get(var))
+			gawmPool.add(riop.toString());
+		
+		return gawmPool;
 	}
 	
 	/**
@@ -89,14 +104,17 @@ public class GlobalActiveWritesMap
 	}
 	
 	/**
-	 * deactive (remove) @param wriop.LatestWrite[@param var] from {@link #globalActiveWritesMap}
+	 * deactive (remove) @param wriop from {@link #globalActiveWritesMap}
 	 * 
-	 * @param wriop WRITE {@link ReadIncOperation} be deactived (removed) from
-	 * @param var variable
+	 * @param wriop WRITE {@link ReadIncOperation} be deactivated (removed) from
+	 * @param var 	variable
+	 * 
+	 * @modified hengxin on 2013-1-4
+	 * @warning  used in {@link ReadIncOperation#apply_wprimew_order()}
 	 */
-	public void deactivateFrom(ReadIncOperation wriop, String var)
+	public void deactivate(ReadIncOperation wriop)
 	{
-		this.globalActiveWritesMap.get(var).remove(wriop.getLatestWriteMap().getLatestWrite(var));
+		this.globalActiveWritesMap.get(wriop.getVariable()).remove(wriop);
 	}
 	
 	/**
@@ -131,6 +149,7 @@ public class GlobalActiveWritesMap
 			sb.append(var).append('=');
 			sb.append(this.getRiopListStr(riops));
 			sb.append(';');
+//			sb.append('\n');
 		}
 		sb.deleteCharAt(sb.length() - 1);	// delete the extra ';'
 		sb.append(']');
@@ -149,13 +168,13 @@ public class GlobalActiveWritesMap
 	{
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append('{');
+		sb.append('[');
 		for (ReadIncOperation riop : riopList)
 			sb.append(riop.toString()).append(',');
 			
 		if (riopList.size() != 0)
 			sb.deleteCharAt(sb.length() - 1);	// delete the extra ','
-		sb.append('}');
+		sb.append(']');
 		
 		return sb.toString();
 	}
