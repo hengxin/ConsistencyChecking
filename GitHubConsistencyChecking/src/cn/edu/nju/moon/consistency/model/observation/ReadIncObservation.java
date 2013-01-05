@@ -98,7 +98,7 @@ public class ReadIncObservation extends RawObservation
 	 * 		   false, o.w..
 	 * 
 	 * @see ReadIncProcess#readLaterWrite()
-	 * @see ReadIncChecker#check()
+	 * @see ReadIncChecker#check_part()
 	 */
 	public boolean readLaterWrite()
 	{

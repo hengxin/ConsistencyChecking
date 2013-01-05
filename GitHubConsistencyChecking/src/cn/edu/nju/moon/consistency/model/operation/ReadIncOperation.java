@@ -159,7 +159,7 @@ public class ReadIncOperation extends BasicOperation
 		// ui
 		DotUI.getInstance().addWprimeWREdge(this, wriop);
 		
-		// cycle detection
+		/** cycle detection **/
 		String var = wriop.getVariable();
 		ReadIncOperation latest_wriop = this.getLatestWriteMap().getLatestWrite(var);
 		if (latest_wriop != null && latest_wriop.getWid() >= wriop.getWid())

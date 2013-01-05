@@ -1,22 +1,17 @@
 package cn.edu.nju.moon.consistency.checker;
 
-import static org.junit.Assert.fail;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import cn.edu.nju.moon.consistency.checker.IChecker;
-import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
 import cn.edu.nju.moon.consistency.model.observation.FileRawObservationConstructor;
 import cn.edu.nju.moon.consistency.model.observation.IRawObservationConstructor;
-import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
 
 public class ReadIncCheckerTest
 {
-	IChecker ri_checker_fig4_2b = null;
-	IChecker ri_checker_fig5_1b = null;
-	IChecker ri_checker_rescheduleread = null;
-	IChecker ri_checker_fig6 = null;
+	Checker ri_checker_fig4_2b = null;
+	Checker ri_checker_fig5_1b = null;
+	Checker ri_checker_rescheduleread = null;
+	Checker ri_checker_fig6 = null;
 	
 	@Before
 	public void setUp() throws Exception
@@ -42,8 +37,16 @@ public class ReadIncCheckerTest
 //		this.ri_checker_rescheduleread.check();
 		
 		// from file: obfib6
+//		IRawObservationConstructor frobcons_fig6 = new FileRawObservationConstructor("./test/testset/obfig6");
+//		ri_checker_fig6 = new ReadIncChecker(new ReadIncObservation(0, frobcons_fig6.construct()), "obfib6");
+//		this.ri_checker_fig6.check_part();
+		
+		/**
+		 * @modified hengxin on 2013-1-5
+		 * @reason refactor IChecker to Checker using Template Method design pattern
+		 */
 		IRawObservationConstructor frobcons_fig6 = new FileRawObservationConstructor("./test/testset/obfig6");
-		ri_checker_fig6 = new ReadIncChecker(new ReadIncObservation(0, frobcons_fig6.construct()), "obfib6");
+		ri_checker_fig6 = new ReadIncChecker(frobcons_fig6.construct(), "obfib6");
 		this.ri_checker_fig6.check();
 	}
 

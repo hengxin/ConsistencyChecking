@@ -7,5 +7,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/util"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JFace"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Zest"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ApacheCommons"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

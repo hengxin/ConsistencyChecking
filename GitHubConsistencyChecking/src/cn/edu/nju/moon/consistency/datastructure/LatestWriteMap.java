@@ -65,7 +65,7 @@ public class LatestWriteMap
 	 * @return latest WRITE {@link ReadIncOperation} on @param var
 	 * 
 	 * @warning You SHOULD check whether the result is NULL.
-	 * TODO: refactor to address the "NULL" return value.
+	 * TODO: refactor to deal with the "NULL" return value.
 	 */
 	public ReadIncOperation getLatestWrite(String var)
 	{

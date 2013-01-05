@@ -22,7 +22,7 @@ import cn.edu.nju.moon.consistency.model.process.RawProcess;
 public class DotUI
 {
 	private GraphViz viz = null;
-	private final String type = "png";
+	private final String type = "pdf";
 	private File out = null;
 	
 	private static DotUI instance = null;
@@ -48,12 +48,12 @@ public class DotUI
 	{
 		this.viz.addln(this.viz.end_graph());
     	
-    	// for test
-    	System.out.println(viz.getDotSource());
+    	System.out.println(viz.getDotSource());	/** for test **/
 		
 		this.out = new File("data/" + out + "." + this.type);
-		System.out.println(this.out.getAbsolutePath());
 		viz.writeGraphToFile(viz.getGraph(viz.getDotSource(), type), this.out);
+		
+		DotUI.instance = null;	/** for reuse **/
 	}
 	
 	/**

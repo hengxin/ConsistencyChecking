@@ -6,8 +6,11 @@ import static org.junit.Assert.fail;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.apache.commons.lang.RandomStringUtils;
+
 import cn.edu.nju.moon.consistency.datastructure.GlobalActiveWritesMap;
 import cn.edu.nju.moon.consistency.model.GlobalData;
+import cn.edu.nju.moon.consistency.model.observation.RawObservation;
 import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.GenericOperation;
@@ -15,39 +18,69 @@ import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
 import cn.edu.nju.moon.consistency.ui.DotUI;
 
-public class ReadIncChecker implements IChecker
+/**
+ * @author hengxin
+ * 
+ * @modified hengxin on 2013-1-5
+ * @reason 	 using Template Method design pattern
+ * @see 	 Checker
+ */
+public class ReadIncChecker extends Checker
 {
-	private ReadIncObservation riob = null;
-	private String name = "";	// for test (e.g., DotUI)
+	private ReadIncObservation riob = null;	/** {@link ReadIncObservation} with respect to some process to check **/
+	private String name = "";	/** for {@link DotUI}; the name of file for visualization **/
 	
-	public ReadIncChecker(ReadIncObservation riob)
+	/**
+	 * Constructor
+	 * @param riob {@link RawObservation} to check
+	 */
+	public ReadIncChecker(RawObservation rob)
 	{
-		this.riob = riob;
-	}
-	
-	public ReadIncChecker(ReadIncObservation riob, String name)
-	{
-		this.riob = riob;
-		this.name = name;
+		super(rob);
+		this.name = RandomStringUtils.random(8);
 	}
 	
 	/**
-	 * 
+	 * Constructor
+	 * @param riob	{@link RawObservation} to check
+	 * @param name	for {@link DotUI}; the name of file for visualization
 	 */
-	// TODO: Javadoc
-	@Override
-	public boolean check()
+	public ReadIncChecker(RawObservation rob, String name)
 	{
-		if (this.riob.nullCheck())	// no operations in the process to be checked
+		super(rob);
+		this.name = name;
+	}
+	
+
+	/**
+	 * @return {link ReadIncObservation} with respect to @param masterPid to check
+	 */
+	@Override
+	protected RawObservation getMasterObservation(int masterPid)
+	{
+		return new ReadIncObservation(masterPid, super.rob);
+	}
+	
+	/**
+	 * check whether {@link #riob} satisfies PRAM Consistency:
+	 * 
+	 * @return true; if {@link #riob} satisfies PRAM Consistency; false, otherwise.
+	 */
+	@Override
+	protected boolean check_part(RawObservation rob)
+	{
+		assertTrue("check ReadIncObservation", rob instanceof ReadIncObservation);
+		this.riob = (ReadIncObservation) rob;
+		
+		if (this.riob.nullCheck())	/** no operations in the process to be checked; it is trivially PRAM Consistent **/
 			return true;
 		
 		this.riob.preprocessing();	// preprocessing: program order and write to order
-		if (this.riob.readLaterWrite())	// some READ reads later WRITE in the same process
+		if (this.riob.readLaterWrite())	/** some READ reads later WRITE in the same process; it does not satisfy PRAM Consistency **/
 			return false;
 		
 		ReadIncProcess master_proc = this.riob.getMasterProcess();
 		int master_size = master_proc.size();
-//		ReadIncOperation master_pre_rriop = master_proc.get_pre_rriop();
 		ReadIncOperation master_cur_rriop = null;
 		BasicOperation bop = null;	
 		for (int index = 0; index < master_size; index++)
@@ -65,10 +98,12 @@ public class ReadIncChecker implements IChecker
 				
 				// (2) master_cur_rriop must read value from dw; apply Rule (c): W'WR order
 				if (this.readFromDW(master_cur_rriop, master_cur_rriop.getReadfromWrite(), this.riob))
-					return false;	// cycle emerges
+					return false;	/** cycle **/
+				
 				// (3) reschedule operations in r'-downset (i.e., master_pre_rriop-downset)
 				if (dominated)
-					this.reschedule(master_cur_rriop);
+					if (this.reschedule(master_cur_rriop))
+						return false; 	/** cycle **/
 				// ui: for GAWM after rescheduling
 				DotUI.getInstance().addGAWM(this.riob.getGlobalActiveWritesMap(), master_cur_rriop.toString(), 2);
 				
@@ -77,9 +112,9 @@ public class ReadIncChecker implements IChecker
 		}
 		
 		// ui
-		DotUI.getInstance().execute(name);
+		DotUI.getInstance().execute(name + master_proc.getPid());
 		
-		return true;
+		return true;	/** no cycle; satisfying PRAM Consistency **/
 	}
 
 	/**
@@ -174,11 +209,11 @@ public class ReadIncChecker implements IChecker
 	}
 	
 	/**
-	 * @param master_cur_rriop
-	 * @return
+	 * @description reschedule (i.e., enforce) orders among {@link ReadIncOperation}s   
 	 * 
+	 * @param master_cur_rriop current READ {@link ReadIncOperation} being checked			
+	 * @return true, if cycle emerges; false, otherwise.
 	 */
-	// TODO: 
 	private boolean reschedule(ReadIncOperation master_cur_rriop)
 	{
 		assertTrue("Reschedule operations due to the current READ ReadIncOperation", master_cur_rriop.isReadOp());
@@ -201,7 +236,7 @@ public class ReadIncChecker implements IChecker
 			// apply W'WR order: wprime_riop => wriop
 			if (wriop != null)
 				if (wprime_riop.apply_wprimew_order(wriop, this.riob))
-					return true;
+					return true;	/** cycle **/
 			
 			if (wriop != null && wriop.isCandidate())
 			{
@@ -234,7 +269,7 @@ public class ReadIncChecker implements IChecker
 			}
 		}
 		
-		return false;
+		return false;	/** no cycle **/
 	}
 	
 	/**
@@ -259,11 +294,11 @@ public class ReadIncChecker implements IChecker
 		for (String wriopStr : this.riob.getGlobalActiveWritesMap().getActiveWritesPool(var))
 		{
 			ReadIncOperation wriop = ReadIncObservation.WRITEPOOL.get(wriopStr);
-			if (! wriop.equals(dw) && wriop.apply_wprimew_order(dw,riob))	// apply Rule (c): W'WR order (i.e., wriop => dw => master_cur_rriop)
-				return true;
+			if (! wriop.equals(dw) && wriop.apply_wprimew_order(dw,riob))	/** apply Rule (c): W'WR order (i.e., wriop => dw => master_cur_rriop) **/
+				return true;	/** cycle **/
 		}
 		
-		return false;
+		return false;  /** no cycle **/
 	}
 	
 	/**
