@@ -1,10 +1,11 @@
 package cn.edu.nju.moon.consistency.checker;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 import org.apache.commons.lang.RandomStringUtils;
 
@@ -83,6 +84,8 @@ public class ReadIncChecker extends Checker
 		int master_size = master_proc.size();
 		ReadIncOperation master_cur_rriop = null;
 		BasicOperation bop = null;	
+		boolean consistent = true;
+		
 		for (int index = 0; index < master_size; index++)
 		{
 			bop = master_proc.getOperation(index);
@@ -98,12 +101,18 @@ public class ReadIncChecker extends Checker
 				
 				// (2) master_cur_rriop must read value from dw; apply Rule (c): W'WR order
 				if (this.readFromDW(master_cur_rriop, master_cur_rriop.getReadfromWrite(), this.riob))
-					return false;	/** cycle **/
+				{
+					consistent = false;	/** cycle **/
+					break;
+				}
 				
 				// (3) reschedule operations in r'-downset (i.e., master_pre_rriop-downset)
 				if (dominated)
 					if (this.reschedule(master_cur_rriop))
-						return false; 	/** cycle **/
+					{
+						consistent = false;	/** cycle **/
+						break;
+					}
 				// ui: for GAWM after rescheduling
 				DotUI.getInstance().addGAWM(this.riob.getGlobalActiveWritesMap(), master_cur_rriop.toString(), 2);
 				
@@ -114,7 +123,7 @@ public class ReadIncChecker extends Checker
 		// ui
 		DotUI.getInstance().execute(name + master_proc.getPid());
 		
-		return true;	/** no cycle; satisfying PRAM Consistency **/
+		return consistent;	/** no cycle; satisfying PRAM Consistency **/
 	}
 
 	/**
@@ -219,7 +228,7 @@ public class ReadIncChecker extends Checker
 		assertTrue("Reschedule operations due to the current READ ReadIncOperation", master_cur_rriop.isReadOp());
 		
 		ReadIncOperation dw = master_cur_rriop.getReadfromWrite();	// dictating WRITE {@link ReadIncOperation}
-		this.draw_reschedule_boundary(dw);	// identify the possible rescheduled operations
+		Set<ReadIncOperation> candidateSet = this.draw_reschedule_boundary(dw);	// identify the possible rescheduled operations
 		
 		Queue<ReadIncOperation> zeroQueue = new LinkedList<ReadIncOperation>();	// queue containing operations ready to check
 		zeroQueue.offer(dw);	// check dw first
@@ -240,8 +249,7 @@ public class ReadIncChecker extends Checker
 			
 			if (wriop != null && wriop.isCandidate())
 			{
-				// TODO: to check is it OK to reset #isCandidate false here
-				wriop.resetCandidate();		
+//				wriop.resetCandidate();		/** using Set instead **/
 				
 				// depending on UNDONE operation
 				if (! wriop.isDone())
@@ -260,6 +268,7 @@ public class ReadIncChecker extends Checker
 			if (wprime_riop.getCount() == 0)
 			{
 				wprime_riop.setDone();
+				
 				for (ReadIncOperation riop : wprime_riop.getPredecessors())
 				{
 					riop.decCount();
@@ -268,6 +277,12 @@ public class ReadIncChecker extends Checker
 				}
 			}
 		}
+		
+		/**
+		 * @modified hengxin on 2013-1-5
+		 */
+		for (ReadIncOperation riop : candidateSet)	/** reset flag isCandidate **/
+			riop.resetCandidate();
 		
 		return false;	/** no cycle **/
 	}
@@ -302,12 +317,20 @@ public class ReadIncChecker extends Checker
 	}
 	
 	/**
-	 * perform BFS on G^T from D(r) to identify the possible rescheduled {@link ReadIncOperation}s
+	 * @description  perform BFS on G^T from D(r) to identify the 
+	 * possible rescheduled {@link ReadIncOperation}s
+	 * 
+	 * @modified hengxin on 2013-1-5
+	 * @reason dealing with {@link ReadIncOperation#isCandidate}
+	 * 
+	 * @param {@link ReadIncOperation} from which the boundary is drawn
+	 * @return set of {@link ReadIncOperation}s involved in the reschedule
 	 */
-	private void draw_reschedule_boundary(ReadIncOperation wriop)
+	private Set<ReadIncOperation> draw_reschedule_boundary(ReadIncOperation wriop)
 	{
 		assertTrue("perform DFS from D(r)", wriop.isWriteOp());
 		
+		Set<ReadIncOperation> candidateSet = new HashSet<ReadIncOperation>();
 		Queue<ReadIncOperation> pending = new LinkedList<ReadIncOperation>();	// pending queue for BFS framework
 		wriop.initCount(0);		// the first operation to consider in reschedule (topological sorting) 
 		pending.offer(wriop);	// enqueue the start operation
@@ -315,6 +338,7 @@ public class ReadIncChecker extends Checker
 		{
 			ReadIncOperation cur_op = pending.poll();	// it is a possible rescheduled operation
 			cur_op.setCandidate();	// mark the possible rescheduled operation
+			candidateSet.add(cur_op);	/** add it to set **/
 			cur_op.resetDone();		// reset to be undone
 			
 			for (ReadIncOperation riop: cur_op.getPredecessors())
@@ -323,9 +347,13 @@ public class ReadIncChecker extends Checker
 				if (! riop.isCandidate())
 					pending.add(riop);
 			}
-			// @modified by hengxin 2013-01-03
+			/**
+			 *  @modified by hengxin 2013-01-03
+			 */
 //			pending.addAll(cur_op.getPredecessors());
 		}
+		
+		return candidateSet;
 	}
 	
 }

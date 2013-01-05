@@ -12,6 +12,7 @@ public class ReadIncCheckerTest
 	Checker ri_checker_fig5_1b = null;
 	Checker ri_checker_rescheduleread = null;
 	Checker ri_checker_fig6 = null;
+	Checker ri_checker_fig7 = null;
 	
 	@Before
 	public void setUp() throws Exception
@@ -36,18 +37,23 @@ public class ReadIncCheckerTest
 //		ri_checker_rescheduleread = new ReadIncChe0cker(new ReadIncObservation(0, frobcons_rescheduleread.construct()));
 //		this.ri_checker_rescheduleread.check();
 		
-		// from file: obfib6
-//		IRawObservationConstructor frobcons_fig6 = new FileRawObservationConstructor("./test/testset/obfig6");
-//		ri_checker_fig6 = new ReadIncChecker(new ReadIncObservation(0, frobcons_fig6.construct()), "obfib6");
-//		this.ri_checker_fig6.check_part();
-		
 		/**
+		 * @description figure 6 (multiple WRITE)
 		 * @modified hengxin on 2013-1-5
 		 * @reason refactor IChecker to Checker using Template Method design pattern
 		 */
 		IRawObservationConstructor frobcons_fig6 = new FileRawObservationConstructor("./test/testset/obfig6");
-		ri_checker_fig6 = new ReadIncChecker(frobcons_fig6.construct(), "obfib6");
+		ri_checker_fig6 = new ReadIncChecker(frobcons_fig6.construct(), "obfig6");
 		this.ri_checker_fig6.check();
+		
+		/**
+		 * @description figure 7 (cycle detection)
+		 * @author hengxin
+		 * @date 2013-1-5
+		 */
+		IRawObservationConstructor fronbcons_fig7 = new FileRawObservationConstructor("./test/testset/obfig7");
+		this.ri_checker_fig7 = new ReadIncChecker(fronbcons_fig7.construct(), "obfig7");
+		this.ri_checker_fig7.check();
 	}
 
 }
