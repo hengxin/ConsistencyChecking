@@ -3,8 +3,10 @@ package cn.edu.nju.moon.consistency.checker;
 import org.junit.Before;
 import org.junit.Test;
 
+import cn.edu.nju.moon.consistency.model.GlobalData;
 import cn.edu.nju.moon.consistency.model.observation.FileRawObservationConstructor;
 import cn.edu.nju.moon.consistency.model.observation.IRawObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.RandomRawObservationConstructor;
 
 public class ReadIncCheckerTest
 {
@@ -13,6 +15,7 @@ public class ReadIncCheckerTest
 	Checker ri_checker_rescheduleread = null;
 	Checker ri_checker_fig6 = null;
 	Checker ri_checker_fig7 = null;
+	Checker ri_checker_rand0 = null;
 	
 	@Before
 	public void setUp() throws Exception
@@ -54,6 +57,11 @@ public class ReadIncCheckerTest
 		IRawObservationConstructor fronbcons_fig7 = new FileRawObservationConstructor("./test/testset/obfig7");
 		this.ri_checker_fig7 = new ReadIncChecker(fronbcons_fig7.construct(), "obfig7");
 		this.ri_checker_fig7.check();
+		
+		GlobalData.VISUALIZATION = true;
+		IRawObservationConstructor randcons_0 = new RandomRawObservationConstructor(6, 10, 30, 50);
+		this.ri_checker_rand0 = new ReadIncChecker(randcons_0.construct(), "rand_6_10_30_50");
+		this.ri_checker_rand0.check();
 	}
 
 }

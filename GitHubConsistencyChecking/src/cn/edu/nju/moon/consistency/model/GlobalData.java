@@ -19,4 +19,7 @@ public final class GlobalData
 	public static final String DUMMYVAR = "DUMMYVAR";
 	// set of variables 
 	public static Set<String> VARSET = new HashSet<String>();
+	
+	// to visualize or not
+	public static boolean VISUALIZATION = false;
 }
