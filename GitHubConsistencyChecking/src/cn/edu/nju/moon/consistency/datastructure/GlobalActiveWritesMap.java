@@ -4,7 +4,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
 import cn.edu.nju.moon.consistency.model.GlobalData;
@@ -25,22 +28,22 @@ public class GlobalActiveWritesMap
 	/**
 	 * <var, operations> pair, in which:
 	 * 		String: variable
-	 * 		ArrayList<ReadIncOperation>: {@link ReadIncOperation}s
+	 * 		HashSet<ReadIncOperation>: {@link ReadIncOperation}s
 	 * 
 	 * @constraints {@link ReadIncOperation} must be WRITE and perform on var
 	 */
-	private HashMap<String,ArrayList<ReadIncOperation>> globalActiveWritesMap = null;
+	private Map<String,HashSet<ReadIncOperation>> globalActiveWritesMap = null;
 	
 	/**
 	 * @constructor initialize {@link #globalActiveWritesMap}
 	 */
 	public GlobalActiveWritesMap()
 	{
-		this.globalActiveWritesMap = new HashMap<String, ArrayList<ReadIncOperation>>();
+		this.globalActiveWritesMap = new HashMap<String, HashSet<ReadIncOperation>>();
 		
 		for (String var: GlobalData.VARSET)
 		{
-			this.globalActiveWritesMap.put(var, new ArrayList<ReadIncOperation>());
+			this.globalActiveWritesMap.put(var, new HashSet<ReadIncOperation>());
 		}
 	}
 	
@@ -48,7 +51,7 @@ public class GlobalActiveWritesMap
 	 * @param var variable
 	 * @return active WRITE {@link ReadIncOperation}s performing on variable @param var
 	 */
-	public ArrayList<ReadIncOperation> getActiveWrites(String var)
+	public HashSet<ReadIncOperation> getActiveWrites(String var)
 	{
 		return this.globalActiveWritesMap.get(var);
 	}
@@ -80,24 +83,24 @@ public class GlobalActiveWritesMap
 	{
 		assertTrue("can only be replaced by WRITE ReadIncOperation", wriop.isWriteOp());
 		
-		ArrayList<ReadIncOperation> wriop_list = new ArrayList<ReadIncOperation>();
+		HashSet<ReadIncOperation> wriop_list = new HashSet<ReadIncOperation>();
 		wriop_list.add(wriop);
 		this.globalActiveWritesMap.put(wriop.getVariable(), wriop_list);
 	}
 	
 	/**
-	 * deactivate some WRITE in @param wriop from {@link #globalActiveWritesMap}
+	 * deactivate some WRITE with @param var from {@link #globalActiveWritesMap}
 	 *  
 	 * @param ReadIncOperation WRITE {@link ReadIncOperation} whose LatestWrite may be removed
 	 * 	from {@link #globalActiveWritesMap}
+	 * @param var	variable
 	 * 
 	 * @constraints @param wriop must be WRITE {@link ReadIncOperation}
 	 */
-	public void deactivateFrom(ReadIncOperation wriop)
+	public void deactivateFrom(ReadIncOperation wriop, String var)
 	{
 		assertTrue("deactivate WRITEs from WRITE ReadIncOperation", wriop.isWriteOp());
 		
-		String var = wriop.getVariable();
 		ReadIncOperation latestWrite = wriop.getLatestWriteMap().getLatestWrite(var);
 		if (latestWrite != null)
 			this.globalActiveWritesMap.get(var).remove(latestWrite);
@@ -133,6 +136,16 @@ public class GlobalActiveWritesMap
 	}
 	
 	/**
+	 * add new active WRITEs into {@link #globalActiveWritesMap} for different variables
+	 * @param wriop_map <var, op> pairs
+	 */
+	public void addActiveWriteMap(Map<String, ReadIncOperation> wriop_map)
+	{
+		for (ReadIncOperation wriop : wriop_map.values())
+			this.addActiveWrite(wriop);
+	}
+	
+	/**
 	 * String format of {@link #globalActiveWritesMap}
 	 * [x={}; y={}; z={}; ...]
 	 */
@@ -142,7 +155,7 @@ public class GlobalActiveWritesMap
 		StringBuilder sb = new StringBuilder();
 		sb.append('[');
 		
-		List<ReadIncOperation> riops = null;
+		HashSet<ReadIncOperation> riops = null;
 		for (String var : GlobalData.VARSET)
 		{
 			riops = this.globalActiveWritesMap.get(var);
@@ -164,7 +177,7 @@ public class GlobalActiveWritesMap
 	 * @param riopList list of {@link ReadIncOperation}
 	 * @return String form of a list of {@link ReadIncOperation} 
 	 */
-	private String getRiopListStr(List<ReadIncOperation> riopList)
+	private String getRiopListStr(Set<ReadIncOperation> riopList)
 	{
 		StringBuilder sb = new StringBuilder();
 		

@@ -2,8 +2,10 @@ package cn.edu.nju.moon.consistency.checker;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -152,7 +154,8 @@ public class ReadIncChecker extends Checker
 		// (1) dealing with rr_interval: (master_pre_rriop, master_cur_rriop)
 		ReadIncOperation pre_riop = master_pre_rriop;
 		ReadIncOperation rr_wriop = null;	/* WRITE {@link ReadIncOperation} in rr_interval*/
-		// rr_interval: (master_pre_rriop, master_cur_rriop)
+		
+		/** rr_interval: (master_pre_rriop, master_cur_rriop) **/
 		for (int rr_index = master_pre_rindex + 1; rr_index < master_cur_rindex; rr_index++)	
 		{
 			rr_wriop = (ReadIncOperation) master_proc.getOperation(rr_index);
@@ -178,26 +181,38 @@ public class ReadIncChecker extends Checker
 		else	// r and D(r) are in different processes
 		{
 			ReadIncProcess dw_proc = (ReadIncProcess) this.riob.getProcess(pid_dw);	// ReadIncProcess in which dictating WRITE resides
-			ReadIncOperation dw_pre_wriop = dw_proc.get_pre_wriop();	// previous WRITE {@link ReadIncOperation}
+			ReadIncOperation dw_pre_wriop = dw_proc.get_pre_wriop();	// previous WRITE {@link ReadIncOperation}; changing in iteration
 			assertTrue("Previous ReadIncOperation in ReadIncProcess not with masterPid is WRITE", dw_pre_wriop.isWriteOp());
+			
 			ReadIncOperation ww_wriop = null;	// WRITE {@link ReadIncOperation} in ww_interval
 			int dw_index = dw.getIndex();
 			int dw_pre_wriop_index = dw_pre_wriop.getIndex();
 			
-			// ww_interval: (dw_pre_wriop_index, dw_index]
+			/** dealing with ww_interval: (dw_pre_wriop_index, dw_index] **/
+			Map<String, ReadIncOperation> last_wriop_map = new HashMap<String, ReadIncOperation>();	/** record the last {@link ReadIncOperation} for each variable **/
 			for (int ww_index = dw_pre_wriop_index + 1; ww_index <= dw_index; ww_index++)
 			{
 				ww_wriop = (ReadIncOperation) dw_proc.getOperation(ww_index);
 				assertTrue("WRITE ReadIncOperation in ww_interval", ww_wriop.isWriteOp());
 				
-				ww_wriop.getEarliestRead().initEarlistRead(master_cur_rriop);	// initialize earliest READ
-				ww_wriop.getLatestWriteMap().updateLatestWrite(dw_pre_wriop);	// update latest WRITE map depending on previous operation
-				/* deactivate some WRITEs */
-				this.riob.getGlobalActiveWritesMap().deactivateFrom(dw_pre_wriop);	// deactivate some WRITEs
-				this.riob.getGlobalActiveWritesMap().addActiveWrite(ww_wriop);	// add this new active WRITE
+				ww_wriop.getEarliestRead().initEarlistRead(master_cur_rriop);	/** initialize earliest READ **/
+				ww_wriop.getLatestWriteMap().updateLatestWrite(dw_pre_wriop);	/** update LatestWriteMap depending on previous operation **/
+				
+				/** 
+				 * @description deactivate some WRITEs 
+				 * @modified 	hengxin on 2013-1-6
+				 * @reason   	there are two reasons to deactivate WRITEs:
+				 * 			(1) due to dw_pre_wriop (with corresponding READs)
+				 * 			(2) due to ww_interval itself (mainly focus on ones without corresponding READs)
+				 */
+				this.riob.getGlobalActiveWritesMap().deactivateFrom(dw_pre_wriop, ww_wriop.getVariable());	// deactivate some WRITE due to dw_pre_wriop
+//				this.riob.getGlobalActiveWritesMap().deactivateFrom(dw_pre_wriop_constant);  /** deactivate some WRITE due to dw_pre_wriop **/
+//				this.riob.getGlobalActiveWritesMap().addActiveWrite(ww_wriop);	/** add this new active WRITE **/
+				last_wriop_map.put(ww_wriop.getVariable(), ww_wriop);	/** record the last {@link ReadIncOperation} for this variable **/
 				
 				dw_pre_wriop = ww_wriop;	// iterate over the next WRITE
 			}
+			this.riob.getGlobalActiveWritesMap().addActiveWriteMap(last_wriop_map);	/** add active WRITE for each variable **/
 			
 			if (dw_index <= dw_pre_wriop_index)	// r and D(r) are in different processes and D(r) is in r'-downset
 				dominated = true;
