@@ -11,4 +11,6 @@ package cn.edu.nju.moon.consistency.model.observation;
 public interface IRawObservationConstructor
 {
 	public abstract RawObservation construct();
+	
+	public abstract String get_ob_id();
 }

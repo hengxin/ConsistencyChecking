@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
+import cn.edu.nju.moon.consistency.model.operation.GenericOperation;
 import cn.edu.nju.moon.consistency.model.process.RawProcess;
 
 /**
@@ -60,5 +61,28 @@ public class RawObservation
 	public int getSize()
 	{
 		return this.procMap.size();
+	}
+	
+	/**
+	 * @return String format of {@link RawObservation}
+	 * 	which is suitable to be stored in file
+	 * 
+	 * Format: 
+	 * one line for each process
+	 * operations in each process are separated by whitespace
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		
+		for (int pid : this.procMap.keySet())
+		{
+			for (GenericOperation rop : this.procMap.get(pid).getOpList())
+				sb.append(rop.toString()).append(' ');
+			sb.append('\n');
+		}
+		
+		return sb.toString();
 	}
 }

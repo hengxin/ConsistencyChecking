@@ -18,7 +18,8 @@ import cn.edu.nju.moon.consistency.model.process.RawProcess;
 public class FileRawObservationConstructor implements IRawObservationConstructor
 {
 	private String fileName = null;
-
+	private String ob_id = null;	// id of generated observation
+	
 	/**
 	 * construct {@link RawObservation} from file
 	 * 
@@ -33,6 +34,8 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 	public RawObservation construct()
 	{
 		File file = new File(fileName);
+		this.ob_id = file.getName();
+		
 		BufferedReader reader = null;
 
 		String process = null;
@@ -68,6 +71,12 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 		}
 
 		return rob;
+	}
+
+	@Override
+	public String get_ob_id()
+	{
+		return this.ob_id;
 	}
 
 }

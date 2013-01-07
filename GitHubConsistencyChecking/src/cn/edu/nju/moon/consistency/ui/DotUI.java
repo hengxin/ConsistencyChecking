@@ -49,14 +49,22 @@ public class DotUI
 	{
 		if (GlobalData.VISUALIZATION)
 		{
+			// add title
+			this.viz.addln("labelloc = \"t\";");
+			this.viz.add("label = \"" + out + "\"");
+			this.viz.addln(";");
+			
+			// finish the graph
 			this.viz.addln(this.viz.end_graph());
+			
+//			System.out.println(viz.getDotSource());	/** for test **/
 
-			System.out.println(viz.getDotSource());	/** for test **/
-
+			// generate the graph
 			this.out = new File("data/" + out + "." + this.type);
 			viz.writeGraphToFile(viz.getGraph(viz.getDotSource(), type), this.out);
 
-			DotUI.instance = null;	/** for reuse **/
+			// reset for reuse
+			DotUI.instance = null;
 		}
 	}
 

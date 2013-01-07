@@ -123,7 +123,7 @@ public class ReadIncChecker extends Checker
 		}
 		
 		// ui
-		DotUI.getInstance().execute(name + master_proc.getPid());
+		DotUI.getInstance().execute(name + "_" + master_proc.getPid());
 		
 		return consistent;	/** no cycle; satisfying PRAM Consistency **/
 	}
@@ -250,36 +250,44 @@ public class ReadIncChecker extends Checker
 		while (! zeroQueue.isEmpty())
 		{
 			ReadIncOperation wprime_riop = zeroQueue.poll();
-			// TODO: check the assertion
-			assertTrue("W' in W'WR must be WRITE", wprime_riop.isWriteOp());
 			
-			// identify the possible W'WR order
-			int oldEarlistRead = wprime_riop.getEarliestRead().updateEarliestRead(wprime_riop.getSuccessors());
-			ReadIncOperation wriop = wprime_riop.getEarliestRead().identify_wrPair(oldEarlistRead, wprime_riop, this.riob.getMasterProcess());
-			
-			// apply W'WR order: wprime_riop => wriop
-			if (wriop != null)
-				if (wprime_riop.apply_wprimew_order(wriop, this.riob))
-					return true;	/** cycle **/
-			
-			if (wriop != null && wriop.isCandidate())
+			/**
+			 * @description rule out the case that wprime_riop is READ
+			 * 
+			 * @modified hengxin on 2013-1-7
+			 * @reason wprime_riop maybe READ (e.g., R and D(R) are in the same process)
+			 */
+			if (wprime_riop.isWriteOp())
 			{
-//				wriop.resetCandidate();		/** using Set instead **/
+				// identify the possible W'WR order
+				int oldEarlistRead = wprime_riop.getEarliestRead().updateEarliestRead(wprime_riop.getSuccessors());
+				ReadIncOperation wriop = wprime_riop.getEarliestRead().identify_wrPair(oldEarlistRead, wprime_riop, this.riob.getMasterProcess());
 				
-				// depending on UNDONE operation
-				if (! wriop.isDone())
+				// apply W'WR order: wprime_riop => wriop
+				if (wriop != null)
+					if (wprime_riop.apply_wprimew_order(wriop, this.riob))
+						return true;	/** cycle **/
+				
+				if (wriop != null && wriop.isCandidate())
 				{
-					wprime_riop.getSuccessors().add(wriop);
-					wriop.getPredecessors().add(wprime_riop);
-					wprime_riop.incCount();
-				}
-				else
-				{
-					wprime_riop.getEarliestRead().updateEarliestRead(wriop);
+					// depending on UNDONE operation
+					if (! wriop.isDone())
+					{
+						wprime_riop.getSuccessors().add(wriop);
+						wriop.getPredecessors().add(wprime_riop);
+						wprime_riop.incCount();
+					}
+					else
+					{
+						wprime_riop.getEarliestRead().updateEarliestRead(wriop);
+					}
 				}
 			}
 			
-			// delete dependency and identify operations ready to check
+			/**
+			 * delete dependency and identify operations ready to check
+			 * no matter whether it is READ or WRITE 
+			 */
 			if (wprime_riop.getCount() == 0)
 			{
 				wprime_riop.setDone();

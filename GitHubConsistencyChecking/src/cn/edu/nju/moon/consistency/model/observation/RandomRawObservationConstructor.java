@@ -1,5 +1,8 @@
 package cn.edu.nju.moon.consistency.model.observation;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -26,6 +29,8 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 	private int valueRange = 10;
 	// number of operations in all (Operation)
 	private int opNum = 30;
+	
+	private String random_id = null;	// id for generated observation
 
 	/**
 	 * Default value:
@@ -65,6 +70,8 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 			rob.addOperation(pRandom.nextInt(this.processNum), new BasicOperation(iter.next()));
 		}
 
+		this.record(rob);
+		
 		return rob;
 	}
 	
@@ -150,5 +157,40 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 		int val = valueRandom.nextInt(this.valueRange);
 
 		return new GenericOperation(type, var, val);
+	}
+	
+	/**
+	 * @description record the {@link RawObservation} generated randomly
+	 * @date 2013-1-7
+	 * 
+	 * @param rob {@link RawObservation} to record 
+	 */
+	private void record(RawObservation rob)
+	{
+		this.random_id = this.processNum + "_" + this.variableNum + "_" + 
+			this.valueRange + "_" + this.opNum + "_" + new Random().nextInt();
+		
+		try
+		{
+			FileWriter fw = new FileWriter("data/randomtest/" + this.random_id + ".txt");
+			BufferedWriter out = new BufferedWriter(fw);
+			out.write(rob.toString());
+
+			out.close();
+		}
+		catch (IOException ioe)
+		{
+			System.err.println("Failure with storage of randomly generated observation");
+			ioe.printStackTrace();
+		}
+	}
+	
+	/**
+	 * @return {@link #random_id}
+	 */
+	@Override
+	public String get_ob_id()
+	{
+		return this.random_id;
 	}
 }
