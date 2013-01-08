@@ -76,11 +76,17 @@ public class ReadIncChecker extends Checker
 		this.riob = (ReadIncObservation) rob;
 		
 		if (this.riob.nullCheck())	/** no operations in the process to be checked; it is trivially PRAM Consistent **/
+		{
+			System.out.println("Null Check: true");
 			return true;
+		}
 		
 		this.riob.preprocessing();	// preprocessing: program order and write to order
 		if (this.riob.readLaterWrite())	/** some READ reads later WRITE in the same process; it does not satisfy PRAM Consistency **/
+		{
+			System.err.println("Read late write: false");
 			return false;
+		}
 		
 		ReadIncProcess master_proc = this.riob.getMasterProcess();
 		int master_size = master_proc.size();

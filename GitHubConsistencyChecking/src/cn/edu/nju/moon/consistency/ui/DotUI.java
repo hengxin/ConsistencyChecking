@@ -25,6 +25,7 @@ public class DotUI
 	private GraphViz viz = null;
 	private final String type = "pdf";
 	private File out = null;
+	private int counter = 0;	// counter for W'WR order edges
 
 	private static DotUI instance = null;
 	private DotUI()
@@ -65,6 +66,7 @@ public class DotUI
 
 			// reset for reuse
 			DotUI.instance = null;
+			this.counter = 0;
 		}
 	}
 
@@ -156,7 +158,8 @@ public class DotUI
 		if (GlobalData.VISUALIZATION)
 		{
 			this.viz.addComment("W'WR Order:");
-			this.viz.addln(from_op.toString() + " -> " + to_op.toString() + "[style = dashed, color = red];");
+			this.viz.addln(from_op.toString() + " -> " + to_op.toString() + 
+					"[style = dashed, color = red, label = \"" + (++this.counter) + "\"" + "];");
 		}
 	}
 

@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -50,6 +51,8 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 		this.variableNum = variableNum;
 		this.valueRange = valueRange;
 		this.opNum = opNum;
+		
+		GlobalData.VARSET = new HashSet<String>();
 	}
 	
 	/**

@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.StringTokenizer;
 
+import cn.edu.nju.moon.consistency.model.GlobalData;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.process.RawProcess;
 
@@ -28,6 +30,7 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 	public FileRawObservationConstructor(String fileName)
 	{
 		this.fileName = fileName;
+		GlobalData.VARSET = new HashSet<String>();
 	}
 
 	@Override

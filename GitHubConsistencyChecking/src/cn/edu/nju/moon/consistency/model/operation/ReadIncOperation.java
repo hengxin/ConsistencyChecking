@@ -24,7 +24,11 @@ import cn.edu.nju.moon.consistency.ui.DotUI;
 public class ReadIncOperation extends BasicOperation
 {
 	/* basic information related */
-	private int index = -1;	// index in {@link ReadIncProcess}
+	/**
+	 * @modified hengxin on 2013-1-8
+	 * @reason refactor: migrate {@link #index} into super class {@link BasicOperation}
+	 */
+//	private int index = -1;	// index in {@link ReadIncProcess}
 //	private int rid = -1;	// id of READ {@link ReadIncOperation}
 	private int wid = -1;	// id of WRITE {@link ReadIncOperation}
 	
@@ -34,7 +38,10 @@ public class ReadIncOperation extends BasicOperation
 	private ReadIncOperation readfromOrder = null; 		// read from order
 	private List<ReadIncOperation> writetoOrder 
 				= new ArrayList<ReadIncOperation>();	// write to relation 
-	private ReadIncOperation wprimewrOrder = null;		// w'wr order TODO: ArrayList<ReadIncOperation> ?
+	/** 
+	 * w'wr order TODO: ArrayList<ReadIncOperation> ? 
+	 */
+	private ReadIncOperation wprimewrOrder = null;		
 	private List<ReadIncOperation> reWprimewrOrder 
 				= new ArrayList<ReadIncOperation>();	// reverse w'wr order
 
@@ -66,16 +73,6 @@ public class ReadIncOperation extends BasicOperation
 		assertTrue("Only READ operation has corresponding dictating WRITE", this.isReadOp());
 		
 		return ReadIncObservation.WRITEPOOL.get(this.toString().replaceFirst("r", "w"));
-	}
-	
-	public void setIndex(int index)
-	{
-		this.index = index;
-	}
-	
-	public int getIndex()
-	{
-		return this.index;
 	}
 	
 	/************* BEGIN: rid and wid **************/
@@ -360,18 +357,4 @@ public class ReadIncOperation extends BasicOperation
 	}
 	/************ END: {@link ReadIncChecker} reschedule related *************/
 	
-	/**
-	 * if the {@link ReadIncOperation}s are both READ, they may be differentiated from
-	 * each other with respect to the field {@link #index}.
-	 */
-	@Override
-	public boolean equals(Object obj)
-	{
-		boolean basicComparison = super.equals(obj);
-		
-		if (basicComparison && this.isReadOp())
-			return this.index == ((ReadIncOperation) obj).index;
-		
-		return basicComparison;
-	}
 }
