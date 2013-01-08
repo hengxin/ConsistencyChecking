@@ -3,8 +3,8 @@ package cn.edu.nju.moon.consistency.model.observation;
 import org.junit.Before;
 import org.junit.Test;
 
-import cn.edu.nju.moon.consistency.model.observation.RandomRawObservationConstructor;
 import cn.edu.nju.moon.consistency.model.observation.RawObservation;
+import cn.edu.nju.moon.consistency.model.observation.constructor.RandomRawObservationConstructor;
 
 public class RandomRawObservationConstructorTest
 {

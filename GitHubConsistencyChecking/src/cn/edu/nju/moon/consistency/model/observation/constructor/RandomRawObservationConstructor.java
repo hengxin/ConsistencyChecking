@@ -1,4 +1,4 @@
-package cn.edu.nju.moon.consistency.model.observation;
+package cn.edu.nju.moon.consistency.model.observation.constructor;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Random;
 
 import cn.edu.nju.moon.consistency.model.GlobalData;
+import cn.edu.nju.moon.consistency.model.observation.RawObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.GenericOperation;
 

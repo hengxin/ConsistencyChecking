@@ -31,7 +31,6 @@ import cn.edu.nju.moon.consistency.ui.DotUI;
 public class ReadIncChecker extends Checker
 {
 	private ReadIncObservation riob = null;	/** {@link ReadIncObservation} with respect to some process to check **/
-	private String name = "";	/** for {@link DotUI}; the name of file for visualization **/
 	
 	/**
 	 * Constructor
@@ -40,7 +39,6 @@ public class ReadIncChecker extends Checker
 	public ReadIncChecker(RawObservation rob)
 	{
 		super(rob);
-		this.name = RandomStringUtils.random(8);
 	}
 	
 	/**
@@ -50,11 +48,9 @@ public class ReadIncChecker extends Checker
 	 */
 	public ReadIncChecker(RawObservation rob, String name)
 	{
-		super(rob);
-		this.name = name;
+		super(rob, name);
 	}
 	
-
 	/**
 	 * @return {link ReadIncObservation} with respect to @param masterPid to check
 	 */
@@ -129,7 +125,7 @@ public class ReadIncChecker extends Checker
 		}
 		
 		// ui
-		DotUI.getInstance().execute(name + "_" + master_proc.getPid());
+		DotUI.getInstance().execute("readinc/" + name + "_" + master_proc.getPid());
 		
 		return consistent;	/** no cycle; satisfying PRAM Consistency **/
 	}

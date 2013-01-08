@@ -1,4 +1,6 @@
-package cn.edu.nju.moon.consistency.model.observation;
+package cn.edu.nju.moon.consistency.model.observation.constructor;
+
+import cn.edu.nju.moon.consistency.model.observation.RawObservation;
 
 /**
  * @description constructor for {@link RawObservation}

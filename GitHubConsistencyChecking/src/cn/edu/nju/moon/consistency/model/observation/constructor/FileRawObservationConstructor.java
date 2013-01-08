@@ -1,4 +1,4 @@
-package cn.edu.nju.moon.consistency.model.observation;
+package cn.edu.nju.moon.consistency.model.observation.constructor;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.StringTokenizer;
 
 import cn.edu.nju.moon.consistency.model.GlobalData;
+import cn.edu.nju.moon.consistency.model.observation.RawObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.process.RawProcess;
 

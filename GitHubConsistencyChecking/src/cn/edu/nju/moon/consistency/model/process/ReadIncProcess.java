@@ -49,16 +49,14 @@ public class ReadIncProcess extends RawProcess
 				{
 					ReadIncOperation rriop = new ReadIncOperation(bop);
 					rriop.setIndex(this.opList.size());
-//					this.opList.add(rriop);	// transform to READ {@link ReadIncOperation}
-					this.addOperation(rriop);	// transform to READ {@link ReadIncOperation}
+					this.addOperation(rriop);
 				}
 			}
 			else	// WRITE {@link ReadIncOperation}
 			{
 				ReadIncOperation wriop = new ReadIncOperation(bop);
 				wriop.setIndex(this.opList.size());
-//				this.opList.add(wriop);
-				this.addOperation(wriop);	// transform to READ {@link ReadIncOperation}
+				this.addOperation(wriop);
 				ReadIncObservation.WRITEPOOL.put(wriop.toString(), wriop);
 			}
 		}

@@ -16,6 +16,7 @@ import cn.edu.nju.moon.consistency.model.process.RawProcess;
 public class RawObservation
 {
 	protected Map<Integer, RawProcess> procMap = new HashMap<Integer, RawProcess>();
+	protected int totalOpNum = -1;
 	
 	public void addProcess(int pid, RawProcess process)
 	{
@@ -61,6 +62,21 @@ public class RawObservation
 	public int getSize()
 	{
 		return this.procMap.size();
+	}
+	
+	/**
+	 * @return total number of operations
+	 */
+	public int getOpNum()
+	{
+		if (this.totalOpNum == -1)
+		{
+			this.totalOpNum = 0;
+			for (RawProcess proc : this.procMap.values())
+				totalOpNum += proc.size();
+		}
+		
+		return this.totalOpNum;
 	}
 	
 	/**

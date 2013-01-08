@@ -1,7 +1,10 @@
 package cn.edu.nju.moon.consistency.checker;
 
+import org.apache.commons.lang.RandomStringUtils;
+
 import cn.edu.nju.moon.consistency.model.observation.RawObservation;
 import cn.edu.nju.moon.consistency.model.process.RawProcess;
+import cn.edu.nju.moon.consistency.ui.DotUI;
 
 /**
  * @description Consistency checking algorithm is responsible for implementing
@@ -16,6 +19,7 @@ import cn.edu.nju.moon.consistency.model.process.RawProcess;
 public abstract class Checker
 {
 	protected RawObservation rob = null;	/** {@link RawObservation} to check **/
+	protected String name = "";		/** for {@link DotUI}; the name of file for visualization **/
 	
 	/**
 	 * Constructor
@@ -24,6 +28,18 @@ public abstract class Checker
 	public Checker(RawObservation rob)
 	{
 		this.rob = rob;
+		this.name = RandomStringUtils.random(8);
+	}
+	
+	/**
+	 * Constructor
+	 * @param riob	{@link RawObservation} to check
+	 * @param name	for {@link DotUI}; the name of file for visualization
+	 */
+	public Checker(RawObservation rob, String name)
+	{
+		this.rob = rob;
+		this.name = name;
 	}
 	
 	/**

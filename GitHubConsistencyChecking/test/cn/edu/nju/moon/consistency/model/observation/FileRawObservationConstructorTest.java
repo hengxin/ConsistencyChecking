@@ -3,6 +3,8 @@ package cn.edu.nju.moon.consistency.model.observation;
 import org.junit.Before;
 import org.junit.Test;
 
+import cn.edu.nju.moon.consistency.model.observation.constructor.IRawObservationConstructor;
+
 public class FileRawObservationConstructorTest
 {
 	IRawObservationConstructor frobcons = null;

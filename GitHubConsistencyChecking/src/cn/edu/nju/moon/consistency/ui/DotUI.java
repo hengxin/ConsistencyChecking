@@ -58,7 +58,7 @@ public class DotUI
 			// finish the graph
 			this.viz.addln(this.viz.end_graph());
 			
-//			System.out.println(viz.getDotSource());	/** for test **/
+			System.out.println(viz.getDotSource());	/** for test **/
 
 			// generate the graph
 			this.out = new File("data/" + out + "." + this.type);
