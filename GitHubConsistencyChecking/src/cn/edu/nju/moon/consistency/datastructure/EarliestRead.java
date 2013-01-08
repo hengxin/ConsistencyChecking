@@ -41,12 +41,15 @@ public class EarliestRead
 	 * @param riop used to update {@link #earlistRead};
 	 * the new earlist read is the smaller between two
 	 * @return old {@link #earlistRead}
+	 * 
+	 * @modified hengxin on 2013-1-8
+	 * @reason   add the assertion code: toEarliestRead != -1;
 	 */
 	public int updateEarliestRead(ReadIncOperation riop)
 	{
 		int oldEarlistRead = this.earlistRead;
 		int toEarlistRead = riop.getEarliestRead().getEarlistReadInt();
-		if (this.earlistRead > toEarlistRead)	// take the smaller one
+		if (toEarlistRead != -1 && this.earlistRead > toEarlistRead)	// take the smaller one
 			this.earlistRead = toEarlistRead;
 		
 		return oldEarlistRead;
@@ -62,8 +65,9 @@ public class EarliestRead
 	{
 		int oldEarlistRead = this.earlistRead;
 		for (ReadIncOperation wriop : wriopList)	// take the smallest one
+		{
 			this.updateEarliestRead(wriop);
-		
+		}
 		return oldEarlistRead;
 	}
 	
@@ -90,7 +94,7 @@ public class EarliestRead
 		{
 			rriop = (ReadIncOperation) master_proc.getOperation(index);
 			if (rriop.isReadOp() && rriop.getVariable().equals(var))
-				return rriop.getReadfromWrite();	// return the dictating WRITE
+				return (ReadIncOperation) rriop.getReadfromWrite();	// return the dictating WRITE
 		}
 		
 		return null;

@@ -2,7 +2,7 @@ package cn.edu.nju.moon.consistency.model.process;
 
 import java.util.List;
 
-import cn.edu.nju.moon.consistency.checker.OperationGraphChecker;
+import cn.edu.nju.moon.consistency.checker.ClosureGraphChecker;
 import cn.edu.nju.moon.consistency.model.observation.ClosureObservation;
 import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
@@ -11,20 +11,20 @@ import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 
 /**
  * @description {@link ClosureProcess} consists of {@link ClosureOperation}
- *   and is used in {@link ClosureObservation} and {@link OperationGraphChecker}  
+ *   and is used in {@link ClosureObservation} and {@link ClosureGraphChecker}  
  * 
  * @author hengxin
  * @date 2013-1-8
  */
-public class ClosureProcess extends RawProcess
+public class ClosureProcess extends BasicProcess
 {
 	/**
-	 * filter {@link RawProcess} for specific purpose
+	 * filter {@link BasicProcess} for specific purpose
 	 * 
 	 * @param masterPid process with masterPid is kept the same
-	 * @param proc {@link RawProcess} to be filtered
+	 * @param proc {@link BasicProcess} to be filtered
 	 */
-	public ClosureProcess(int masterPid, RawProcess proc)
+	public ClosureProcess(int masterPid, BasicProcess proc)
 	{
 		this.pid = proc.getPid();
 
@@ -51,45 +51,45 @@ public class ClosureProcess extends RawProcess
 		}
 	}
 
-	/**
-	 * establish "program order" between {@link ClosureOperation}s 
-	 * in the same {@link ClosureProcess}
-	 */
-	public void establishProgramOrder()
-	{
-		if (this.opList.size() == 0)
-			return ;
-		
-		ClosureOperation preOp = (ClosureOperation) this.opList.get(0);
-		ClosureOperation curOp = null;
-		int size = this.opList.size();
-		
-		for (int index = 1; index < size; index++)
-		{
-			curOp = (ClosureOperation) this.opList.get(index);
-			preOp.setProgramOrder(curOp);
-			preOp = curOp;
-		}
-	}
-	
-	/**
-	 * @see {@link ClosureObservation} private method #establishWritetoOrder()
-	 */
-	public void establishWritetoOrder()
-	{
-		List<BasicOperation> opList = this.opList;
-		ClosureOperation rclop = null;
-		ClosureOperation wclop = null;
-		int size = opList.size();
-		for (int index = 0; index < size; index++)
-		{	
-			rclop = (ClosureOperation) opList.get(index);
-			if(rclop.isReadOp())	
-			{
-				wclop = rclop.fetchDictatingWrite();
-				wclop.addWritetoOrder(rclop);
-			}
-		}
-	}
+//	/**
+//	 * establish "program order" between {@link ClosureOperation}s 
+//	 * in the same {@link ClosureProcess}
+//	 */
+//	public void establishProgramOrder()
+//	{
+//		if (this.opList.size() == 0)
+//			return;
+//		
+//		ClosureOperation preOp = (ClosureOperation) this.opList.get(0);
+//		ClosureOperation curOp = null;
+//		int size = this.opList.size();
+//		
+//		for (int index = 1; index < size; index++)
+//		{
+//			curOp = (ClosureOperation) this.opList.get(index);
+//			preOp.setProgramOrder(curOp);
+//			preOp = curOp;
+//		}
+//	}
+//	
+//	/**
+//	 * @see {@link ClosureObservation} private method #establishWritetoOrder()
+//	 */
+//	public void establishWritetoOrder()
+//	{
+//		List<BasicOperation> opList = this.opList;
+//		ClosureOperation rclop = null;
+//		ClosureOperation wclop = null;
+//		int size = opList.size();
+//		for (int index = 0; index < size; index++)
+//		{	
+//			rclop = (ClosureOperation) opList.get(index);
+//			if(rclop.isReadOp())	
+//			{
+//				wclop = rclop.fetchDictatingWrite();
+//				wclop.addWritetoOrder(rclop);
+//			}
+//		}
+//	}
 	
 }

@@ -17,7 +17,7 @@ public class ReadIncCheckerTest
 	}
 
 //	@Test
-	public void testCheck()
+	public void testCheck_part_fig4()
 	{
 		GlobalData.VISUALIZATION = true;
 
@@ -87,6 +87,16 @@ public class ReadIncCheckerTest
 		GlobalData.VISUALIZATION = true;
 
 		IRawObservationConstructor randcons_0 = new RandomRawObservationConstructor(10, 8, 15, 200);
+		Checker ri_checker_rand0 = new ReadIncChecker(randcons_0.construct(), randcons_0.get_ob_id());
+		ri_checker_rand0.check();
+	}
+	
+	@Test
+	public void testCheck_random_1549()
+	{
+		GlobalData.VISUALIZATION = true;
+
+		IRawObservationConstructor randcons_0 = new FileRawObservationConstructor("./test/testset/1549");
 		Checker ri_checker_rand0 = new ReadIncChecker(randcons_0.construct(), randcons_0.get_ob_id());
 		ri_checker_rand0.check();
 	}

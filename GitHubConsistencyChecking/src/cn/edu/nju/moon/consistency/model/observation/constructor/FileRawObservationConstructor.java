@@ -8,12 +8,12 @@ import java.util.HashSet;
 import java.util.StringTokenizer;
 
 import cn.edu.nju.moon.consistency.model.GlobalData;
-import cn.edu.nju.moon.consistency.model.observation.RawObservation;
+import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
-import cn.edu.nju.moon.consistency.model.process.RawProcess;
+import cn.edu.nju.moon.consistency.model.process.BasicProcess;
 
 /**
- * construct {@link RawObservation} from file
+ * construct {@link BasicObservation} from file
  *
  * @author hengxin
  * @date 2012-12-8
@@ -24,7 +24,7 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 	private String ob_id = null;	// id of generated observation
 	
 	/**
-	 * construct {@link RawObservation} from file
+	 * construct {@link BasicObservation} from file
 	 * 
 	 * @param fileName file to be read
 	 */
@@ -35,7 +35,7 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 	}
 
 	@Override
-	public RawObservation construct()
+	public BasicObservation construct()
 	{
 		File file = new File(fileName);
 		this.ob_id = file.getName();
@@ -46,16 +46,16 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 		StringTokenizer st = null;
 		String token = null;
 
-		RawObservation rob = null;
+		BasicObservation rob = null;
 		try
 		{
 			reader = new BufferedReader(new FileReader(file));
 
-			rob = new RawObservation();
+			rob = new BasicObservation();
 			int pid = 0;
 			while((process = reader.readLine()) != null)
 			{
-				RawProcess rp = new RawProcess(pid);
+				BasicProcess rp = new BasicProcess(pid);
 				st = new StringTokenizer(process);
 				while(st.hasMoreTokens())
 				{

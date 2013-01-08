@@ -13,10 +13,10 @@ import org.apache.commons.lang.RandomStringUtils;
 
 import cn.edu.nju.moon.consistency.datastructure.GlobalActiveWritesMap;
 import cn.edu.nju.moon.consistency.model.GlobalData;
-import cn.edu.nju.moon.consistency.model.observation.RawObservation;
+import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
-import cn.edu.nju.moon.consistency.model.operation.GenericOperation;
+import cn.edu.nju.moon.consistency.model.operation.RawOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
 import cn.edu.nju.moon.consistency.ui.DotUI;
@@ -34,19 +34,19 @@ public class ReadIncChecker extends Checker
 	
 	/**
 	 * Constructor
-	 * @param riob {@link RawObservation} to check
+	 * @param riob {@link BasicObservation} to check
 	 */
-	public ReadIncChecker(RawObservation rob)
+	public ReadIncChecker(BasicObservation rob)
 	{
 		super(rob);
 	}
 	
 	/**
 	 * Constructor
-	 * @param riob	{@link RawObservation} to check
+	 * @param riob	{@link BasicObservation} to check
 	 * @param name	for {@link DotUI}; the name of file for visualization
 	 */
-	public ReadIncChecker(RawObservation rob, String name)
+	public ReadIncChecker(BasicObservation rob, String name)
 	{
 		super(rob, name);
 	}
@@ -55,7 +55,7 @@ public class ReadIncChecker extends Checker
 	 * @return {link ReadIncObservation} with respect to @param masterPid to check
 	 */
 	@Override
-	protected RawObservation getMasterObservation(int masterPid)
+	protected BasicObservation getMasterObservation(int masterPid)
 	{
 		return new ReadIncObservation(masterPid, super.rob);
 	}
@@ -66,23 +66,23 @@ public class ReadIncChecker extends Checker
 	 * @return true; if {@link #riob} satisfies PRAM Consistency; false, otherwise.
 	 */
 	@Override
-	protected boolean check_part(RawObservation rob)
+	protected boolean check_part(BasicObservation rob)
 	{
 		assertTrue("check ReadIncObservation", rob instanceof ReadIncObservation);
 		this.riob = (ReadIncObservation) rob;
 		
-		if (this.riob.nullCheck())	/** no operations in the process to be checked; it is trivially PRAM Consistent **/
-		{
-			System.out.println("Null Check: true");
-			return true;
-		}
-		
-		this.riob.preprocessing();	// preprocessing: program order and write to order
-		if (this.riob.readLaterWrite())	/** some READ reads later WRITE in the same process; it does not satisfy PRAM Consistency **/
-		{
-			System.err.println("Read late write: false");
-			return false;
-		}
+//		if (this.riob.nullCheck())	/** no operations in the process to be checked; it is trivially PRAM Consistent **/
+//		{
+//			System.out.println("Null Check: true");
+//			return true;
+//		}
+//		
+//		this.riob.preprocessing();	// preprocessing: program order and write to order
+//		if (this.riob.readLaterWrite())	/** some READ reads later WRITE in the same process; it does not satisfy PRAM Consistency **/
+//		{
+//			System.err.println("Read late write: false");
+//			return false;
+//		}
 		
 		ReadIncProcess master_proc = this.riob.getMasterProcess();
 		int master_size = master_proc.size();
@@ -104,7 +104,7 @@ public class ReadIncChecker extends Checker
 				DotUI.getInstance().addGAWM(this.riob.getGlobalActiveWritesMap(), master_cur_rriop.toString(), 1);
 				
 				// (2) master_cur_rriop must read value from dw; apply Rule (c): W'WR order
-				if (this.readFromDW(master_cur_rriop, master_cur_rriop.getReadfromWrite(), this.riob))
+				if (this.readFromDW(master_cur_rriop, (ReadIncOperation) master_cur_rriop.getReadfromWrite(), this.riob))
 				{
 					consistent = false;	/** cycle **/
 					break;
@@ -172,7 +172,7 @@ public class ReadIncChecker extends Checker
 		master_cur_rriop.getLatestWriteMap().updateLatestWrite(pre_riop);	// update latest WRITE map for @param master_cur_rriop individually
 		
 		// (2) dealing with ww_interval
-		ReadIncOperation dw = master_cur_rriop.getReadfromWrite();	// dictating WRITE for @param master_cur_rriop
+		ReadIncOperation dw = (ReadIncOperation) master_cur_rriop.getReadfromWrite();	// dictating WRITE for @param master_cur_rriop
 		int pid_master = master_cur_rriop.getPid();	// pid of current READ
 		int pid_dw = dw.getPid();	// pid of dictating WRITE
 		if (pid_dw == pid_master)	// r and D(r) are in the same process and thus ww_interval is empty
@@ -227,7 +227,7 @@ public class ReadIncChecker extends Checker
 		 *  	the same variable are scheduled before "dw" and LatestWrite are updated 
 		 *  	accordingly 
 		 */
-		ReadIncOperation temp_riop = new ReadIncOperation(new GenericOperation(GlobalData.WRITE, GlobalData.DUMMYVAR, -1));	// temp 
+		ReadIncOperation temp_riop = new ReadIncOperation(new RawOperation(GlobalData.WRITE, GlobalData.DUMMYVAR, -1));	// temp 
 		for (ReadIncOperation active_wriop : this.riob.getGlobalActiveWritesMap().getActiveWrites(master_cur_rriop.getVariable()))
 			temp_riop.getLatestWriteMap().updateLatestWrite(active_wriop);
 		
@@ -244,7 +244,7 @@ public class ReadIncChecker extends Checker
 	{
 		assertTrue("Reschedule operations due to the current READ ReadIncOperation", master_cur_rriop.isReadOp());
 		
-		ReadIncOperation dw = master_cur_rriop.getReadfromWrite();	// dictating WRITE {@link ReadIncOperation}
+		ReadIncOperation dw = (ReadIncOperation) master_cur_rriop.getReadfromWrite();	// dictating WRITE {@link ReadIncOperation}
 		Set<ReadIncOperation> candidateSet = this.draw_reschedule_boundary(dw);	// identify the possible rescheduled operations
 		
 		Queue<ReadIncOperation> zeroQueue = new LinkedList<ReadIncOperation>();	// queue containing operations ready to check

@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Random;
 
 import cn.edu.nju.moon.consistency.model.GlobalData;
-import cn.edu.nju.moon.consistency.model.observation.RawObservation;
+import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
-import cn.edu.nju.moon.consistency.model.operation.GenericOperation;
+import cn.edu.nju.moon.consistency.model.operation.RawOperation;
 
 /**
  * @author hengxin
@@ -62,13 +62,13 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 	 * @return RawObservation object
 	 */
 	@Override
-	public RawObservation construct()
+	public BasicObservation construct()
 	{
-		RawObservation rob = new RawObservation();
+		BasicObservation rob = new BasicObservation();
 
 		// distribute a list of Operation (s) into #processNum processes randomly
 		Random pRandom = new Random();
-		Iterator<GenericOperation> iter = this.constructOperationList().iterator();
+		Iterator<RawOperation> iter = this.constructOperationList().iterator();
 		while(iter.hasNext())
 		{
 			rob.addOperation(pRandom.nextInt(this.processNum), new BasicOperation(iter.next()));
@@ -83,11 +83,11 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 	 * @return List of Operation.
 	 *   Constraint: Write distinct values for a variable.
 	 */
-	private List<GenericOperation> constructOperationList()
+	private List<RawOperation> constructOperationList()
 	{
-		List<GenericOperation> opList = new ArrayList<GenericOperation>();
+		List<RawOperation> opList = new ArrayList<RawOperation>();
 		Random random = new Random();
-		GenericOperation op = null;
+		RawOperation op = null;
 		int loop = 0;
 
 		for(int i=0;i<this.opNum;)
@@ -102,7 +102,7 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 				opList.add(op);
 				i++;
 
-				GenericOperation wop = new GenericOperation(GlobalData.WRITE, op.getVariable(), op.getValue());
+				RawOperation wop = new RawOperation(GlobalData.WRITE, op.getVariable(), op.getValue());
 
 				if(i == this.opNum)
 				{
@@ -142,9 +142,9 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 	/**
 	 * construct generic operation randomly
 	 * 
-	 * @return {@link GenericOperation} object
+	 * @return {@link RawOperation} object
 	 */
-	private GenericOperation consturctOperation()
+	private RawOperation consturctOperation()
 	{
 		Random typeRandom = new Random();
 		Random variableRandom = new Random();
@@ -160,16 +160,16 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 		String var = String.valueOf((char) ('a' + variableRandom.nextInt(this.variableNum)));
 		int val = valueRandom.nextInt(this.valueRange);
 
-		return new GenericOperation(type, var, val);
+		return new RawOperation(type, var, val);
 	}
 	
 	/**
-	 * @description record the {@link RawObservation} generated randomly
+	 * @description record the {@link BasicObservation} generated randomly
 	 * @date 2013-1-7
 	 * 
-	 * @param rob {@link RawObservation} to record 
+	 * @param rob {@link BasicObservation} to record 
 	 */
-	private void record(RawObservation rob)
+	private void record(BasicObservation rob)
 	{
 		this.random_id = this.processNum + "_" + this.variableNum + "_" + 
 			this.valueRange + "_" + this.opNum + "_" + new Random().nextInt();

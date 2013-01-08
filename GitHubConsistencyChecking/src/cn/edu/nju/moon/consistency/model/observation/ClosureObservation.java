@@ -4,33 +4,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.edu.nju.moon.consistency.checker.OperationGraphChecker;
+import cn.edu.nju.moon.consistency.checker.ClosureGraphChecker;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.ClosureOperation;
 import cn.edu.nju.moon.consistency.model.process.ClosureProcess;
 import cn.edu.nju.moon.consistency.ui.DotUI;
 
 /**
- * @description {@link ClosureObservation} is used in {@link OperationGraphChecker}
+ * @description {@link ClosureObservation} is used in {@link ClosureGraphChecker}
  *   and is related to {@link ClosureOperation} and {@link ClosureProcess} 
  * 
  * @author hengxin
  * @date 2013-1-8
  */
-public class ClosureObservation extends RawObservation
+public class ClosureObservation extends BasicObservation
 {
 	public static Map<String, ClosureOperation> WRITEPOOL = null;
 	
-	/** {@link ClosureIncProcess} with masterPid is to be checked against PRAM consistency **/
-	private int masterPid = -1;
-	private int opNum = -1;
+//	/** {@link ClosureIncProcess} with masterPid is to be checked against PRAM consistency **/
+//	private int masterPid = -1;
+//	private int opNum = -1;
 	
 	/** array of {@link ClosureOperation}s @see #encodeOperations() */
 	private final ClosureOperation[] opArray;
 
 	/** matrix of {@link ClosureOperation}s */
 	private final boolean [][] opMatrix;
-	
+
 	/**
 	 * get the filtered observation in which READ operations
 	 * are ignored except those reside on process with @param masterPid
@@ -40,7 +40,7 @@ public class ClosureObservation extends RawObservation
 	 * 
 	 * @see {@link ClosureProcess}
 	 */
-	public ClosureObservation(int masterPid, RawObservation rob)
+	public ClosureObservation(int masterPid, BasicObservation rob)
 	{
 		ClosureObservation.WRITEPOOL = new HashMap<String, ClosureOperation>();
 		this.masterPid = masterPid;
@@ -48,63 +48,55 @@ public class ClosureObservation extends RawObservation
 		for (int pid : rob.getProcMap().keySet())
 			this.procMap.put(pid, new ClosureProcess(masterPid, rob.getProcMap().get(pid)));
 
-		this.opNum = this.getOpNum();
-		
-		/** initialize {#opArray} */
-		this.opArray = new ClosureOperation[this.opNum];
-		
-		/** initialize the matrix of {@link ClosureOperation}s */
-		this.opMatrix = new boolean[this.opNum][this.opNum];
-		
-		/** fill the opArray (encode all the {@link ClosureOperation}s) */
-		this.fillOpArray();
+		this.totalOpNum = this.getOpNum();
+		this.opArray = new ClosureOperation[this.totalOpNum];	/** initialize {#opArray} */
+		this.opMatrix = new boolean[this.totalOpNum][this.totalOpNum];	/** initialize the matrix of {@link ClosureOperation}s */
 		
 		// ui
 		DotUI.getInstance().visual_ob(this);
 	}
 	
-	/**
-	 * @return {@link #masterPid}
-	 */
-	public int getMasterPid()
-	{
-		return this.masterPid;
-	}
+//	/**
+//	 * @return {@link #masterPid}
+//	 */
+//	public int getMasterPid()
+//	{
+//		return this.masterPid;
+//	}
 	
 	/**
 	 * preprocessing the {@link ClosureObservation}, including
 	 * (1) establishing "program order" between {@link ClosureOperation}
 	 * (2) establishing "write to order" between {@link ClosureOperation}
 	 */
+	@Override
 	public void preprocessing()
 	{
-		this.establishProgramOrder();
-		this.establishWritetoOrder();
+		super.preprocessing();	/** establish "program order" and "write to order" */
 		
-		this.fillOpMatrix();
+		this.fillOpArray();		/** fill the {#opArray} */
+		this.fillOpMatrix();	/** fill the {#opMatrix} */
 	}
 	
-	/**
-	 * establishing "program order" between {@link ClosureOperation}s
-	 */
-	private void establishProgramOrder()
-	{
-		for (int pid : this.procMap.keySet())
-			((ClosureProcess) this.procMap.get(pid)).establishProgramOrder();
-	}
-	
-	/**
-	 * establishing "write to order" between {@link ClosureOperation}s 
-	 * and set rid for READ {@link ClosureOperation} and wid for corresponding
-	 * WRITE {@link ClosureOperation} 
-	 */
-	private void establishWritetoOrder()
-	{
-		// FIXME: NullPointer exception
-		
-		// all READ {@link ClosureOperation}s are in the {@link ClosureProcess} with #masterPid
-		((ClosureProcess) this.procMap.get(this.masterPid)).establishWritetoOrder();
-	}
+//	/**
+//	 * establishing "program order" between {@link ClosureOperation}s
+//	 */
+//	private void establishProgramOrder()
+//	{
+//		for (int pid : this.procMap.keySet())
+//			((ClosureProcess) this.procMap.get(pid)).establishProgramOrder();
+//	}
+//	
+//	/**
+//	 * establishing "write to order" between {@link ClosureOperation}s 
+//	 * and set rid for READ {@link ClosureOperation} and wid for corresponding
+//	 * WRITE {@link ClosureOperation} 
+//	 */
+//	private void establishWritetoOrder()
+//	{
+//		// all READ {@link ClosureOperation}s are in the {@link ClosureProcess} with #masterPid
+//		((ClosureProcess) this.procMap.get(this.masterPid)).establishWritetoOrder();
+//	}
 	
 	/**
 	 * encode {@link ClosureOperation}s with unique global index
@@ -115,9 +107,10 @@ public class ClosureObservation extends RawObservation
 	private void fillOpArray()
 	{
 		int procNum = this.getSize();
-		int totalIndex = 0;
+		int accIndex = 0;
 		int globalIndex = 0;
 		List<BasicOperation> opList = null;
+		
 		// encode operations for each process
 		for(int pid = 0; pid < procNum; pid++)
 		{
@@ -125,13 +118,13 @@ public class ClosureObservation extends RawObservation
 			// encode each operation
 			for(BasicOperation bop : opList)
 			{
-				globalIndex = totalIndex + bop.getIndex();
+				globalIndex = accIndex + bop.getIndex();
 				((ClosureOperation) bop).setGlobalIndex(globalIndex);
 				// put this operation in the right position of array
 				this.opArray[globalIndex] = (ClosureOperation) bop;
 			}
 
-			totalIndex += opList.size();
+			accIndex += opList.size();
 		}
 	}
 	
@@ -145,14 +138,14 @@ public class ClosureObservation extends RawObservation
 		for(ClosureOperation clop : this.opArray)
 		{
 			// program order
-			temp_clop = clop.getProgramOrder();
+			temp_clop = (ClosureOperation) clop.getProgramOrder();
 			if(temp_clop != null)
 				this.opMatrix[clop.getGlobalIndex()][temp_clop.getGlobalIndex()] = true;
 
 			// writeto order
 			if(clop.isWriteOp())
-				for(ClosureOperation rclop : clop.getWritetoOrder())
-					this.opMatrix[clop.getGlobalIndex()][rclop.getGlobalIndex()] = true;
+				for(BasicOperation rclop : clop.getWritetoOrder())
+					this.opMatrix[clop.getGlobalIndex()][((ClosureOperation) rclop).getGlobalIndex()] = true;
 		}
 	}
 	
@@ -168,9 +161,9 @@ public class ClosureObservation extends RawObservation
 	{
 		boolean changed = false;
 
-		for(int mid = 0; mid < this.opNum; mid++)
-			for(int src = 0; src < this.opNum; src++)
-				for(int dest = 0; dest < this.opNum; dest++)
+		for(int mid = 0; mid < this.totalOpNum; mid++)
+			for(int src = 0; src < this.totalOpNum; src++)
+				for(int dest = 0; dest < this.totalOpNum; dest++)
 					if(! this.opMatrix[src][dest])
 					{
 						this.opMatrix[src][dest] = this.opMatrix[src][mid] && this.opMatrix[mid][dest];
@@ -191,7 +184,7 @@ public class ClosureObservation extends RawObservation
 		boolean cycle = false;
 		
 		// check the diagonal elements in opMatrix
-		for(int dia = 0; dia < this.opNum; dia++)
+		for(int dia = 0; dia < this.totalOpNum; dia++)
 		{
 			cycle = this.opMatrix[dia][dia];
 			if (cycle)
@@ -220,10 +213,10 @@ public class ClosureObservation extends RawObservation
 			if(bop.isReadOp())
 			{
 				// 3) look up #opMatrix for all the Write precedences W' of R which is not W = D(R)
-				for(int row = 0; row < this.opNum; row++)
+				for(int row = 0; row < this.totalOpNum; row++)
 				{
 					wprime_op = this.opArray[row];
-					wop = ((ClosureOperation) bop).getReadfromWrite();
+					wop = (ClosureOperation) bop.getReadfromWrite();
 
 					if(! wprime_op.isReadOp()
 							&& wprime_op.getVariable().equals(bop.getVariable())

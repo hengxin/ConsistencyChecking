@@ -28,16 +28,15 @@ public class ReadIncOperation extends BasicOperation
 	 * @modified hengxin on 2013-1-8
 	 * @reason refactor: migrate {@link #index} into super class {@link BasicOperation}
 	 */
-//	private int index = -1;	// index in {@link ReadIncProcess}
 //	private int rid = -1;	// id of READ {@link ReadIncOperation}
 	private int wid = -1;	// id of WRITE {@link ReadIncOperation}
 	
-	/* precede order related */
-	private ReadIncOperation programOrder = null;		// program order
-	private ReadIncOperation reProgramOrder = null;		// reverse program order
-	private ReadIncOperation readfromOrder = null; 		// read from order
-	private List<ReadIncOperation> writetoOrder 
-				= new ArrayList<ReadIncOperation>();	// write to relation 
+//	/* precede order related */
+//	private ReadIncOperation programOrder = null;		// program order
+//	private ReadIncOperation reProgramOrder = null;		// reverse program order
+//	private ReadIncOperation readfromOrder = null; 		// read from order
+//	private List<ReadIncOperation> writetoOrder 
+//				= new ArrayList<ReadIncOperation>();	// write to relation 
 	/** 
 	 * w'wr order TODO: ArrayList<ReadIncOperation> ? 
 	 */
@@ -59,7 +58,10 @@ public class ReadIncOperation extends BasicOperation
 	private List<ReadIncOperation> predecessors = null;
 	private List<ReadIncOperation> successors = null;
 	
-	public ReadIncOperation(GenericOperation otherOp)
+//	private List<BasicOperation> predecessors = null;
+//	private List<BasicOperation> successors = null;
+	
+	public ReadIncOperation(RawOperation otherOp)
 	{
 		super(otherOp);
 	}
@@ -91,49 +93,49 @@ public class ReadIncOperation extends BasicOperation
 	/************* END: rid and wid **************/
 	
 	/*********** BEGIN: order related methods ************/
-	public void setProgramOrder(ReadIncOperation riop)
-	{
-		this.programOrder = riop;
-		riop.reProgramOrder = this;
-		
-		// ui
-		DotUI.getInstance().addPOEdge(this, riop);
-	}
-	
-	public void addWritetoOrder(ReadIncOperation riop)
-	{
-		assertTrue("WRITE writes to READ", this.isWriteOp() && riop.isReadOp());
-		
-		this.writetoOrder.add(riop);
-		riop.readfromOrder = this;
-		
-		// ui
-		DotUI.getInstance().addWritetoEdge(this, riop);
-	}
-	
-	/**
-	 * @return dictating WRITE {@link ReadIncOperation} from which this READ reads
-	 * 
-	 * @constraints this must be READ {@link ReadIncOperation}
-	 */
-	public ReadIncOperation getReadfromWrite()
-	{
-		assertTrue("READ reads from WRITE", this.isReadOp());
-		
-		return this.readfromOrder;
-	}
-	
-	/**
-	 * @return dictated READ {@link ReadIncOperation}s for this WRITE one
-	 * 
-	 * @constraints this must be WRITE {@link ReadIncOperation}
-	 */
-	public List<ReadIncOperation> getWritetoOrder()
-	{
-		assertTrue("WRITE writes to READ", this.isWriteOp());
-		
-		return this.writetoOrder;
-	}
+//	public void setProgramOrder(ReadIncOperation riop)
+//	{
+//		this.programOrder = riop;
+//		riop.reProgramOrder = this;
+//		
+//		// ui
+//		DotUI.getInstance().addPOEdge(this, riop);
+//	}
+//	
+//	public void addWritetoOrder(ReadIncOperation riop)
+//	{
+//		assertTrue("WRITE writes to READ", this.isWriteOp() && riop.isReadOp());
+//		
+//		this.writetoOrder.add(riop);
+//		riop.readfromOrder = this;
+//		
+//		// ui
+//		DotUI.getInstance().addWritetoEdge(this, riop);
+//	}
+//	
+//	/**
+//	 * @return dictating WRITE {@link ReadIncOperation} from which this READ reads
+//	 * 
+//	 * @constraints this must be READ {@link ReadIncOperation}
+//	 */
+//	public ReadIncOperation getReadfromWrite()
+//	{
+//		assertTrue("READ reads from WRITE", this.isReadOp());
+//		
+//		return this.readfromOrder;
+//	}
+//	
+//	/**
+//	 * @return dictated READ {@link ReadIncOperation}s for this WRITE one
+//	 * 
+//	 * @constraints this must be WRITE {@link ReadIncOperation}
+//	 */
+//	public List<ReadIncOperation> getWritetoOrder()
+//	{
+//		assertTrue("WRITE writes to READ", this.isWriteOp());
+//		
+//		return this.writetoOrder;
+//	}
 	
 	/**
 	 * applying Rule (c): W'WR order; 
@@ -327,9 +329,9 @@ public class ReadIncOperation extends BasicOperation
 		// identify predecessors
 		this.predecessors = new ArrayList<ReadIncOperation>();
 		if (this.reProgramOrder != null)				// reverse program order
-			this.predecessors.add(this.reProgramOrder);	
+			this.predecessors.add((ReadIncOperation) this.reProgramOrder);	
 		if (this.isReadOp())							// read from order
-			this.predecessors.add(this.readfromOrder);
+			this.predecessors.add((ReadIncOperation) this.readfromOrder);
 		else											// reverse w'wr order
 			this.predecessors.addAll(reWprimewrOrder);
 		
@@ -347,9 +349,12 @@ public class ReadIncOperation extends BasicOperation
 		// identify successors
 		this.successors = new ArrayList<ReadIncOperation>();
 		if (this.programOrder != null)					// program order
-			this.successors.add(this.programOrder);
+			this.successors.add((ReadIncOperation) this.programOrder);
 		if (this.isWriteOp())
-			this.successors.addAll(this.writetoOrder);	// write to order
+		{
+			for (BasicOperation bop : this.writetoOrder)
+				this.successors.add((ReadIncOperation) bop);	// write to order
+		}
 		if (this.wprimewrOrder != null)					// w'wr order
 			this.successors.add(this.wprimewrOrder);
 		

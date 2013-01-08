@@ -5,10 +5,10 @@ import java.io.File;
 import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
 import cn.edu.nju.moon.consistency.datastructure.GlobalActiveWritesMap;
 import cn.edu.nju.moon.consistency.model.GlobalData;
-import cn.edu.nju.moon.consistency.model.observation.RawObservation;
+import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
-import cn.edu.nju.moon.consistency.model.process.RawProcess;
+import cn.edu.nju.moon.consistency.model.process.BasicProcess;
 
 /**
  * @description UI for {@link ReadIncChecker}; visualization of the data structures 
@@ -71,11 +71,11 @@ public class DotUI
 	}
 
 	/**
-	 * visualize {@link RawObservation}
+	 * visualize {@link BasicObservation}
 	 * 
-	 * @param riob {@link RawObservation} to visualize
+	 * @param riob {@link BasicObservation} to visualize
 	 */
-	public void visual_ob(RawObservation ob)
+	public void visual_ob(BasicObservation ob)
 	{
 		if (GlobalData.VISUALIZATION)
 		{
@@ -100,11 +100,11 @@ public class DotUI
 	}
 
 	/**
-	 * visualize {@link RawProcess}
+	 * visualize {@link BasicProcess}
 	 * 
-	 * @param ripro {@link RawProcess} to visualize
+	 * @param ripro {@link BasicProcess} to visualize
 	 */
-	private void visual_proc(RawProcess ripro)
+	private void visual_proc(BasicProcess ripro)
 	{
 		viz.add("{");
 		viz.add("rank = same;");	// in the same process

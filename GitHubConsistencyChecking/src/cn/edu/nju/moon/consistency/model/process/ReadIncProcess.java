@@ -7,7 +7,7 @@ import java.util.List;
 import cn.edu.nju.moon.consistency.model.GlobalData;
 import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
-import cn.edu.nju.moon.consistency.model.operation.GenericOperation;
+import cn.edu.nju.moon.consistency.model.operation.RawOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 
 /**
@@ -19,23 +19,23 @@ import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
  * 
  * @see {@link ReadIncObservation}
  */
-public class ReadIncProcess extends RawProcess
+public class ReadIncProcess extends BasicProcess
 {
 	/* {@link ReadIncChecker} related */
 	private ReadIncOperation cur_rriop = null;	// the current READ {@link ReadIncOperation} to be check
 	
 	private ReadIncOperation pre_rriop = new ReadIncOperation(
-			new GenericOperation(GlobalData.READ, GlobalData.DUMMYVAR, -1));		// for {@link ReadIncProcess} with masterPid
+			new RawOperation(GlobalData.READ, GlobalData.DUMMYVAR, -1));		// for {@link ReadIncProcess} with masterPid
 	private ReadIncOperation pre_wriop = new ReadIncOperation(
-			new GenericOperation(GlobalData.WRITE, GlobalData.DUMMYVAR, -1));	// for other {@link ReadIncProcess}es
+			new RawOperation(GlobalData.WRITE, GlobalData.DUMMYVAR, -1));	// for other {@link ReadIncProcess}es
 	
 	/**
-	 * filter {@link RawProcess} for specific purpose
+	 * filter {@link BasicProcess} for specific purpose
 	 * 
 	 * @param masterPid process with masterPid is kept the same
-	 * @param proc {@link RawProcess} to be filtered
+	 * @param proc {@link BasicProcess} to be filtered
 	 */
-	public ReadIncProcess(int masterPid, RawProcess proc)
+	public ReadIncProcess(int masterPid, BasicProcess proc)
 	{
 		this.pid = proc.getPid();
 
@@ -62,30 +62,31 @@ public class ReadIncProcess extends RawProcess
 		}
 	}
 
-	/**
-	 * establish "program order" between {@link ReadIncOperation}s 
-	 * in the same {@link ReadIncProcess}
-	 */
-	public void establishProgramOrder()
-	{
-		if (this.opList.size() == 0)
-			return ;
-		
-		ReadIncOperation preOp = (ReadIncOperation) this.opList.get(0);
-		ReadIncOperation curOp = null;
-		int size = this.opList.size();
-		
-		for (int index = 1; index < size; index++)
-		{
-			curOp = (ReadIncOperation) this.opList.get(index);
-			preOp.setProgramOrder(curOp);
-			preOp = curOp;
-		}
-	}
+//	/**
+//	 * establish "program order" between {@link ReadIncOperation}s 
+//	 * in the same {@link ReadIncProcess}
+//	 */
+//	public void establishProgramOrder()
+//	{
+//		if (this.opList.size() == 0)
+//			return;
+//		
+//		ReadIncOperation preOp = (ReadIncOperation) this.opList.get(0);
+//		ReadIncOperation curOp = null;
+//		int size = this.opList.size();
+//		
+//		for (int index = 1; index < size; index++)
+//		{
+//			curOp = (ReadIncOperation) this.opList.get(index);
+//			preOp.setProgramOrder(curOp);
+//			preOp = curOp;
+//		}
+//	}
 	
 	/**
 	 * @see ReadIncObservation private method #establishWritetoOrder()
 	 */
+	@Override
 	public void establishWritetoOrder()
 	{
 		List<BasicOperation> opList = this.opList;
@@ -98,38 +99,37 @@ public class ReadIncProcess extends RawProcess
 			if(rriop.isReadOp())	
 			{
 				wriop = rriop.fetchDictatingWrite();
-//				rriop.setRid(index);  // replaced by the following statement: setEarliestReadInt(index)
-				rriop.getEarliestRead().setEarlistReadInt(index);
-				wriop.setWid(index);
+				
+				rriop.getEarliestRead().setEarlistReadInt(index);	/** initialize earliest read */
+				wriop.setWid(index);								/** set {#wid} */
+				
 				wriop.addWritetoOrder(rriop);
 			}
 		}
 	}
 	
-	/**
-	 * does some READ {@link ReadIncOperation} read value from later WRITE
-	 * {@link ReadIncOperation} on the same {@link ReadIncProcess}
-	 * 
-	 * @return true, if it does; false, o.w..
-	 * 
-	 * @see ReadIncObservation#readLaterWrite()
-	 */
-	public boolean readLaterWrite()
-	{
-		ReadIncOperation rriop = null;
-		ReadIncOperation wriop = null;
-		for (BasicOperation riop : this.opList)
-		{
-			if (riop.isReadOp())	// check every READ
-			{
-				rriop = (ReadIncOperation) riop;
-				wriop = rriop.getReadfromWrite();
-				if (rriop.getPid() == wriop.getPid() && rriop.getIndex() < wriop.getIndex())
-					return true;
-			}
-		}
-		return false;
-	}
+//	/**
+//	 * does some READ {@link ReadIncOperation} read value from later WRITE
+//	 * {@link ReadIncOperation} on the same {@link ReadIncProcess}
+//	 * 
+//	 * @return true, if it does; false, o.w..
+//	 * 
+//	 * @see ReadIncObservation#readLaterWrite()
+//	 */
+//	public boolean readLaterWrite()
+//	{
+//		BasicOperation wriop = null;
+//		for (BasicOperation riop : this.opList)
+//		{
+//			if (riop.isReadOp())	// check every READ
+//			{
+//				wriop = riop.getReadfromWrite();
+//				if (riop.getPid() == wriop.getPid() && riop.getIndex() < wriop.getIndex())
+//					return true;
+//			}
+//		}
+//		return false;
+//	}
 	
 	/**
 	 * set {@link #cur_rriop} to @param riop

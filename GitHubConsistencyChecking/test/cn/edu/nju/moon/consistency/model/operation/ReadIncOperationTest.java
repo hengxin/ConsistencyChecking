@@ -29,10 +29,10 @@ public class ReadIncOperationTest
 	@Test
 	public void testEquals()
 	{
-		ReadIncOperation wriop = new ReadIncOperation(new GenericOperation(GlobalData.WRITE, "x", 1));
-		ReadIncOperation rriop1 = new ReadIncOperation(new GenericOperation(GlobalData.READ, "x", 1));
+		ReadIncOperation wriop = new ReadIncOperation(new RawOperation(GlobalData.WRITE, "x", 1));
+		ReadIncOperation rriop1 = new ReadIncOperation(new RawOperation(GlobalData.READ, "x", 1));
 		rriop1.setIndex(0);
-		ReadIncOperation rriop2 = new ReadIncOperation(new GenericOperation(GlobalData.READ, "x", 1));
+		ReadIncOperation rriop2 = new ReadIncOperation(new RawOperation(GlobalData.READ, "x", 1));
 		rriop2.setIndex(0);
 		
 		opSet.add(wriop);

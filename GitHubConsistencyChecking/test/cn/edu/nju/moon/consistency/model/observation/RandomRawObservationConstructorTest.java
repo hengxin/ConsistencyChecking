@@ -3,14 +3,14 @@ package cn.edu.nju.moon.consistency.model.observation;
 import org.junit.Before;
 import org.junit.Test;
 
-import cn.edu.nju.moon.consistency.model.observation.RawObservation;
+import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.observation.constructor.RandomRawObservationConstructor;
 
 public class RandomRawObservationConstructorTest
 {
 
 	RandomRawObservationConstructor rrocon = null;
-	RawObservation rob = null;
+	BasicObservation rob = null;
 	
 //	@Before
 //	public void setUp() throws Exception
