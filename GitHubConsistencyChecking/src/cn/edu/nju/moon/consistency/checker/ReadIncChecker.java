@@ -306,8 +306,14 @@ public class ReadIncChecker extends Checker
 					// depending on UNDONE operation
 					if (! wriop.isDone())
 					{
-						wprime_riop.getSuccessors().add(wriop);
-						wriop.getPredecessors().add(wprime_riop);
+						/**
+						 * @modified hengxin on 2013-1-9
+						 * @modification the update of predecessors and successors 
+						 *   are encapsulated in methods related to different kinds of edges
+						 * @reason maintenance of predecessors and successors
+						 */
+//						wprime_riop.getSuccessors().add(wriop);
+//						wriop.getPredecessors().add(wprime_riop);
 						wprime_riop.incCount();
 					}
 					else
@@ -325,11 +331,13 @@ public class ReadIncChecker extends Checker
 			{
 				wprime_riop.setDone();
 				
-				for (ReadIncOperation riop : wprime_riop.getPredecessors())
+				ReadIncOperation tmp_riop = null;
+				for (BasicOperation bop : wprime_riop.getPredecessors())
 				{
-					riop.decCount();
-					if (riop.getCount() == 0 && ! riop.isDone())	/** TODO£º is it necessary to check riop.isDone() **/
-						zeroQueue.offer(riop);
+					tmp_riop = (ReadIncOperation) bop;
+					tmp_riop.decCount();
+					if (tmp_riop.getCount() == 0 && ! tmp_riop.isDone())	/** TODO£º is it necessary to check riop.isDone() **/
+						zeroQueue.offer(tmp_riop);
 				}
 			}
 		}
@@ -367,7 +375,7 @@ public class ReadIncChecker extends Checker
 		
 		for (String wriopStr : this.riob.getGlobalActiveWritesMap().getActiveWritesPool(var))
 		{
-			ReadIncOperation wriop = ReadIncObservation.WRITEPOOL.get(wriopStr);
+			ReadIncOperation wriop = (ReadIncOperation) this.riob.getWrite(wriopStr);
 			if (! wriop.equals(dw) && wriop.apply_wprimew_order(dw,this.riob))	/** apply Rule (c): W'WR order (i.e., wriop => dw => master_cur_rriop) **/
 				return true;	/** cycle **/
 		}
@@ -400,11 +408,13 @@ public class ReadIncChecker extends Checker
 			candidateSet.add(cur_op);	/** add it to set **/
 			cur_op.resetDone();		// reset to be undone
 			
-			for (ReadIncOperation riop: cur_op.getPredecessors())
+			ReadIncOperation tmp_riop = null;
+			for (BasicOperation bop: cur_op.getPredecessors())
 			{
-				riop.incCount();	// one more dependency operation
-				if (! riop.isCandidate())
-					pending.add(riop);
+				tmp_riop = (ReadIncOperation) bop;
+				tmp_riop.incCount();	// one more dependency operation
+				if (! tmp_riop.isCandidate())
+					pending.add(tmp_riop);
 			}
 			/**
 			 *  @modified by hengxin 2013-01-03

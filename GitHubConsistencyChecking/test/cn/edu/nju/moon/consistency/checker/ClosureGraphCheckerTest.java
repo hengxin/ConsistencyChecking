@@ -21,7 +21,7 @@ public class ClosureGraphCheckerTest
 	{
 	}
 
-//	@Test
+	@Test
 	public void testCheck_part_fig4()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -31,7 +31,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 
-//	@Test
+	@Test
 	public void testCheck_part_fig5()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -41,7 +41,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 	
-//	@Test
+	@Test
 	public void testCheck_part_fig6()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -51,7 +51,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 	
-//	@Test
+	@Test
 	public void testCheck_part_fig7()
 	{
 		GlobalData.VISUALIZATION = true;

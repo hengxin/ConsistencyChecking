@@ -3,11 +3,10 @@ package cn.edu.nju.moon.consistency.model.process;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.edu.nju.moon.consistency.model.observation.ClosureObservation;
-import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
+import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.ClosureOperation;
-import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
+import cn.edu.nju.moon.consistency.model.operation.RawOperation;
 
 /**
  * @author hengxin
@@ -23,6 +22,7 @@ public class BasicProcess
 {
 	protected int pid = -1;
 	protected List<BasicOperation> opList = null;
+	protected BasicObservation bob = null;	/** backward reference to {@link BasicObservation} */
 	
 	public BasicProcess()
 	{
@@ -109,20 +109,21 @@ public class BasicProcess
 	}
 	
 	/**
-	 * @see {@link ClosureObservation} private method #establishWritetoOrder()
+	 * establish WritetoOrder: D(R) => R
 	 */
 	public void establishWritetoOrder()
 	{
 		List<BasicOperation> opList = this.opList;
-		ClosureOperation rclop = null;
-		ClosureOperation wclop = null;
+		BasicOperation rclop = null;
+		BasicOperation wclop = null;
 		int size = opList.size();
 		for (int index = 0; index < size; index++)
 		{	
-			rclop = (ClosureOperation) opList.get(index);
+			rclop = opList.get(index);
 			if(rclop.isReadOp())	
 			{
-				wclop = rclop.fetchDictatingWrite();
+//				wclop = rclop.fetchDictatingWrite();
+				wclop = this.bob.getDictatingWrite(rclop);
 				wclop.addWritetoOrder(rclop);
 			}
 		}

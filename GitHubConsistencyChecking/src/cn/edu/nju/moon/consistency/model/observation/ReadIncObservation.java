@@ -1,12 +1,9 @@
 package cn.edu.nju.moon.consistency.model.observation;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
 import cn.edu.nju.moon.consistency.datastructure.GlobalActiveWritesMap;
-import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
 import cn.edu.nju.moon.consistency.ui.DotUI;
 
@@ -24,9 +21,11 @@ public class ReadIncObservation extends BasicObservation
 	 *  pool of all WRITE operations
 	 *  in the PRAM-distinct problem, WRITE operations are distinct.
 	 *  
-	 *  @warning public static field cannot be shared in multiple test cases
+	 * @modified hengxin on 2013-1-9
+	 * @modification remove public static field {@link #WRITEPOOL}; 
+	 * 	change it into protected; extracted to super class {@link BasicObservation}
 	 */
-	public static Map<String, ReadIncOperation> WRITEPOOL = null;	
+//	public static Map<String, ReadIncOperation> WRITEPOOL = null;	
 	
 //	// {@link ReadIncProcess} with masterPid is to be checked against PRAM consistency
 //	private int masterPid = -1;
@@ -45,13 +44,13 @@ public class ReadIncObservation extends BasicObservation
 	 */
 	public ReadIncObservation(int masterPid, BasicObservation rob)
 	{
-		ReadIncObservation.WRITEPOOL = new HashMap<String, ReadIncOperation>();
+//		ReadIncObservation.WRITEPOOL = new HashMap<String, ReadIncOperation>();
 		
 		this.masterPid = masterPid;
 		
 		Set<Integer> pids = rob.getProcMap().keySet();
 		for (int pid : pids)
-			this.procMap.put(pid, new ReadIncProcess(masterPid, rob.getProcMap().get(pid)));
+			this.procMap.put(pid, new ReadIncProcess(masterPid, rob.getProcMap().get(pid), this));
 		
 		// ui
 		DotUI.getInstance().visual_ob(this);

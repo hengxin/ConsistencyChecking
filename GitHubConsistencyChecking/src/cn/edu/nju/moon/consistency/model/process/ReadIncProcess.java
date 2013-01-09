@@ -35,9 +35,10 @@ public class ReadIncProcess extends BasicProcess
 	 * @param masterPid process with masterPid is kept the same
 	 * @param proc {@link BasicProcess} to be filtered
 	 */
-	public ReadIncProcess(int masterPid, BasicProcess proc)
+	public ReadIncProcess(int masterPid, BasicProcess proc, ReadIncObservation riob)
 	{
 		this.pid = proc.getPid();
+		this.bob = riob;
 
 		List<BasicOperation> opListTemp = proc.getOpListCopy();
 
@@ -57,7 +58,8 @@ public class ReadIncProcess extends BasicProcess
 				ReadIncOperation wriop = new ReadIncOperation(bop);
 				wriop.setIndex(this.opList.size());
 				this.addOperation(wriop);
-				ReadIncObservation.WRITEPOOL.put(wriop.toString(), wriop);
+				riob.addWrite2Pool(wriop);
+//				ReadIncObservation.WRITEPOOL.put(wriop.toString(), wriop);
 			}
 		}
 	}
@@ -98,8 +100,8 @@ public class ReadIncProcess extends BasicProcess
 			rriop = (ReadIncOperation) opList.get(index);
 			if(rriop.isReadOp())	
 			{
-				wriop = rriop.fetchDictatingWrite();
-				
+//				wriop = rriop.fetchDictatingWrite();
+				wriop = (ReadIncOperation) this.bob.getDictatingWrite(rriop);
 				rriop.getEarliestRead().setEarlistReadInt(index);	/** initialize earliest read */
 				wriop.setWid(index);								/** set {#wid} */
 				

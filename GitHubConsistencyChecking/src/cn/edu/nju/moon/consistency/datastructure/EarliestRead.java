@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
+import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
 
@@ -61,12 +62,12 @@ public class EarliestRead
 	 * @param wriopSet set of {@link ReadIncOperation}s
 	 * @return old {@link #earlistRead}
 	 */
-	public int updateEarliestRead(Set<ReadIncOperation> wriopSet)
+	public int updateEarliestRead(Set<BasicOperation> wriopSet)
 	{
 		int oldEarlistRead = this.earlistRead;
 		
-		for (ReadIncOperation wriop : wriopSet)	// take the smallest one
-			this.updateEarliestRead(wriop);
+		for (BasicOperation wriop : wriopSet)	// take the smallest one
+			this.updateEarliestRead((ReadIncOperation) wriop);
 
 		return oldEarlistRead;
 	}

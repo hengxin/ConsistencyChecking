@@ -19,7 +19,11 @@ import cn.edu.nju.moon.consistency.ui.DotUI;
  */
 public class ClosureObservation extends BasicObservation
 {
-	public static Map<String, ClosureOperation> WRITEPOOL = null;
+	/**
+	 * @modified hengxin on 2013-1-9
+	 * @modification extracted to super class {@link BasicObservation} 
+	 */
+//	public static Map<String, ClosureOperation> WRITEPOOL = null;
 	
 //	/** {@link ClosureIncProcess} with masterPid is to be checked against PRAM consistency **/
 //	private int masterPid = -1;
@@ -42,11 +46,11 @@ public class ClosureObservation extends BasicObservation
 	 */
 	public ClosureObservation(int masterPid, BasicObservation rob)
 	{
-		ClosureObservation.WRITEPOOL = new HashMap<String, ClosureOperation>();
+//		ClosureObservation.WRITEPOOL = new HashMap<String, ClosureOperation>();
 		this.masterPid = masterPid;
 		
 		for (int pid : rob.getProcMap().keySet())
-			this.procMap.put(pid, new ClosureProcess(masterPid, rob.getProcMap().get(pid)));
+			this.procMap.put(pid, new ClosureProcess(masterPid, rob.getProcMap().get(pid), rob));
 
 		this.totalOpNum = this.getOpNum();
 		this.opArray = new ClosureOperation[this.totalOpNum];	/** initialize {#opArray} */
@@ -206,7 +210,7 @@ public class ClosureObservation extends BasicObservation
 							&& ! this.isReachable(wprime_op, wop))
 					{
 						// 4) add edge W' -> W
-						wprime_op.addWprimewrEdge(wop);
+						wprime_op.add_wprimew_order(wop);
 						this.opMatrix[wprime_op.getGlobalIndex()][wop.getGlobalIndex()] = true;
 						changed = true;
 					}

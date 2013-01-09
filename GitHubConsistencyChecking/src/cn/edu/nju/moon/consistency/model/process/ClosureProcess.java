@@ -3,11 +3,10 @@ package cn.edu.nju.moon.consistency.model.process;
 import java.util.List;
 
 import cn.edu.nju.moon.consistency.checker.ClosureGraphChecker;
+import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.observation.ClosureObservation;
-import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.ClosureOperation;
-import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 
 /**
  * @description {@link ClosureProcess} consists of {@link ClosureOperation}
@@ -24,10 +23,11 @@ public class ClosureProcess extends BasicProcess
 	 * @param masterPid process with masterPid is kept the same
 	 * @param proc {@link BasicProcess} to be filtered
 	 */
-	public ClosureProcess(int masterPid, BasicProcess proc)
+	public ClosureProcess(int masterPid, BasicProcess proc, BasicObservation bob)
 	{
 		this.pid = proc.getPid();
-
+		this.bob = bob;
+		
 		List<BasicOperation> opListTemp = proc.getOpListCopy();
 
 		for (BasicOperation bop : opListTemp)
@@ -46,7 +46,8 @@ public class ClosureProcess extends BasicProcess
 				ClosureOperation wclop = new ClosureOperation(bop);
 				wclop.setIndex(this.opList.size());
 				this.addOperation(wclop);
-				ClosureObservation.WRITEPOOL.put(wclop.toString(), wclop);
+				bob.addWrite2Pool(wclop);
+//				ClosureObservation.WRITEPOOL.put(wclop.toString(), wclop);
 			}
 		}
 	}

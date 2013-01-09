@@ -40,42 +40,30 @@ public class ClosureOperation extends BasicOperation
 	 * 
 	 * @constraints @param to_clop should be a WRITE
 	 */
-	public void addWprimewrEdge(ClosureOperation to_clop)
+	public void add_wprimew_order(ClosureOperation to_clop)
 	{
 		assertTrue("The target of W'WR edge is WRITE", to_clop.isWriteOp());
 		
+		/** set edge */
 		this.wprimewrOrder.add(to_clop);
+		
+		/** update successors and predecessors */
+		this.successors.add(to_clop);
+		to_clop.predecessors.add(this);
+		
 		// ui
 		DotUI.getInstance().addWprimeWREdge(this, to_clop);
 	}
 	
-	/**
-	 * @return dictating WRITE {@link ClosureOperation} for this one
-	 * 	if this is a READ {@link ClosureOperation}
-	 */
-	public ClosureOperation fetchDictatingWrite()
-	{
-		assertTrue("Only READ operation has corresponding dictating WRITE", this.isReadOp());
-		
-		return ClosureObservation.WRITEPOOL.get(this.toString().replaceFirst("r", "w"));
-	}
-	
 //	/**
-//	 * @return list of predecessor {@link ClosureOperation}s
+//	 * @return dictating WRITE {@link ClosureOperation} for this one
+//	 * 	if this is a READ {@link ClosureOperation}
 //	 */
-//	public List<ClosureOperation> getPredecessors()
+//	public ClosureOperation fetchDictatingWrite()
 //	{
-//		if (this.predecessors != null)
-//			return this.predecessors;
+//		assertTrue("Only READ operation has corresponding dictating WRITE", this.isReadOp());
 //		
-//		// identify predecessors
-//		this.predecessors = new ArrayList<ClosureOperation>();
-//		if (this.reProgramOrder != null)				// reverse program order
-//			this.predecessors.add(this.reProgramOrder);	
-//		if (this.isReadOp())							// read from order
-//			this.predecessors.add(this.readfromOrder);
-//		
-//		return this.predecessors;
+//		return ClosureObservation.WRITEPOOL.get(this.toString().replaceFirst("r", "w"));
 //	}
 	
 	/**

@@ -35,22 +35,35 @@ public class View
 	 */
 	public View(BasicObservation bob)
 	{
+		/** schedule operations in bop-downset */
 		for (BasicOperation bop : bob.getProcess(bob.getMasterPid()).getOpList())
+			if (bop.isReadOp())	
+				this.topoSorting(bop);
+		
+		/** picking up the remaining WRITEs */
+		for (BasicOperation wop : bob.getWritePool().values())
 		{
-//			if (bop.isReadOp())
-//				this.topoSorting(bop);
-			
+			if (wop.isInView())
+				wop.resetInView();
+			else
+				this.view.add(wop);
 		}
 	}
 	
-//	private void topoSorting(BasicOperation bop)
-//	{
-//		if (! bop.isInView())
-//		{
-//			bop.setInView();
-//			for (BasicOperation op : bop.)
-//		}
-//	}
+	/**
+	 * performing DFS to give a topological sorting
+	 * @param bop root operation from which DFS starts
+	 */
+	private void topoSorting(BasicOperation bop)
+	{
+		if (! bop.isInView())
+		{
+			bop.setInView();
+			for (BasicOperation pre_bop : bop.getPredecessors())
+				this.topoSorting(pre_bop);
+			this.view.add(bop);
+		}
+	}
 	
 	/**
 	 * to check whether {@link #view} satisfies PRAM Consistency:

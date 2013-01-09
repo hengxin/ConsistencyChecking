@@ -1,5 +1,7 @@
 package cn.edu.nju.moon.consistency.model.observation;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +11,6 @@ import cn.edu.nju.moon.consistency.model.operation.ClosureOperation;
 import cn.edu.nju.moon.consistency.model.operation.RawOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.BasicProcess;
-import cn.edu.nju.moon.consistency.model.process.ClosureProcess;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
 
 /**
@@ -27,6 +28,7 @@ public class BasicObservation
 	private int opNum = -1;
 	protected Map<Integer, BasicProcess> procMap = new HashMap<Integer, BasicProcess>();
 	protected int totalOpNum = -1;
+	protected Map<String, BasicOperation> write_pool = new HashMap<String, BasicOperation>();
 	
 	public void addProcess(int pid, BasicProcess process)
 	{
@@ -158,6 +160,46 @@ public class BasicObservation
 		}
 		
 		return this.totalOpNum;
+	}
+	
+	/**
+	 * adding WRITE operation into {@link #write_pool}
+	 * @param bop WRITE operation to add
+	 */
+	public void addWrite2Pool(BasicOperation bop)
+	{
+		assertTrue("Adding WRITE to pool", bop.isWriteOp());
+		
+		this.write_pool.put(bop.toString(), bop);
+	}
+	
+	/**
+	 * @param opStr String form of WRITE operation to retrieve
+	 * @return WRITE operation in {@link #write_pool} with key = @param opStr
+	 */
+	public BasicOperation getWrite(String opStr)
+	{
+		return this.write_pool.get(opStr);
+	}
+	
+	/**
+	 * get the dictating WRITE for some READ
+	 * @param rop READ operation
+	 * @return dictating WRITE for @param rop
+	 */
+	public BasicOperation getDictatingWrite(BasicOperation rop)
+	{
+		assertTrue("Get dictating WRITE of READ", rop.isReadOp());
+		
+		return this.getWrite(rop.toString().replaceFirst("r", "w"));
+	}
+	
+	/**
+	 * @return {@link #write_pool}
+	 */
+	public Map<String, BasicOperation> getWritePool()
+	{
+		return this.write_pool;
 	}
 	
 	/**

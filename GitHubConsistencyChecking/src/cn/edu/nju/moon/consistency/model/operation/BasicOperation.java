@@ -3,8 +3,11 @@ package cn.edu.nju.moon.consistency.model.operation;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.schedule.View;
 import cn.edu.nju.moon.consistency.ui.DotUI;
 
@@ -40,6 +43,21 @@ public class BasicOperation extends RawOperation
 	protected BasicOperation readfromOrder = null; 		// read from order
 	protected List<BasicOperation> writetoOrder 
 				= new ArrayList<BasicOperation>();	// writeto order
+	
+	/**
+	 * @modified hengxin on 2013-1-9
+	 * @reason Bug fix: using Set instead of List to avoid repetition
+	 * 
+	 * @modified hengxin on 2013-1-9
+	 * @modification Refactor: extract from subclass {@ReadIncOperation} 
+	 * 	More importantly, the computation of these two fields are scattered in
+	 *  different methods: {@link #addWritetoOrder(BasicOperation)}, 
+	 *  {@link #setProgramOrder(BasicOperation)}, and Rule W'WR is applied.
+	 *  
+	 * @reason inherited by both {@link ReadIncOperation} and {@link ClosureOperation}
+	 */
+	protected Set<BasicOperation> predecessors = new HashSet<BasicOperation>();
+	protected Set<BasicOperation> successors = new HashSet<BasicOperation>();
 	
 	public BasicOperation(RawOperation otherOp)
 	{
@@ -85,8 +103,13 @@ public class BasicOperation extends RawOperation
 	 */
 	public void setProgramOrder(BasicOperation bop)
 	{
+		/** set edges */
 		this.programOrder = bop;
 		bop.reProgramOrder = this;
+		
+		/** update successors and predecessors */
+		this.successors.add(bop);
+		bop.predecessors.add(this);
 		
 		// ui
 		DotUI.getInstance().addPOEdge(this, bop);
@@ -108,8 +131,13 @@ public class BasicOperation extends RawOperation
 	{
 		assertTrue("WRITE writes to READ", this.isWriteOp() && rop.isReadOp());
 		
+		/** set edges */
 		this.writetoOrder.add(rop);
 		rop.readfromOrder = this;
+		
+		/** update successors and predecessors*/
+		this.successors.add(rop);
+		rop.predecessors.add(this);
 		
 		// ui
 		DotUI.getInstance().addWritetoEdge(this, rop);
@@ -137,6 +165,26 @@ public class BasicOperation extends RawOperation
 		assertTrue("WRITE writes to READ", this.isWriteOp());
 		
 		return this.writetoOrder;
+	}
+	
+	/**
+	 * @return {@link #predecessors} of this {@link BasicOperation}
+	 * 
+	 * @warning the returned values may be different between calls
+	 */
+	public Set<BasicOperation> getPredecessors()
+	{
+		return this.predecessors;
+	}
+	
+	/**
+	 * @return {@link #successors} of this {@link BasicOperation}
+	 * 
+	 * @warning  the returned values may be different between calls
+	 */
+	public Set<BasicOperation> getSuccessors()
+	{
+		return this.successors;
 	}
 	
 	/**

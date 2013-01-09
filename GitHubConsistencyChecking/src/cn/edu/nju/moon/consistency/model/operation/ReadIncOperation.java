@@ -58,28 +58,21 @@ public class ReadIncOperation extends BasicOperation
 //	private List<ReadIncOperation> predecessors = null;
 //	private List<ReadIncOperation> successors = null;
 	
-	/**
-	 * @modified hengxin on 2013-1-9
-	 * @reason Bug fix: using Set instead of List to avoid repetition
-	 */
-	private Set<ReadIncOperation> predecessors = null;
-	private Set<ReadIncOperation> successors = null;
-	
 	public ReadIncOperation(RawOperation otherOp)
 	{
 		super(otherOp);
 	}
 
-	/**
-	 * @return dictating WRITE {@link ReadIncOperation} for this one
-	 * 	if this is a READ {link ReadIncOperation}
-	 */
-	public ReadIncOperation fetchDictatingWrite()
-	{
-		assertTrue("Only READ operation has corresponding dictating WRITE", this.isReadOp());
-		
-		return ReadIncObservation.WRITEPOOL.get(this.toString().replaceFirst("r", "w"));
-	}
+//	/**
+//	 * @return dictating WRITE {@link ReadIncOperation} for this one
+//	 * 	if this is a READ {link ReadIncOperation}
+//	 */
+//	public ReadIncOperation fetchDictatingWrite()
+//	{
+//		assertTrue("Only READ operation has corresponding dictating WRITE", this.isReadOp());
+//		
+//		return ReadIncObservation.WRITEPOOL.get(this.toString().replaceFirst("r", "w"));
+//	}
 	
 	/************* BEGIN: rid and wid **************/
 	public int getWid()
@@ -142,6 +135,23 @@ public class ReadIncOperation extends BasicOperation
 //	}
 	
 	/**
+	 * set W'WR order: this => @param wriop
+	 */
+	public void add_wprimew_order(ReadIncOperation wriop)
+	{
+		/** set edges */
+		this.wprimewrOrder = wriop;
+		wriop.reWprimewrOrder.add(this);
+		
+		/** update successors and predecessors */
+		this.successors.add(wriop);
+		wriop.predecessors.add(this);
+		
+		// ui
+		DotUI.getInstance().addWprimeWREdge(this, wriop);
+	}
+	
+	/**
 	 * applying Rule (c): W'WR order; 
 	 * return <a>true</a> if cycle emerges; <a>false</a>, otherwise.
 	 * 
@@ -156,11 +166,7 @@ public class ReadIncOperation extends BasicOperation
 		assertTrue("pointing to the WRITE ReadIncOperation which has corresponding READs", ! wriop.getWritetoOrder().isEmpty());
 		assertTrue("W'WR order: on two operations performing on the same variable", this.getVariable().equals(wriop.getVariable()));
 		
-		this.wprimewrOrder = wriop;
-		wriop.reWprimewrOrder.add(this);
-		
-		// ui
-		DotUI.getInstance().addWprimeWREdge(this, wriop);
+		this.add_wprimew_order(wriop);
 		
 		/** cycle detection **/
 		String var = wriop.getVariable();
@@ -188,9 +194,9 @@ public class ReadIncOperation extends BasicOperation
 			// propagation until the current ReadIncOperation being checked
 			if (! riob.getMasterProcess().get_cur_rriop().equals(riop))
 			{
-				for (ReadIncOperation op : riop.getSuccessors())	// rule out the Write -> (unchecked) Read case
-					if (! op.isCovered() && (riop.isWriteOp() || op.getIndex() <= riop.getIndex()))
-						propQueue.add(op);
+				for (BasicOperation op : riop.getSuccessors())	// rule out the Write -> (unchecked) Read case
+					if (! ((ReadIncOperation) op).isCovered() && (riop.isWriteOp() || op.getIndex() <= riop.getIndex()))
+						propQueue.add((ReadIncOperation) op);
 			}
 		}
 		
@@ -322,48 +328,48 @@ public class ReadIncOperation extends BasicOperation
 		this.count = val;
 	}
 	
-	/**
-	 * @return Set of predecessor {@link ReadIncOperation}s
-	 */
-	public Set<ReadIncOperation> getPredecessors()
-	{
-		if (this.predecessors != null)
-			return this.predecessors;
-		
-		// identify predecessors
-		this.predecessors = new HashSet<ReadIncOperation>();
-		if (this.reProgramOrder != null)				// reverse program order
-			this.predecessors.add((ReadIncOperation) this.reProgramOrder);	
-		if (this.isReadOp())							// read from order
-			this.predecessors.add((ReadIncOperation) this.readfromOrder);
-		else											// reverse w'wr order
-			this.predecessors.addAll(reWprimewrOrder);
-		
-		return this.predecessors;
-	}
+//	/**
+//	 * @return Set of predecessor {@link ReadIncOperation}s
+//	 */
+//	public Set<ReadIncOperation> getPredecessors()
+//	{
+//		if (this.predecessors != null)
+//			return this.predecessors;
+//		
+//		// identify predecessors
+//		this.predecessors = new HashSet<ReadIncOperation>();
+//		if (this.reProgramOrder != null)				// reverse program order
+//			this.predecessors.add((ReadIncOperation) this.reProgramOrder);	
+//		if (this.isReadOp())							// read from order
+//			this.predecessors.add((ReadIncOperation) this.readfromOrder);
+//		else											// reverse w'wr order
+//			this.predecessors.addAll(reWprimewrOrder);
+//		
+//		return this.predecessors;
+//	}
 	
-	/**
-	 * @return set of successor {@link ReadIncOperation}
-	 */
-	public Set<ReadIncOperation> getSuccessors()
-	{
-		if (this.successors != null)
-			return this.successors;
-		
-		// identify successors
-		this.successors = new HashSet<ReadIncOperation>();
-		if (this.programOrder != null)					// program order
-			this.successors.add((ReadIncOperation) this.programOrder);
-		if (this.isWriteOp())
-		{
-			for (BasicOperation bop : this.writetoOrder)
-				this.successors.add((ReadIncOperation) bop);	// write to order
-		}
-		if (this.wprimewrOrder != null)					// w'wr order
-			this.successors.add(this.wprimewrOrder);
-		
-		return this.successors;
-	}
+//	/**
+//	 * @return set of successor {@link ReadIncOperation}
+//	 */
+//	public Set<ReadIncOperation> getSuccessors()
+//	{
+//		if (this.successors != null)
+//			return this.successors;
+//		
+//		// identify successors
+//		this.successors = new HashSet<ReadIncOperation>();
+//		if (this.programOrder != null)					// program order
+//			this.successors.add((ReadIncOperation) this.programOrder);
+//		if (this.isWriteOp())
+//		{
+//			for (BasicOperation bop : this.writetoOrder)
+//				this.successors.add((ReadIncOperation) bop);	// write to order
+//		}
+//		if (this.wprimewrOrder != null)					// w'wr order
+//			this.successors.add(this.wprimewrOrder);
+//		
+//		return this.successors;
+//	}
 	/************ END: {@link ReadIncChecker} reschedule related *************/
 	
 }

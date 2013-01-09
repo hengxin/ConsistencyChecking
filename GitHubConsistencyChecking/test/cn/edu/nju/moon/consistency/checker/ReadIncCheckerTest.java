@@ -21,7 +21,7 @@ public class ReadIncCheckerTest
 	 * @author hengxin
 	 * @date 2013-1-7 
 	 */
-//	@Test
+	@Test
 	public void testCheck_part_fig4()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -36,7 +36,7 @@ public class ReadIncCheckerTest
 	 * @author hengxin
 	 * @date 2013-1-7
 	 */
-//	@Test
+	@Test
 	public void testCheck_part_fig5()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -51,7 +51,7 @@ public class ReadIncCheckerTest
 	 * @modified hengxin on 2013-1-5
 	 * @reason refactor IChecker to Checker using Template Method design pattern
 	 */
-//	@Test
+	@Test
 	public void testCheck_part_fig6()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -66,7 +66,7 @@ public class ReadIncCheckerTest
 	 * @author hengxin
 	 * @date 2013-1-5
 	 */
-//	@Test
+	@Test
 	public void testCheck_part_fig7()
 	{
 		GlobalData.VISUALIZATION = true;
