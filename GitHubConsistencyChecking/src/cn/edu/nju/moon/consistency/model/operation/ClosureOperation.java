@@ -34,7 +34,6 @@ public class ClosureOperation extends BasicOperation
 		super(opStr);
 	}
 	
-	
 	/**
 	 * @description apply W'WR order: this => @param to_clop
 	 * @param to_clop W part of the W'WR order

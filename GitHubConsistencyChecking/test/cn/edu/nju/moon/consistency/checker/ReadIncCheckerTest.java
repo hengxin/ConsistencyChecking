@@ -16,7 +16,7 @@ public class ReadIncCheckerTest
 	{
 	}
 
-//	@Test
+	@Test
 	public void testCheck_part_fig4()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -31,7 +31,7 @@ public class ReadIncCheckerTest
 		ri_checker_fig4_2b.check();
 	}
 	
-//	@Test
+	@Test
 	public void testCheck_part_fig5()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -46,7 +46,7 @@ public class ReadIncCheckerTest
 		ri_checker_fig5_1b.check();
 	}
 	
-//	@Test
+	@Test
 	public void testCheck_part_fig6()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -61,7 +61,7 @@ public class ReadIncCheckerTest
 		ri_checker_fig6.check();
 	}
 	
-//	@Test
+	@Test
 	public void testCheck_part_fig7()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -91,7 +91,7 @@ public class ReadIncCheckerTest
 		ri_checker_rand0.check();
 	}
 	
-	@Test
+//	@Test
 	public void testCheck_random_1549()
 	{
 		GlobalData.VISUALIZATION = true;

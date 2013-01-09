@@ -104,20 +104,27 @@ public class ReadIncChecker extends Checker
 				DotUI.getInstance().addGAWM(this.riob.getGlobalActiveWritesMap(), master_cur_rriop.toString(), 1);
 				
 				// (2) master_cur_rriop must read value from dw; apply Rule (c): W'WR order
-				if (this.readFromDW(master_cur_rriop, (ReadIncOperation) master_cur_rriop.getReadfromWrite(), this.riob))
+				/**
+				 * @modified hengxin on 2013-1-9
+				 * @reason   if no other WRITEs than dw itself, it is not necessary to reschedule at all
+				 */
+				if (this.riob.getGlobalActiveWritesMap().getActiveWrites(master_cur_rriop.getVariable()).size() > 1)
 				{
-					consistent = false;	/** cycle **/
-					break;
-				}
-				
-				// (3) reschedule operations in r'-downset (i.e., master_pre_rriop-downset)
-				if (dominated)
-					if (this.reschedule(master_cur_rriop))
+					if (this.readFromDW(master_cur_rriop, (ReadIncOperation) master_cur_rriop.getReadfromWrite(), this.riob))
 					{
 						consistent = false;	/** cycle **/
 						break;
 					}
-				// ui: for GAWM after rescheduling
+					
+					// (3) reschedule operations in r'-downset (i.e., master_pre_rriop-downset)
+					if (dominated)
+						if (this.reschedule(master_cur_rriop))
+						{
+							consistent = false;	/** cycle **/
+							break;
+						}
+				}
+				// ui: for GAWM after rescheduling (even if no rescheduling at all: for test)
 				DotUI.getInstance().addGAWM(this.riob.getGlobalActiveWritesMap(), master_cur_rriop.toString(), 2);
 				
 				master_proc.advance_pre_rriop(master_cur_rriop);	// iterate over the next (R,R) pair

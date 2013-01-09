@@ -55,11 +55,15 @@ public class ReadIncOperation extends BasicOperation
 	
 	private int count = 0;		/** related to and manipulated together with {@link #isCandidate} and {@link #isDone}**/
 
-	private List<ReadIncOperation> predecessors = null;
-	private List<ReadIncOperation> successors = null;
+//	private List<ReadIncOperation> predecessors = null;
+//	private List<ReadIncOperation> successors = null;
 	
-//	private List<BasicOperation> predecessors = null;
-//	private List<BasicOperation> successors = null;
+	/**
+	 * @modified hengxin on 2013-1-9
+	 * @reason Bug fix: using Set instead of List to avoid repetition
+	 */
+	private Set<ReadIncOperation> predecessors = null;
+	private Set<ReadIncOperation> successors = null;
 	
 	public ReadIncOperation(RawOperation otherOp)
 	{
@@ -319,15 +323,15 @@ public class ReadIncOperation extends BasicOperation
 	}
 	
 	/**
-	 * @return list of predecessor {@link ReadIncOperation}s
+	 * @return Set of predecessor {@link ReadIncOperation}s
 	 */
-	public List<ReadIncOperation> getPredecessors()
+	public Set<ReadIncOperation> getPredecessors()
 	{
 		if (this.predecessors != null)
 			return this.predecessors;
 		
 		// identify predecessors
-		this.predecessors = new ArrayList<ReadIncOperation>();
+		this.predecessors = new HashSet<ReadIncOperation>();
 		if (this.reProgramOrder != null)				// reverse program order
 			this.predecessors.add((ReadIncOperation) this.reProgramOrder);	
 		if (this.isReadOp())							// read from order
@@ -339,15 +343,15 @@ public class ReadIncOperation extends BasicOperation
 	}
 	
 	/**
-	 * @return list of successor {@link ReadIncOperation}
+	 * @return set of successor {@link ReadIncOperation}
 	 */
-	public List<ReadIncOperation> getSuccessors()
+	public Set<ReadIncOperation> getSuccessors()
 	{
 		if (this.successors != null)
 			return this.successors;
 		
 		// identify successors
-		this.successors = new ArrayList<ReadIncOperation>();
+		this.successors = new HashSet<ReadIncOperation>();
 		if (this.programOrder != null)					// program order
 			this.successors.add((ReadIncOperation) this.programOrder);
 		if (this.isWriteOp())

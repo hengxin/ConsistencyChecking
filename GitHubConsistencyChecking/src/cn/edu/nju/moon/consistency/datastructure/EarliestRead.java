@@ -2,7 +2,7 @@ package cn.edu.nju.moon.consistency.datastructure;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
+import java.util.Set;
 
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
@@ -58,16 +58,16 @@ public class EarliestRead
 	/**
 	 * update the earlist read {@link #earlistRead} according to a list of WRITE {@link ReadIncOperation}s
 	 * 
-	 * @param wriopList list of {@link ReadIncOperation}s
+	 * @param wriopSet set of {@link ReadIncOperation}s
 	 * @return old {@link #earlistRead}
 	 */
-	public int updateEarliestRead(List<ReadIncOperation> wriopList)
+	public int updateEarliestRead(Set<ReadIncOperation> wriopSet)
 	{
 		int oldEarlistRead = this.earlistRead;
-		for (ReadIncOperation wriop : wriopList)	// take the smallest one
-		{
+		
+		for (ReadIncOperation wriop : wriopSet)	// take the smallest one
 			this.updateEarliestRead(wriop);
-		}
+
 		return oldEarlistRead;
 	}
 	
