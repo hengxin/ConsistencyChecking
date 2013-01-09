@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.edu.nju.moon.consistency.schedule.View;
 import cn.edu.nju.moon.consistency.ui.DotUI;
 
 /**
@@ -24,6 +25,12 @@ public class BasicOperation extends RawOperation
     
     /** index in process */
     private int index = -1;	
+    
+    /**
+     * @modified hengxin on 2013-1-9
+	 * @modification adding this flag for {@link View#View(BasicObservation)} 
+     */
+    private boolean isInView = false;
     
 	/** 
 	 * very basic "precede order"
@@ -130,6 +137,30 @@ public class BasicOperation extends RawOperation
 		assertTrue("WRITE writes to READ", this.isWriteOp());
 		
 		return this.writetoOrder;
+	}
+	
+	/**
+	 * @return {@link #isInView}
+	 */
+	public boolean isInView()
+	{
+		return this.isInView;
+	}
+	
+	/**
+	 * set {@link #isInView} true
+	 */
+	public void setInView()
+	{
+		this.isInView = true;
+	}
+	
+	/**
+	 * reset {@link #isInView} false
+	 */
+	public void resetInView()
+	{
+		this.isInView = false;
 	}
 	
 	/**

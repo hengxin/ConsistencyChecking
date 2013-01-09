@@ -1,0 +1,10 @@
+wf14 wh10 rd1 re4 rg13 ra6 rc14 rh6 ra5 rc10 rc10 wf3 re3 wh14 
+wg6 rb6 rd12 rc6 re10 wh3 rd9 rf1 rf10 rd1 wd0 rc4 rh4 rb2 we3 wf0 rh3 rb5 wc14 re11 ra1 
+wg10 re11 rc14 rf11 rf13 wh7 rg2 wc5 wb6 wf6 wh11 ra7 rb0 re10 ra10 
+wb0 ra5 rf13 wc9 re13 wa6 wd12 rh7 rg11 rc13 rc9 rd12 re4 wf10 rg11 rh13 wh9 rg14 
+re6 rd12 rd8 wb4 wd3 wg13 we6 rf14 wa10 rg10 wc6 re8 re7 rh0 rh6 wc4 rh10 
+rg2 rb8 rg7 wc1 we13 wb8 wg2 rg1 rf11 rf8 wg14 ra13 rb2 we5 wa7 wa14 rb8 rd9 wg7 rc12 wb14 we8 
+rf6 re11 wd9 wh4 wg11 re2 wa2 rb1 wf13 re13 wg1 rh8 rd12 rh2 rg11 wc12 rb3 ra13 wb10 rc6 
+wa3 wb3 rf4 wb1 rh9 wh13 ra9 rh0 wa4 wf11 rf0 rh0 wb5 wc13 wc8 rc4 wc10 wh0 wd7 rb0 rh4 rc13 wa5 ra4 we7 wh6 re5 rh14 rc6 we2 rb3 
+wc11 re10 wd8 rb14 wh8 rf8 rg6 rd12 re13 rc8 wf8 rb10 wf1 ra13 rd8 rh0 we10 wa9 rc11 wa13 rh8 re7 wd1 
+ra14 wf4 we4 rg10 rg6 rb1 wb2 wa1 wc2 rb4 rb2 re7 ra3 rd0 rb10 wh2 ra3 ra4 we11 

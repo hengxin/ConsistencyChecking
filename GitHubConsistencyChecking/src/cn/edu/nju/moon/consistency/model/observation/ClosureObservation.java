@@ -68,6 +68,7 @@ public class ClosureObservation extends BasicObservation
 	 * preprocessing the {@link ClosureObservation}, including
 	 * (1) establishing "program order" between {@link ClosureOperation}
 	 * (2) establishing "write to order" between {@link ClosureOperation}
+	 * (3) fill its own data structure for checking: {@link #opArray} and {@link #opMatrix}
 	 */
 	@Override
 	public void preprocessing()
@@ -77,26 +78,6 @@ public class ClosureObservation extends BasicObservation
 		this.fillOpArray();		/** fill the {#opArray} */
 		this.fillOpMatrix();	/** fill the {#opMatrix} */
 	}
-	
-//	/**
-//	 * establishing "program order" between {@link ClosureOperation}s
-//	 */
-//	private void establishProgramOrder()
-//	{
-//		for (int pid : this.procMap.keySet())
-//			((ClosureProcess) this.procMap.get(pid)).establishProgramOrder();
-//	}
-//	
-//	/**
-//	 * establishing "write to order" between {@link ClosureOperation}s 
-//	 * and set rid for READ {@link ClosureOperation} and wid for corresponding
-//	 * WRITE {@link ClosureOperation} 
-//	 */
-//	private void establishWritetoOrder()
-//	{
-//		// all READ {@link ClosureOperation}s are in the {@link ClosureProcess} with #masterPid
-//		((ClosureProcess) this.procMap.get(this.masterPid)).establishWritetoOrder();
-//	}
 	
 	/**
 	 * encode {@link ClosureOperation}s with unique global index

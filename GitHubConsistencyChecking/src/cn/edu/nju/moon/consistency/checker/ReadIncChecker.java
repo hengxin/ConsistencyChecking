@@ -108,9 +108,10 @@ public class ReadIncChecker extends Checker
 				 * @modified hengxin on 2013-1-9
 				 * @reason   if no other WRITEs than dw itself, it is not necessary to reschedule at all
 				 */
-				if (this.riob.getGlobalActiveWritesMap().getActiveWrites(master_cur_rriop.getVariable()).size() > 1)
+				ReadIncOperation dw_cur_rriop = (ReadIncOperation) master_cur_rriop.getReadfromWrite();
+				if (this.reschedule_assertion(master_cur_rriop, dw_cur_rriop))
 				{
-					if (this.readFromDW(master_cur_rriop, (ReadIncOperation) master_cur_rriop.getReadfromWrite(), this.riob))
+					if (this.readFromDW(master_cur_rriop, dw_cur_rriop))
 					{
 						consistent = false;	/** cycle **/
 						break;
@@ -242,6 +243,29 @@ public class ReadIncChecker extends Checker
 	}
 	
 	/**
+	 * is it necessary to reschedule operations?
+	 * There are two cases in which no reschedule is necessary at all:
+	 * (1) D(R) has not been overwritten, and there exist some WRITE other than D(R) 
+	 * (2) D(R) has been overwritten, and there still exist some WRITE
+	 * 
+	 * @return true, if it is necessary to reschedule operations; false, otherwise.
+	 * 
+	 * @constraints @param dw_cur_rriop has the "writeto" relation with @param cur_rriop
+	 * 
+	 * @author hengxin
+	 * @date 2013-1-9
+	 */
+	private boolean reschedule_assertion(ReadIncOperation cur_rriop, ReadIncOperation dw_cur_rriop)
+	{
+		assertTrue("D(R) writes to R", cur_rriop.isReadOp() && dw_cur_rriop.isWriteOp() 
+				&& cur_rriop.getVariable().equals(dw_cur_rriop.getVariable())
+				&& cur_rriop.getValue() == dw_cur_rriop.getValue());
+		
+		Set<ReadIncOperation> gaws = this.riob.getGlobalActiveWritesMap().getActiveWrites(cur_rriop.getVariable());
+		return ( (gaws.contains(dw_cur_rriop) && gaws.size() >= 2) || (! gaws.contains(dw_cur_rriop) && gaws.size() >= 1));
+	}
+	
+	/**
 	 * @description reschedule (i.e., enforce) orders among {@link ReadIncOperation}s   
 	 * 
 	 * @param master_cur_rriop current READ {@link ReadIncOperation} being checked			
@@ -325,14 +349,17 @@ public class ReadIncChecker extends Checker
 	 * 
 	 * @param master_cur_rriop READ {@link ReadIncOperation}
 	 * @param dw READ {@link ReadIncOperation}
-	 * @param riob {@link ReadIncObservation}
 	 * 
 	 * @return true, if cycle emerges; false, otherwise.
 	 * 
 	 * @modified hengxin on 2013-1-4
-	 * @reason you cannot remove elements [apply_wprimew_order] from ArrayList in foreach syntax
+	 * @reason you cannot remove elements [apply_wprimew_order] from ArrayList in for each syntax
+	 * 
+	 * @modified hengxin on 2013-1-9
+	 * @modification remove the third parameter {@link ReadIncObservation}
+	 * @reason you can assess {@link #riob} in this class directly
 	 */
-	private boolean readFromDW(ReadIncOperation master_cur_rriop, ReadIncOperation dw, ReadIncObservation riob)
+	private boolean readFromDW(ReadIncOperation master_cur_rriop, ReadIncOperation dw)
 	{
 		assertTrue("READ reads from some WRITE", master_cur_rriop.isReadOp() && dw.isWriteOp());
 		
@@ -341,7 +368,7 @@ public class ReadIncChecker extends Checker
 		for (String wriopStr : this.riob.getGlobalActiveWritesMap().getActiveWritesPool(var))
 		{
 			ReadIncOperation wriop = ReadIncObservation.WRITEPOOL.get(wriopStr);
-			if (! wriop.equals(dw) && wriop.apply_wprimew_order(dw,riob))	/** apply Rule (c): W'WR order (i.e., wriop => dw => master_cur_rriop) **/
+			if (! wriop.equals(dw) && wriop.apply_wprimew_order(dw,this.riob))	/** apply Rule (c): W'WR order (i.e., wriop => dw => master_cur_rriop) **/
 				return true;	/** cycle **/
 		}
 		

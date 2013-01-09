@@ -51,6 +51,7 @@ public class DotUI
 		if (GlobalData.VISUALIZATION)
 		{
 			// add title
+			this.viz.addComment("title");
 			this.viz.addln("labelloc = \"t\";");
 			this.viz.add("label = \"" + out + "\"");
 			this.viz.addln(";");

@@ -50,8 +50,13 @@ public class ClosureGraphChecker extends Checker
 		
 		ClosureObservation clob = (ClosureObservation) rob;
 
-		// 1) add program order edge and read-write mapping
-		clob.preprocessing();
+		/**
+		 * @modified hengxin on 2013-1-9
+		 * @modification remove "clob.preprocessing()" here
+		 * @reason it has been called by super class {@link Checker}#check() (as a Template Method)
+		 */
+//		// 1) add program order edge and read-write mapping
+//		clob.preprocessing();
 
 		/**
 		 *  2) iteration of applying two rules until no new edges are added,

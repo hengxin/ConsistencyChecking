@@ -51,7 +51,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 	
-	@Test
+//	@Test
 	public void testCheck_part_fig7()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -67,7 +67,7 @@ public class ClosureGraphCheckerTest
 	 * @date 2013-1-8
 	 */
 //	@Test
-	public void testCheck_random()
+	public void testCheck_part_random()
 	{
 		GlobalData.VISUALIZATION = true;
 
@@ -75,4 +75,15 @@ public class ClosureGraphCheckerTest
 		Checker og_checker_rand0 = new ClosureGraphChecker(randcons_0.construct(), randcons_0.get_ob_id());
 		og_checker_rand0.check();
 	}
+	
+//	@Test
+	public void testCheck_part_random_1549()
+	{
+		GlobalData.VISUALIZATION = true;
+
+		IRawObservationConstructor randcons_0 = new FileRawObservationConstructor("./test/testset/randomclosure/1549");
+		Checker cl_checker_rand0 = new ClosureGraphChecker(randcons_0.construct(), randcons_0.get_ob_id());
+		cl_checker_rand0.check();
+	}
+	
 }
