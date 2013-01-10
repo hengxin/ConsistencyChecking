@@ -55,7 +55,7 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 			int pid = 0;
 			while((process = reader.readLine()) != null)
 			{
-				BasicProcess rp = new BasicProcess(pid);
+				BasicProcess rp = new BasicProcess(pid, rob);
 				st = new StringTokenizer(process);
 				while(st.hasMoreTokens())
 				{

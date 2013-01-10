@@ -19,6 +19,16 @@ public class WeakSchedule implements ISchedule
 	private View[] views = null;	/** one {@link View} for each Process */
 	
 	/**
+	 * Constructor: allocate one view for each process 
+	 * @param procNum number of processes
+	 */
+	public WeakSchedule(int procNum)
+	{
+		this.procNum = procNum;
+		this.views = new View[procNum];
+	}
+	
+	/**
 	 * check whether the {@link WeakSchedule} (i.e., {@link #views}) satisfies PRAM Consistency.
 	 * {@link #views} satisfies PRAM Consistency if and only if each {@link View} satisfies 
 	 * PRAM Consistency
@@ -29,9 +39,12 @@ public class WeakSchedule implements ISchedule
 	public boolean valid()
 	{
 		for (View v : this.views)
+		{	
+			if (v == null)
+				return false;
 			if (! v.self_check())
 				return false;
-		
+		}
 		return true;
 	}
 
@@ -45,20 +58,54 @@ public class WeakSchedule implements ISchedule
 	}
 
 	/**
+	 * get the binary schedule in the sense that the concrete {@link View}
+	 * is not significant, but its existence is.
+	 * 
+	 * @return binary schedule: 1 for consistent; 0 for not consistent.
+	 */
+	public boolean[] getBinarySchedule()
+	{
+		boolean[] bs = new boolean[this.procNum];
+		
+		for (int index = 0; index < this.procNum; index++)
+			if (this.views[index] == null)
+				bs[index] = false;
+			else
+				bs[index] = true;
+		
+		return bs;
+	}
+	
+	/**
 	 * compare two {@link WeakSchedule}s to see whether they are compatible to each other
 	 * @param ws another {@link WeakSchedule} to compare with
 	 * @return true, if the two {@link WeakSchedule} are compatible to each other; false, otherwise.
 	 */
-	public boolean compare(WeakSchedule ws)
+	@Override
+	public boolean compare(ISchedule ws)
 	{
 		if (! (this.valid() && ws.valid()))
 			return false;
 		
 		for (int pid = 0; pid < this.procNum; pid++)
-			if ( (this.views[pid] == null && ws.views[pid] != null) || 
-				 (this.views[pid] != null && ws.views[pid] == null) )
+			if ( (this.views[pid] == null && ((WeakSchedule) ws).views[pid] != null) || 
+				 (this.views[pid] != null && ((WeakSchedule) ws).views[pid] == null) )
 				return false;
 		
 		return true;  
 	}
+	
+	/**
+	 * @return String form of {@link #views}: one line for each view 
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		for (int index = 0; index < this.procNum; index++)
+			if (this.views[index] != null)
+				sb.append(index).append(':').append(this.views[index].toString()).append('\n');
+		return sb.toString();
+	}
+	
 }

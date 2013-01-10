@@ -1,12 +1,19 @@
 package cn.edu.nju.moon.consistency.checker;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import cn.edu.nju.moon.consistency.model.GlobalData;
+import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.observation.constructor.FileRawObservationConstructor;
 import cn.edu.nju.moon.consistency.model.observation.constructor.IRawObservationConstructor;
 import cn.edu.nju.moon.consistency.model.observation.constructor.RandomRawObservationConstructor;
+import cn.edu.nju.moon.consistency.schedule.WeakSchedule;
 
 /**
  * @description test for {@link ClosureGraphChecker}
@@ -21,7 +28,7 @@ public class ClosureGraphCheckerTest
 	{
 	}
 
-	@Test
+//	@Test
 	public void testCheck_part_fig4()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -31,7 +38,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 
-	@Test
+//	@Test
 	public void testCheck_part_fig5()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -41,7 +48,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 	
-	@Test
+//	@Test
 	public void testCheck_part_fig6()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -51,14 +58,31 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 	
-	@Test
+//	@Test
 	public void testCheck_part_fig7()
 	{
 		GlobalData.VISUALIZATION = true;
 		
-		IRawObservationConstructor frobcons_fig4_2b = new FileRawObservationConstructor("./test/testset/operationgraph/obfig7");
-		Checker og_checker_fig4_2b = new ClosureGraphChecker(frobcons_fig4_2b.construct(), frobcons_fig4_2b.get_ob_id());
-		og_checker_fig4_2b.check();
+		IRawObservationConstructor frobcons = new FileRawObservationConstructor("./test/testset/operationgraph/obfig7");
+		Checker og_checker = new ClosureGraphChecker(frobcons.construct(), frobcons.get_ob_id());
+		og_checker.check();
+	}
+	
+	/**
+	 * test for {@link Checker#check()}
+	 */
+//	@Test
+	public void testCheck_fig7()
+	{
+		GlobalData.VISUALIZATION = true;
+		
+		IRawObservationConstructor frobcons = new FileRawObservationConstructor("./test/testset/operationgraph/obfig7");
+		BasicObservation bob = frobcons.construct();
+		Checker og_checker = new ClosureGraphChecker(bob, frobcons.get_ob_id() + "check", new WeakSchedule(bob.getSize()));
+		
+		assertFalse("Fig7 observation does not satisfy PRAM Consistency", og_checker.check());
+		assertTrue("None of the three processes satisfies PRAM Consistnecy", 
+				Arrays.equals( ((WeakSchedule) og_checker.getSchedule()).getBinarySchedule(), new boolean[] {false, false, false}));
 	}
 	
 	/**
@@ -76,14 +100,21 @@ public class ClosureGraphCheckerTest
 		og_checker_rand0.check();
 	}
 	
-//	@Test
+	@Test
 	public void testCheck_part_random_1549()
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor randcons_0 = new FileRawObservationConstructor("./test/testset/randomclosure/1549");
-		Checker cl_checker_rand0 = new ClosureGraphChecker(randcons_0.construct(), randcons_0.get_ob_id());
-		cl_checker_rand0.check();
+		IRawObservationConstructor randcons = new FileRawObservationConstructor("./test/testset/randomclosure/1549");
+		BasicObservation bob = randcons.construct();
+
+		Checker cl_checker_rand = new ClosureGraphChecker(bob, randcons.get_ob_id() + "check", new WeakSchedule(bob.getSize()));
+		assertFalse("Random 1459 does not satisfy PRAM Consistency", cl_checker_rand.check());
+		assertTrue("Process 0 and Process 1 has legal view for PRAM Consistency",
+				Arrays.equals(((WeakSchedule) cl_checker_rand.getSchedule()).getBinarySchedule(),
+						new boolean[] {true, false, false, false, false, false, false, false, false, false}));
+		assertFalse("The views in schedule are all valid", cl_checker_rand.getSchedule().valid());
+		System.out.println(cl_checker_rand.getSchedule());
 	}
 	
 }

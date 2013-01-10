@@ -2,6 +2,7 @@ package cn.edu.nju.moon.consistency.checker;
 
 import cn.edu.nju.moon.consistency.model.observation.ClosureObservation;
 import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
+import cn.edu.nju.moon.consistency.schedule.ISchedule;
 import cn.edu.nju.moon.consistency.ui.DotUI;
 
 /**
@@ -27,6 +28,17 @@ public class ClosureGraphChecker extends Checker
 	public ClosureGraphChecker(BasicObservation rob, String name)
 	{
 		super(rob, name);
+	}
+	
+	/**
+	 * Constructor
+	 * @param rob	{@link BasicObservation} to check
+	 * @param name	name for visualization in {@link DotUI}
+	 * @param s {@link ISchedule}: record for the checking result
+	 */
+	public ClosureGraphChecker(BasicObservation rob, String name, ISchedule s)
+	{
+		super(rob, name, s);
 	}
 	
 	/**

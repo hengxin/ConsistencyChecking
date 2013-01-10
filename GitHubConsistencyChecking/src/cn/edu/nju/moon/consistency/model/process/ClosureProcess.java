@@ -25,8 +25,7 @@ public class ClosureProcess extends BasicProcess
 	 */
 	public ClosureProcess(int masterPid, BasicProcess proc, BasicObservation bob)
 	{
-		this.pid = proc.getPid();
-		this.bob = bob;
+		super(proc.getPid(), bob);
 		
 		List<BasicOperation> opListTemp = proc.getOpListCopy();
 

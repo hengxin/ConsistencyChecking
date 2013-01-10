@@ -4,6 +4,8 @@ import org.apache.commons.lang.RandomStringUtils;
 
 import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.process.BasicProcess;
+import cn.edu.nju.moon.consistency.schedule.ISchedule;
+import cn.edu.nju.moon.consistency.schedule.WeakSchedule;
 import cn.edu.nju.moon.consistency.ui.DotUI;
 
 /**
@@ -20,15 +22,28 @@ public abstract class Checker
 {
 	protected BasicObservation rob = null;	/** {@link BasicObservation} to check **/
 	protected String name = "";		/** for {@link DotUI}; the name of file for visualization **/
+	private ISchedule schedule = null;	/** record of the checking result */
 	
 	/**
 	 * Constructor
-	 * @param rob {@link BasicObservation} to check
+	 * @param bob {@link BasicObservation} to check
 	 */
-	public Checker(BasicObservation rob)
+	public Checker(BasicObservation bob)
 	{
-		this.rob = rob;
+		this.rob = bob;
 		this.name = RandomStringUtils.random(8);
+		this.schedule = new WeakSchedule(bob.getSize());
+	}
+	
+	/**
+	 * Constructor
+	 * @param bob {@link BasicObservation} to check
+	 * @param s {@link ISchedule}: record for the checking result
+	 */
+	public Checker(BasicObservation bob, ISchedule s)
+	{
+		this(bob);
+		this.schedule = s;
 	}
 	
 	/**
@@ -36,10 +51,22 @@ public abstract class Checker
 	 * @param riob	{@link BasicObservation} to check
 	 * @param name	for {@link DotUI}; the name of file for visualization
 	 */
-	public Checker(BasicObservation rob, String name)
+	public Checker(BasicObservation bob, String name)
 	{
-		this.rob = rob;
+		this.rob = bob;
 		this.name = name;
+	}
+	
+	/**
+	 * Constructor
+	 * @param bob {@link BasicObservation} to check
+	 * @param name for {@link DotUI}; the name of file for visualization
+	 * @param s  {@link ISchedule}: record for the checking result
+	 */
+	public Checker(BasicObservation bob, String name, ISchedule s)
+	{
+		this(bob, name);
+		this.schedule = s;
 	}
 	
 	/**
@@ -51,20 +78,31 @@ public abstract class Checker
 	public final boolean check()
 	{
 		int pids = this.rob.getSize();
-		BasicObservation masterObservation = null;
+		BasicObservation mob = null;
+
 		for (int pid = 0; pid < pids; pid++)
 		{
-			masterObservation = this.getMasterObservation(pid);
-			if (this.trivial_check(masterObservation))	/** pass the simple check */
+			mob = this.getMasterObservation(pid);
+			if (this.trivial_check(mob))	/** pass the simple check */
 			{	
-				if (! this.check_part(masterObservation))	/** process with pid does not satisfy consistency condition **/
+				if (! this.check_part(mob))	/** process with pid does not satisfy consistency condition **/
 					return false;
 			}
 			else
 				return false;
+			if (this.schedule != null)
+				this.schedule.constructView(mob);	/** the process with pid satisfies consistency condition; construct a view for it */
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * @return {@link #schedule}
+	 */
+	public ISchedule getSchedule()
+	{
+		return this.schedule;
 	}
 	
 	/**

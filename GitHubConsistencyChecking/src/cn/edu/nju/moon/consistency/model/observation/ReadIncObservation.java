@@ -44,8 +44,6 @@ public class ReadIncObservation extends BasicObservation
 	 */
 	public ReadIncObservation(int masterPid, BasicObservation rob)
 	{
-//		ReadIncObservation.WRITEPOOL = new HashMap<String, ReadIncOperation>();
-		
 		this.masterPid = masterPid;
 		
 		Set<Integer> pids = rob.getProcMap().keySet();

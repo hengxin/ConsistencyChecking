@@ -45,7 +45,7 @@ public class BasicObservation
 	{
 		BasicProcess proc = this.procMap.get(pid);
 		if(proc == null)
-			proc = new BasicProcess(pid);
+			proc = new BasicProcess(pid, this);
 		proc.addOperation(op);
 		this.procMap.put(pid, proc);
 	}

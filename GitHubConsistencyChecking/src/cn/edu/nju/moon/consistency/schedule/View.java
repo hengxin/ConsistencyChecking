@@ -89,4 +89,15 @@ public class View
 		return true;
 	}
 	
+	/**
+	 * @return String form of view: ops are separated by whitespace
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		for (BasicOperation bop : this.view)
+			sb.append(bop.toString()).append(' ');
+		return sb.toString();
+	}
 }

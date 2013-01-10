@@ -1,5 +1,8 @@
 package cn.edu.nju.moon.consistency.schedule;
 
+import cn.edu.nju.moon.consistency.checker.Checker;
+import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
+
 /**
  * @description The form of {@link WeakSchedule} depend on the respective consistency model.
  * Specifically, the strong consistency models (such as Atomic, Sequential Consistency)
@@ -20,8 +23,23 @@ package cn.edu.nju.moon.consistency.schedule;
 public interface ISchedule
 {
 	/**
+	 * construct {@link View} from observation
+	 * @param bob {@link BasicObservation} from which {@link View} is constructed
+	 */
+	public abstract void constructView(BasicObservation bob);
+
+	/**
 	 * is the schedule a witness for some particular Consistency condition?
 	 * @return true, if it is; false, otherwise.
 	 */
 	public abstract boolean valid();
+	
+	/**
+	 * compare two {@link ISchedule}s to see whether they are compatible to each other.
+	 * The "compatibility" is user-defined.
+	 *  
+	 * @param s another {@link ISchedule}
+	 * @return true, if the two {@link ISchedule} are compatible to each other; false, otherwise.
+	 */
+	public abstract boolean compare(ISchedule s);
 }

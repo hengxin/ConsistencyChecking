@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import cn.edu.nju.moon.consistency.model.GlobalData;
+import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.RawOperation;
@@ -35,10 +36,9 @@ public class ReadIncProcess extends BasicProcess
 	 * @param masterPid process with masterPid is kept the same
 	 * @param proc {@link BasicProcess} to be filtered
 	 */
-	public ReadIncProcess(int masterPid, BasicProcess proc, ReadIncObservation riob)
+	public ReadIncProcess(int masterPid, BasicProcess proc, BasicObservation riob)
 	{
-		this.pid = proc.getPid();
-		this.bob = riob;
+		super(proc.getPid(), riob);
 
 		List<BasicOperation> opListTemp = proc.getOpListCopy();
 

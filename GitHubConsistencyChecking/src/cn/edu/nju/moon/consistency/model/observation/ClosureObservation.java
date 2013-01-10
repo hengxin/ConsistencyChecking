@@ -46,11 +46,10 @@ public class ClosureObservation extends BasicObservation
 	 */
 	public ClosureObservation(int masterPid, BasicObservation rob)
 	{
-//		ClosureObservation.WRITEPOOL = new HashMap<String, ClosureOperation>();
 		this.masterPid = masterPid;
 		
 		for (int pid : rob.getProcMap().keySet())
-			this.procMap.put(pid, new ClosureProcess(masterPid, rob.getProcMap().get(pid), rob));
+			this.procMap.put(pid, new ClosureProcess(masterPid, rob.getProcMap().get(pid), this));
 
 		this.totalOpNum = this.getOpNum();
 		this.opArray = new ClosureOperation[this.totalOpNum];	/** initialize {#opArray} */

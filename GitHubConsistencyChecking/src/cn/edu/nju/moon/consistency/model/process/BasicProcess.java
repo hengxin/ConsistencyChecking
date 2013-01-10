@@ -21,18 +21,18 @@ import cn.edu.nju.moon.consistency.model.operation.RawOperation;
 public class BasicProcess
 {
 	protected int pid = -1;
-	protected List<BasicOperation> opList = null;
+	protected List<BasicOperation> opList = new ArrayList<BasicOperation>();
 	protected BasicObservation bob = null;	/** backward reference to {@link BasicObservation} */
 	
-	public BasicProcess()
-	{
-		this.opList = new ArrayList<BasicOperation>();
-	}
+//	public BasicProcess()
+//	{
+//		this.opList = new ArrayList<BasicOperation>();
+//	}
 	
-	public BasicProcess(int pid)
+	public BasicProcess(int pid, BasicObservation bob)
 	{
 		this.pid = pid;
-		this.opList = new ArrayList<BasicOperation>();
+		this.bob = bob;
 	}
 	
 	/**
