@@ -90,7 +90,15 @@ public class ClosureObservation extends BasicObservation
 		// encode operations for each process
 		for(int pid = 0; pid < procNum; pid++)
 		{
-			opList = this.getProcess(pid).getOpList();
+			try
+			{
+			opList = this.getProcess(pid)
+				.getOpList();
+			} catch(Exception e)
+			{
+				e.printStackTrace();
+				System.out.println(this.toString() + "pid = " + pid);
+			}
 			// encode each operation
 			for(BasicOperation bop : opList)
 			{

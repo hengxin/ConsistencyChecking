@@ -23,7 +23,7 @@ public class ViewTest
 	{
 	}
 
-	@Test
+//	@Test
 	public void testSelf_check()
 	{
 		BasicOperation bop1 = new BasicOperation("wx1");

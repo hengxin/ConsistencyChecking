@@ -92,8 +92,16 @@ public class BasicObservation
 	 */
 	public boolean nullCheck()
 	{
-		if (this.procMap.get(this.masterPid).size() == 0)
-			return true;
+		try{
+		if (this.procMap
+				.get(this.masterPid)
+				.size() == 0)
+			return true;}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			System.err.println(procMap.toString() + "\n" + this.masterPid);
+		}
 		return false;
 	}
 	
@@ -170,8 +178,11 @@ public class BasicObservation
 	
 	/**
 	 * store all WRITEs into {@link #write_pool}
+	 * 
+	 * now: only used in constructors of {@link ClosureObservation} 
+	 * 	and {@link ReadIncObservation}
 	 */
-	public void storeWrite2Pool()
+	protected void storeWrite2Pool()
 	{
 		for (int pid : this.procMap.keySet())
 			for (BasicOperation bop : this.getProcess(pid).getOpList())

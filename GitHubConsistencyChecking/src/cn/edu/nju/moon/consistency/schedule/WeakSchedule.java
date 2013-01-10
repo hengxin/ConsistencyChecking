@@ -1,5 +1,7 @@
 package cn.edu.nju.moon.consistency.schedule;
 
+import java.util.Arrays;
+
 import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 
 /**
@@ -84,15 +86,10 @@ public class WeakSchedule implements ISchedule
 	@Override
 	public boolean compare(ISchedule ws)
 	{
-		if (! (this.valid() && ws.valid()))
+		if ( ! (ws instanceof WeakSchedule))
 			return false;
 		
-		for (int pid = 0; pid < this.procNum; pid++)
-			if ( (this.views[pid] == null && ((WeakSchedule) ws).views[pid] != null) || 
-				 (this.views[pid] != null && ((WeakSchedule) ws).views[pid] == null) )
-				return false;
-		
-		return true;  
+		return Arrays.equals(this.getBinarySchedule(), ((WeakSchedule) ws).getBinarySchedule());
 	}
 	
 	/**

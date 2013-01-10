@@ -58,13 +58,16 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 	
 	/**
 	 * construct RawObservation randomly
+	 * Requirement for test:
+	 * every process contains at least one operation
 	 * 
-	 * @return RawObservation object
+	 * @return RawObservation object or NULL 
+	 * 	(when some process has no operations at all)
 	 */
 	@Override
 	public BasicObservation construct()
 	{
-		BasicObservation rob = new BasicObservation();
+		BasicObservation bob = new BasicObservation();
 
 		// distribute a list of Operation (s) into #processNum processes randomly
 		Random pRandom = new Random();
@@ -72,12 +75,16 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 		while(iter.hasNext())
 		{
 			BasicOperation bop = new BasicOperation(iter.next());
-			rob.addOperation(pRandom.nextInt(this.processNum),bop);
+			bob.addOperation(pRandom.nextInt(this.processNum),bop);
 		}
-
-		this.record(rob);
 		
-		return rob;
+		for (int pid = 0; pid < this.processNum; pid++)
+			if (bob.getProcess(pid) == null)
+				return null;
+		
+//		this.record(rob);
+		
+		return bob;
 	}
 	
 	/**

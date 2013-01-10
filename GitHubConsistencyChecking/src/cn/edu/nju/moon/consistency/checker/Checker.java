@@ -32,18 +32,6 @@ public abstract class Checker
 	{
 		this.rob = bob;
 		this.name = RandomStringUtils.random(8);
-		this.schedule = new WeakSchedule(bob.getProcNum());
-	}
-	
-	/**
-	 * Constructor
-	 * @param bob {@link BasicObservation} to check
-	 * @param s {@link ISchedule}: record for the checking result
-	 */
-	public Checker(BasicObservation bob, ISchedule s)
-	{
-		this(bob);
-		this.schedule = s;
 	}
 	
 	/**
@@ -55,6 +43,17 @@ public abstract class Checker
 	{
 		this.rob = bob;
 		this.name = name;
+	}
+	
+	/**
+	 * Constructor
+	 * @param bob {@link BasicObservation} to check
+	 * @param s {@link ISchedule}: record for the checking result
+	 */
+	public Checker(BasicObservation bob, ISchedule s)
+	{
+		this(bob);
+		this.schedule = s;
 	}
 	
 	/**
@@ -77,6 +76,8 @@ public abstract class Checker
 	 */
 	public final boolean check()
 	{
+		boolean consistent = true;
+		
 		int pids = this.rob.getProcNum();
 		BasicObservation mob = null;
 
@@ -86,15 +87,18 @@ public abstract class Checker
 			if (this.trivial_check(mob))	/** pass the simple check */
 			{	
 				if (! this.check_part(mob))	/** process with pid does not satisfy consistency condition **/
-					return false;
+//					return false;
+					consistent = false;
 			}
 			else
-				return false;
+//				return false;
+				consistent = false;
 			if (this.schedule != null)
 				this.schedule.constructView(mob);	/** the process with pid satisfies consistency condition; construct a view for it */
 		}
 		
-		return true;
+//		return true;
+		return consistent;
 	}
 	
 	/**
@@ -119,14 +123,14 @@ public abstract class Checker
 	{
 		if (ob.nullCheck())	/** no operations in the process to be checked; it is trivially PRAM Consistent **/
 		{
-			System.out.println("Null Check: true");
+//			System.out.println("Null Check: true");
 			return true;
 		}
 		
 		ob.preprocessing();	// preprocessing: program order and write to order
 		if (ob.readLaterWrite())	/** some READ reads later WRITE in the same process; it does not satisfy PRAM Consistency **/
 		{
-			System.err.println("Read late write: false");
+//			System.err.println("Read late write: false");
 			return false;
 		}
 		

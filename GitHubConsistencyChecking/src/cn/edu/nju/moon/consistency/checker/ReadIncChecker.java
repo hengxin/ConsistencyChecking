@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import org.apache.commons.lang.RandomStringUtils;
-
 import cn.edu.nju.moon.consistency.datastructure.GlobalActiveWritesMap;
 import cn.edu.nju.moon.consistency.model.GlobalData;
 import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
@@ -19,6 +17,7 @@ import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.RawOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
 import cn.edu.nju.moon.consistency.model.process.ReadIncProcess;
+import cn.edu.nju.moon.consistency.schedule.ISchedule;
 import cn.edu.nju.moon.consistency.ui.DotUI;
 
 /**
@@ -52,6 +51,17 @@ public class ReadIncChecker extends Checker
 	}
 	
 	/**
+	 * Constructor
+	 * @param riob	{@link BasicObservation} to check
+	 * @param name	for {@link DotUI}; the name of file for visualization
+	 * @param s 	record of checking results
+	 */
+	public ReadIncChecker(BasicObservation rob, String name, ISchedule s)
+	{
+		super(rob, name, s);
+	}
+	
+	/**
 	 * @return {link ReadIncObservation} with respect to @param masterPid to check
 	 */
 	@Override
@@ -70,19 +80,6 @@ public class ReadIncChecker extends Checker
 	{
 		assertTrue("check ReadIncObservation", rob instanceof ReadIncObservation);
 		this.riob = (ReadIncObservation) rob;
-		
-//		if (this.riob.nullCheck())	/** no operations in the process to be checked; it is trivially PRAM Consistent **/
-//		{
-//			System.out.println("Null Check: true");
-//			return true;
-//		}
-//		
-//		this.riob.preprocessing();	// preprocessing: program order and write to order
-//		if (this.riob.readLaterWrite())	/** some READ reads later WRITE in the same process; it does not satisfy PRAM Consistency **/
-//		{
-//			System.err.println("Read late write: false");
-//			return false;
-//		}
 		
 		ReadIncProcess master_proc = this.riob.getMasterProcess();
 		int master_size = master_proc.size();

@@ -28,7 +28,7 @@ public class ClosureGraphCheckerTest
 	{
 	}
 
-	@Test
+//	@Test
 	public void testCheck_part_fig4()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -38,7 +38,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 
-	@Test
+//	@Test
 	public void testCheck_part_fig5()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -48,7 +48,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 	
-	@Test
+//	@Test
 	public void testCheck_part_fig6()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -58,7 +58,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 	
-	@Test
+//	@Test
 	public void testCheck_part_fig7()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -71,7 +71,7 @@ public class ClosureGraphCheckerTest
 	/**
 	 * test for {@link Checker#check()}
 	 */
-	@Test
+//	@Test
 	public void testCheck_fig7()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -100,7 +100,7 @@ public class ClosureGraphCheckerTest
 		og_checker_rand0.check();
 	}
 	
-	@Test
+//	@Test
 	public void testCheck_part_random_1549()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -115,6 +115,16 @@ public class ClosureGraphCheckerTest
 						new boolean[] {true, false, false, false, false, false, false, false, false, false}));
 		assertFalse("The views in schedule are all valid", cl_checker_rand.getSchedule().valid());
 		System.out.println(cl_checker_rand.getSchedule());
+	}
+	
+//	@Test
+	public void testCheck_part_jt_50_420()
+	{
+		GlobalData.VISUALIZATION = true;
+		
+		IRawObservationConstructor frobcons = new FileRawObservationConstructor("./test/testset/operationgraph/jt_50_420");
+		Checker og_checker = new ClosureGraphChecker(frobcons.construct(), frobcons.get_ob_id());
+		og_checker.check();
 	}
 	
 }
