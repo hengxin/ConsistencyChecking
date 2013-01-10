@@ -25,10 +25,6 @@ public class ClosureObservation extends BasicObservation
 	 */
 //	public static Map<String, ClosureOperation> WRITEPOOL = null;
 	
-//	/** {@link ClosureIncProcess} with masterPid is to be checked against PRAM consistency **/
-//	private int masterPid = -1;
-//	private int opNum = -1;
-	
 	/** array of {@link ClosureOperation}s @see #encodeOperations() */
 	private final ClosureOperation[] opArray;
 
@@ -43,14 +39,18 @@ public class ClosureObservation extends BasicObservation
 	 * @param rob RawObservation to be filtered
 	 * 
 	 * @see {@link ClosureProcess}
+	 * 
+	 * @TODO: using design pattern to refactor the creation of observation
 	 */
 	public ClosureObservation(int masterPid, BasicObservation rob)
 	{
 		this.masterPid = masterPid;
 		
 		for (int pid : rob.getProcMap().keySet())
-			this.procMap.put(pid, new ClosureProcess(masterPid, rob.getProcMap().get(pid), this));
+			this.procMap.put(pid, new ClosureProcess(masterPid, pid, rob));
 
+		this.storeWrite2Pool();
+		
 		this.totalOpNum = this.getOpNum();
 		this.opArray = new ClosureOperation[this.totalOpNum];	/** initialize {#opArray} */
 		this.opMatrix = new boolean[this.totalOpNum][this.totalOpNum];	/** initialize the matrix of {@link ClosureOperation}s */
@@ -58,14 +58,6 @@ public class ClosureObservation extends BasicObservation
 		// ui
 		DotUI.getInstance().visual_ob(this);
 	}
-	
-//	/**
-//	 * @return {@link #masterPid}
-//	 */
-//	public int getMasterPid()
-//	{
-//		return this.masterPid;
-//	}
 	
 	/**
 	 * preprocessing the {@link ClosureObservation}, including
@@ -90,7 +82,7 @@ public class ClosureObservation extends BasicObservation
 	 */
 	private void fillOpArray()
 	{
-		int procNum = this.getSize();
+		int procNum = this.getProcNum();
 		int accIndex = 0;
 		int globalIndex = 0;
 		List<BasicOperation> opList = null;

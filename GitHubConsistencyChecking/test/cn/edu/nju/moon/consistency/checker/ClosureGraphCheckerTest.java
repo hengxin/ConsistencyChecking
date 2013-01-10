@@ -28,7 +28,7 @@ public class ClosureGraphCheckerTest
 	{
 	}
 
-//	@Test
+	@Test
 	public void testCheck_part_fig4()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -38,7 +38,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 
-//	@Test
+	@Test
 	public void testCheck_part_fig5()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -48,7 +48,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 	
-//	@Test
+	@Test
 	public void testCheck_part_fig6()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -58,7 +58,7 @@ public class ClosureGraphCheckerTest
 		og_checker_fig4_2b.check();
 	}
 	
-//	@Test
+	@Test
 	public void testCheck_part_fig7()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -71,14 +71,14 @@ public class ClosureGraphCheckerTest
 	/**
 	 * test for {@link Checker#check()}
 	 */
-//	@Test
+	@Test
 	public void testCheck_fig7()
 	{
 		GlobalData.VISUALIZATION = true;
 		
 		IRawObservationConstructor frobcons = new FileRawObservationConstructor("./test/testset/operationgraph/obfig7");
 		BasicObservation bob = frobcons.construct();
-		Checker og_checker = new ClosureGraphChecker(bob, frobcons.get_ob_id() + "check", new WeakSchedule(bob.getSize()));
+		Checker og_checker = new ClosureGraphChecker(bob, frobcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
 		
 		assertFalse("Fig7 observation does not satisfy PRAM Consistency", og_checker.check());
 		assertTrue("None of the three processes satisfies PRAM Consistnecy", 
@@ -108,7 +108,7 @@ public class ClosureGraphCheckerTest
 		IRawObservationConstructor randcons = new FileRawObservationConstructor("./test/testset/randomclosure/1549");
 		BasicObservation bob = randcons.construct();
 
-		Checker cl_checker_rand = new ClosureGraphChecker(bob, randcons.get_ob_id() + "check", new WeakSchedule(bob.getSize()));
+		Checker cl_checker_rand = new ClosureGraphChecker(bob, randcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
 		assertFalse("Random 1459 does not satisfy PRAM Consistency", cl_checker_rand.check());
 		assertTrue("Process 0 and Process 1 has legal view for PRAM Consistency",
 				Arrays.equals(((WeakSchedule) cl_checker_rand.getSchedule()).getBinarySchedule(),

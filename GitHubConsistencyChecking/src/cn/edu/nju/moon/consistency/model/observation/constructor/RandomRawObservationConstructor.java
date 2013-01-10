@@ -71,7 +71,8 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 		Iterator<RawOperation> iter = this.constructOperationList().iterator();
 		while(iter.hasNext())
 		{
-			rob.addOperation(pRandom.nextInt(this.processNum), new BasicOperation(iter.next()));
+			BasicOperation bop = new BasicOperation(iter.next());
+			rob.addOperation(pRandom.nextInt(this.processNum),bop);
 		}
 
 		this.record(rob);

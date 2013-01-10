@@ -21,11 +21,14 @@ public class ClosureProcess extends BasicProcess
 	 * filter {@link BasicProcess} for specific purpose
 	 * 
 	 * @param masterPid process with masterPid is kept the same
-	 * @param proc {@link BasicProcess} to be filtered
+	 * @param pid 		id of this {@link ClosureProcess}
+	 * @param bob		{@link BasicObservation} from which 
+	 * 		{@link ClosureProcess} is constructed
 	 */
-	public ClosureProcess(int masterPid, BasicProcess proc, BasicObservation bob)
+	public ClosureProcess(int masterPid, int pid, BasicObservation bob /** BasicProcess proc */)
 	{
-		super(proc.getPid(), bob);
+		super(pid);
+		BasicProcess proc = bob.getProcess(pid);
 		
 		List<BasicOperation> opListTemp = proc.getOpListCopy();
 
@@ -45,51 +48,8 @@ public class ClosureProcess extends BasicProcess
 				ClosureOperation wclop = new ClosureOperation(bop);
 				wclop.setIndex(this.opList.size());
 				this.addOperation(wclop);
-				bob.addWrite2Pool(wclop);
-//				ClosureObservation.WRITEPOOL.put(wclop.toString(), wclop);
 			}
 		}
 	}
 
-//	/**
-//	 * establish "program order" between {@link ClosureOperation}s 
-//	 * in the same {@link ClosureProcess}
-//	 */
-//	public void establishProgramOrder()
-//	{
-//		if (this.opList.size() == 0)
-//			return;
-//		
-//		ClosureOperation preOp = (ClosureOperation) this.opList.get(0);
-//		ClosureOperation curOp = null;
-//		int size = this.opList.size();
-//		
-//		for (int index = 1; index < size; index++)
-//		{
-//			curOp = (ClosureOperation) this.opList.get(index);
-//			preOp.setProgramOrder(curOp);
-//			preOp = curOp;
-//		}
-//	}
-//	
-//	/**
-//	 * @see {@link ClosureObservation} private method #establishWritetoOrder()
-//	 */
-//	public void establishWritetoOrder()
-//	{
-//		List<BasicOperation> opList = this.opList;
-//		ClosureOperation rclop = null;
-//		ClosureOperation wclop = null;
-//		int size = opList.size();
-//		for (int index = 0; index < size; index++)
-//		{	
-//			rclop = (ClosureOperation) opList.get(index);
-//			if(rclop.isReadOp())	
-//			{
-//				wclop = rclop.fetchDictatingWrite();
-//				wclop.addWritetoOrder(rclop);
-//			}
-//		}
-//	}
-	
 }

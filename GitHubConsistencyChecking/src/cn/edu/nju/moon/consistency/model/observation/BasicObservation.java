@@ -25,11 +25,16 @@ public class BasicObservation
 {
 	/** {@link BasicProcess} with masterPid is to be checked against PRAM consistency **/
 	protected int masterPid = -1;
-	private int opNum = -1;
 	protected Map<Integer, BasicProcess> procMap = new HashMap<Integer, BasicProcess>();
 	protected int totalOpNum = -1;
 	protected Map<String, BasicOperation> write_pool = new HashMap<String, BasicOperation>();
 	
+	
+	/**
+	 * add process into this observation
+	 * @param pid assign pid to this process to add
+	 * @param process process to add
+	 */
 	public void addProcess(int pid, BasicProcess process)
 	{
 		this.procMap.put(pid, process);
@@ -45,8 +50,9 @@ public class BasicObservation
 	{
 		BasicProcess proc = this.procMap.get(pid);
 		if(proc == null)
-			proc = new BasicProcess(pid, this);
+			proc = new BasicProcess(pid);
 		proc.addOperation(op);
+		
 		this.procMap.put(pid, proc);
 	}
 	
@@ -107,10 +113,8 @@ public class BasicObservation
 	 */
 	protected void establishWritetoOrder()
 	{
-		// FIXME: NullPointer exception
-		
 		// all READ {@link BasicOperation}s are in the {@link BasicProcess} with #masterPid
-		this.procMap.get(this.masterPid).establishWritetoOrder();
+		this.procMap.get(this.masterPid).establishWritetoOrder(this);
 	}
 	
 	/**
@@ -134,7 +138,7 @@ public class BasicObservation
 	/**
 	 * @return number of Processes in this Observation
 	 */
-	public int getSize()
+	public int getProcNum()
 	{
 		return this.procMap.size();
 	}
@@ -162,15 +166,17 @@ public class BasicObservation
 		return this.totalOpNum;
 	}
 	
+	/** ############### {@link #write_pool} related ################ */
+	
 	/**
-	 * adding WRITE operation into {@link #write_pool}
-	 * @param bop WRITE operation to add
+	 * store all WRITEs into {@link #write_pool}
 	 */
-	public void addWrite2Pool(BasicOperation bop)
+	public void storeWrite2Pool()
 	{
-		assertTrue("Adding WRITE to pool", bop.isWriteOp());
-		
-		this.write_pool.put(bop.toString(), bop);
+		for (int pid : this.procMap.keySet())
+			for (BasicOperation bop : this.getProcess(pid).getOpList())
+				if (bop.isWriteOp())
+					this.write_pool.put(bop.toString(), bop);
 	}
 	
 	/**

@@ -80,7 +80,7 @@ public class DotUI
 	{
 		if (GlobalData.VISUALIZATION)
 		{
-			int size = ob.getSize();
+			int size = ob.getProcNum();
 
 			viz.addln("ranksep = 1.0; size = \"10,10\";");	// drawing with constrained ranks
 			viz.addln("{");	// pids

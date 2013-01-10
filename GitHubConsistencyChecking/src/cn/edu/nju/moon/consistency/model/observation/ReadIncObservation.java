@@ -48,7 +48,9 @@ public class ReadIncObservation extends BasicObservation
 		
 		Set<Integer> pids = rob.getProcMap().keySet();
 		for (int pid : pids)
-			this.procMap.put(pid, new ReadIncProcess(masterPid, rob.getProcMap().get(pid), this));
+			this.procMap.put(pid, new ReadIncProcess(masterPid, pid, rob));
+		
+		this.storeWrite2Pool();
 		
 		// ui
 		DotUI.getInstance().visual_ob(this);

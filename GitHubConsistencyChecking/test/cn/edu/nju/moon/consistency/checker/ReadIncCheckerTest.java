@@ -106,7 +106,7 @@ public class ReadIncCheckerTest
 		ri_checker_rand0.check();
 	}
 	
-//	@Test
+	@Test
 	public void testCheck_random_1549()
 	{
 		GlobalData.VISUALIZATION = true;

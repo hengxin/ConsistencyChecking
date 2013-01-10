@@ -22,17 +22,10 @@ public class BasicProcess
 {
 	protected int pid = -1;
 	protected List<BasicOperation> opList = new ArrayList<BasicOperation>();
-	protected BasicObservation bob = null;	/** backward reference to {@link BasicObservation} */
 	
-//	public BasicProcess()
-//	{
-//		this.opList = new ArrayList<BasicOperation>();
-//	}
-	
-	public BasicProcess(int pid, BasicObservation bob)
+	public BasicProcess(int pid)
 	{
 		this.pid = pid;
-		this.bob = bob;
 	}
 	
 	/**
@@ -110,8 +103,9 @@ public class BasicProcess
 	
 	/**
 	 * establish WritetoOrder: D(R) => R
+	 * @param bob {@link BasicObservation} from which you can retrieve any WRITE
 	 */
-	public void establishWritetoOrder()
+	public void establishWritetoOrder(BasicObservation bob)
 	{
 		List<BasicOperation> opList = this.opList;
 		BasicOperation rclop = null;
@@ -122,8 +116,7 @@ public class BasicProcess
 			rclop = opList.get(index);
 			if(rclop.isReadOp())	
 			{
-//				wclop = rclop.fetchDictatingWrite();
-				wclop = this.bob.getDictatingWrite(rclop);
+				wclop = bob.getDictatingWrite(rclop);
 				wclop.addWritetoOrder(rclop);
 			}
 		}

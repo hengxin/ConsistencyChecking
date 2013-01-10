@@ -36,13 +36,11 @@ public class ReadIncProcess extends BasicProcess
 	 * @param masterPid process with masterPid is kept the same
 	 * @param proc {@link BasicProcess} to be filtered
 	 */
-	public ReadIncProcess(int masterPid, BasicProcess proc, BasicObservation riob)
+	public ReadIncProcess(int masterPid, int pid, BasicObservation bob)
 	{
-		super(proc.getPid(), riob);
+		super(pid);
 
-		List<BasicOperation> opListTemp = proc.getOpListCopy();
-
-		for (BasicOperation bop : opListTemp)
+		for (BasicOperation bop : bob.getProcess(pid).getOpListCopy())
 		{	
 			if (bop.isReadOp())	// READ {@link ReadIncOperation}
 			{
@@ -58,38 +56,15 @@ public class ReadIncProcess extends BasicProcess
 				ReadIncOperation wriop = new ReadIncOperation(bop);
 				wriop.setIndex(this.opList.size());
 				this.addOperation(wriop);
-				riob.addWrite2Pool(wriop);
-//				ReadIncObservation.WRITEPOOL.put(wriop.toString(), wriop);
 			}
 		}
 	}
 
-//	/**
-//	 * establish "program order" between {@link ReadIncOperation}s 
-//	 * in the same {@link ReadIncProcess}
-//	 */
-//	public void establishProgramOrder()
-//	{
-//		if (this.opList.size() == 0)
-//			return;
-//		
-//		ReadIncOperation preOp = (ReadIncOperation) this.opList.get(0);
-//		ReadIncOperation curOp = null;
-//		int size = this.opList.size();
-//		
-//		for (int index = 1; index < size; index++)
-//		{
-//			curOp = (ReadIncOperation) this.opList.get(index);
-//			preOp.setProgramOrder(curOp);
-//			preOp = curOp;
-//		}
-//	}
-	
 	/**
 	 * @see ReadIncObservation private method #establishWritetoOrder()
 	 */
 	@Override
-	public void establishWritetoOrder()
+	public void establishWritetoOrder(BasicObservation bob)
 	{
 		List<BasicOperation> opList = this.opList;
 		ReadIncOperation rriop = null;
@@ -100,8 +75,7 @@ public class ReadIncProcess extends BasicProcess
 			rriop = (ReadIncOperation) opList.get(index);
 			if(rriop.isReadOp())	
 			{
-//				wriop = rriop.fetchDictatingWrite();
-				wriop = (ReadIncOperation) this.bob.getDictatingWrite(rriop);
+				wriop = (ReadIncOperation) bob.getDictatingWrite(rriop);
 				rriop.getEarliestRead().setEarlistReadInt(index);	/** initialize earliest read */
 				wriop.setWid(index);								/** set {#wid} */
 				
@@ -109,29 +83,6 @@ public class ReadIncProcess extends BasicProcess
 			}
 		}
 	}
-	
-//	/**
-//	 * does some READ {@link ReadIncOperation} read value from later WRITE
-//	 * {@link ReadIncOperation} on the same {@link ReadIncProcess}
-//	 * 
-//	 * @return true, if it does; false, o.w..
-//	 * 
-//	 * @see ReadIncObservation#readLaterWrite()
-//	 */
-//	public boolean readLaterWrite()
-//	{
-//		BasicOperation wriop = null;
-//		for (BasicOperation riop : this.opList)
-//		{
-//			if (riop.isReadOp())	// check every READ
-//			{
-//				wriop = riop.getReadfromWrite();
-//				if (riop.getPid() == wriop.getPid() && riop.getIndex() < wriop.getIndex())
-//					return true;
-//			}
-//		}
-//		return false;
-//	}
 	
 	/**
 	 * set {@link #cur_rriop} to @param riop
@@ -209,4 +160,5 @@ public class ReadIncProcess extends BasicProcess
 		
 		this.pre_rriop = cur_rriop;
 	}
+	
 }

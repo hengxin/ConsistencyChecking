@@ -32,7 +32,7 @@ public abstract class Checker
 	{
 		this.rob = bob;
 		this.name = RandomStringUtils.random(8);
-		this.schedule = new WeakSchedule(bob.getSize());
+		this.schedule = new WeakSchedule(bob.getProcNum());
 	}
 	
 	/**
@@ -77,7 +77,7 @@ public abstract class Checker
 	 */
 	public final boolean check()
 	{
-		int pids = this.rob.getSize();
+		int pids = this.rob.getProcNum();
 		BasicObservation mob = null;
 
 		for (int pid = 0; pid < pids; pid++)

@@ -32,13 +32,13 @@ public class ClosureGraphChecker extends Checker
 	
 	/**
 	 * Constructor
-	 * @param rob	{@link BasicObservation} to check
+	 * @param bob	{@link BasicObservation} to check
 	 * @param name	name for visualization in {@link DotUI}
 	 * @param s {@link ISchedule}: record for the checking result
 	 */
-	public ClosureGraphChecker(BasicObservation rob, String name, ISchedule s)
+	public ClosureGraphChecker(BasicObservation bob, String name, ISchedule s)
 	{
-		super(rob, name, s);
+		super(bob, name, s);
 	}
 	
 	/**

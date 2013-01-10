@@ -34,6 +34,9 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 		GlobalData.VARSET = new HashSet<String>();
 	}
 
+	/**
+	 * construct {@link BasicObservation} from file
+	 */
 	@Override
 	public BasicObservation construct()
 	{
@@ -46,23 +49,24 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 		StringTokenizer st = null;
 		String token = null;
 
-		BasicObservation rob = null;
+		BasicObservation bob = null;
 		try
 		{
 			reader = new BufferedReader(new FileReader(file));
 
-			rob = new BasicObservation();
+			bob = new BasicObservation();
 			int pid = 0;
 			while((process = reader.readLine()) != null)
 			{
-				BasicProcess rp = new BasicProcess(pid, rob);
+				BasicProcess rp = new BasicProcess(pid);
 				st = new StringTokenizer(process);
 				while(st.hasMoreTokens())
 				{
 					token = st.nextToken();
-					rp.addOperation(new BasicOperation(token));
+					BasicOperation bop = new BasicOperation(token);
+					rp.addOperation(bop);
 				}
-				rob.addProcess(pid, rp);
+				bob.addProcess(pid, rp);
 				pid++;
 			}
 			reader.close();
@@ -74,7 +78,7 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 			System.exit(1);  
 		}
 
-		return rob;
+		return bob;
 	}
 
 	@Override
