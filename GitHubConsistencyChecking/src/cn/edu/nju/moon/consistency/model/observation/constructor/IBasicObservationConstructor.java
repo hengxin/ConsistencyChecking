@@ -10,7 +10,7 @@ import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
  *
  * @see {@link BasicObservation}
  */
-public interface IRawObservationConstructor
+public interface IBasicObservationConstructor
 {
 	public abstract BasicObservation construct();
 	

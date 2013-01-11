@@ -4,12 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
-import cn.edu.nju.moon.consistency.model.observation.constructor.RandomRawObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.constructor.RandomBasicObservationConstructor;
 
 public class RandomRawObservationConstructorTest
 {
 
-	RandomRawObservationConstructor rrocon = null;
+	RandomBasicObservationConstructor rrocon = null;
 	BasicObservation rob = null;
 	
 //	@Before

@@ -3,11 +3,11 @@ package cn.edu.nju.moon.consistency.model.observation;
 import org.junit.Before;
 import org.junit.Test;
 
-import cn.edu.nju.moon.consistency.model.observation.constructor.IRawObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.constructor.IBasicObservationConstructor;
 
 public class FileRawObservationConstructorTest
 {
-	IRawObservationConstructor frobcons = null;
+	IBasicObservationConstructor frobcons = null;
 	
 //	@Before
 //	public void setUp() throws Exception

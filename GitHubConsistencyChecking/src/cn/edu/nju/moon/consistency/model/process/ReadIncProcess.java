@@ -10,6 +10,7 @@ import cn.edu.nju.moon.consistency.model.observation.ReadIncObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.RawOperation;
 import cn.edu.nju.moon.consistency.model.operation.ReadIncOperation;
+import cn.edu.nju.moon.consistency.model.operation.factory.ReadIncOperationTransformer;
 
 /**
  * @description {@link ReadIncProcess} filter READ BasicOperation
@@ -36,28 +37,30 @@ public class ReadIncProcess extends BasicProcess
 	 * @param masterPid process with masterPid is kept the same
 	 * @param proc {@link BasicProcess} to be filtered
 	 */
-	public ReadIncProcess(int masterPid, int pid, BasicObservation bob)
+	public ReadIncProcess(int masterPid, BasicProcess proc)
 	{
-		super(pid);
+		super(proc.getPid());
 
-		for (BasicOperation bop : bob.getProcess(pid).getOpListCopy())
-		{	
-			if (bop.isReadOp())	// READ {@link ReadIncOperation}
-			{
-				if (this.pid == masterPid)	// the {@link ReadIncProcess} with masterPid	
-				{
-					ReadIncOperation rriop = new ReadIncOperation(bop);
-					rriop.setIndex(this.opList.size());
-					this.addOperation(rriop);
-				}
-			}
-			else	// WRITE {@link ReadIncOperation}
-			{
-				ReadIncOperation wriop = new ReadIncOperation(bop);
-				wriop.setIndex(this.opList.size());
-				this.addOperation(wriop);
-			}
-		}
+		proc.filter_fill(masterPid, this, new ReadIncOperationTransformer());
+		
+//		for (BasicOperation bop : proc.getOpListCopy())
+//		{	
+//			if (bop.isReadOp())	// READ {@link ReadIncOperation}
+//			{
+//				if (this.pid == masterPid)	// the {@link ReadIncProcess} with masterPid	
+//				{
+//					ReadIncOperation rriop = new ReadIncOperation(bop);
+//					rriop.setIndex(this.opList.size());
+//					this.addOperation(rriop);
+//				}
+//			}
+//			else	// WRITE {@link ReadIncOperation}
+//			{
+//				ReadIncOperation wriop = new ReadIncOperation(bop);
+//				wriop.setIndex(this.opList.size());
+//				this.addOperation(wriop);
+//			}
+//		}
 	}
 
 	/**

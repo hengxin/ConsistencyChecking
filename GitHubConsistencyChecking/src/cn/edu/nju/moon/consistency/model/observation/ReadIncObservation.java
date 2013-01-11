@@ -44,11 +44,13 @@ public class ReadIncObservation extends BasicObservation
 	 */
 	public ReadIncObservation(int masterPid, BasicObservation rob)
 	{
+		/** initialize to avoid {@link NullPointerException} */
+		super(rob.getProcNum());
+		
 		this.masterPid = masterPid;
 		
-		Set<Integer> pids = rob.getProcMap().keySet();
-		for (int pid : pids)
-			this.procMap.put(pid, new ReadIncProcess(masterPid, pid, rob));
+		for (int pid : rob.getProcMap().keySet())
+			this.procMap.put(pid, new ReadIncProcess(masterPid, rob.getProcess(pid)));
 		
 		this.storeWrite2Pool();
 		

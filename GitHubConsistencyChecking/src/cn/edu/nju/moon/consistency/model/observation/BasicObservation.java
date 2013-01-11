@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
+import cn.edu.nju.moon.consistency.model.observation.constructor.FileBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.ClosureOperation;
 import cn.edu.nju.moon.consistency.model.operation.RawOperation;
@@ -25,10 +26,34 @@ public class BasicObservation
 {
 	/** {@link BasicProcess} with masterPid is to be checked against PRAM consistency **/
 	protected int masterPid = -1;
+	
+	protected int procNum = -1;	/** number of processes */
 	protected Map<Integer, BasicProcess> procMap = new HashMap<Integer, BasicProcess>();
+	
 	protected int totalOpNum = -1;
 	protected Map<String, BasicOperation> write_pool = new HashMap<String, BasicOperation>();
 	
+	/**
+	 * Default constructor: used in {@link FileBasicObservationConstructor}
+	 * 	without {@link NullPointerException}
+	 */
+	public BasicObservation()
+	{
+		
+	}
+	
+	/**
+	 * Constructor:
+	 * 	(1) set {@link #procNum}
+	 *  (2) initialize {@link #procMap} to avoid {@link NullPointerException}
+	 * @param procNum number of processes in the observation
+	 */
+	public BasicObservation(int procNum)
+	{
+		this.procNum = procNum;
+		for (int pid = 0; pid < this.procNum; pid++)
+			this.procMap.put(pid, new BasicProcess(pid));
+	}
 	
 	/**
 	 * add process into this observation
@@ -95,7 +120,7 @@ public class BasicObservation
 		try{
 		if (this.procMap
 				.get(this.masterPid)
-				.size() == 0)
+				.getOpNum() == 0)
 			return true;}
 		catch (Exception e)
 		{
@@ -144,11 +169,16 @@ public class BasicObservation
 	}
 	
 	/**
-	 * @return number of Processes in this Observation
+	 * @return number of processes in the observation: {@link #procNum}
 	 */
 	public int getProcNum()
 	{
-		return this.procMap.size();
+		/** in case the {@link BasicObservation} is initialized by the default
+		 * constructor without @param procNum 
+		 */
+		if (this.procNum == -1)
+			this.procNum = this.procMap.size();
+		return this.procNum;
 	}
 	
 	/**
@@ -162,13 +192,13 @@ public class BasicObservation
 	/**
 	 * @return total number of operations
 	 */
-	public int getOpNum()
+	public int getTotalOpNum()
 	{
 		if (this.totalOpNum == -1)
 		{
 			this.totalOpNum = 0;
 			for (BasicProcess proc : this.procMap.values())
-				totalOpNum += proc.size();
+				totalOpNum += proc.getOpNum();
 		}
 		
 		return this.totalOpNum;

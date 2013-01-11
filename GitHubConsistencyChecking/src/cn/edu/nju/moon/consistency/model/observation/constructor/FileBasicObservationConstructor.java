@@ -18,7 +18,7 @@ import cn.edu.nju.moon.consistency.model.process.BasicProcess;
  * @author hengxin
  * @date 2012-12-8
  */
-public class FileRawObservationConstructor implements IRawObservationConstructor
+public class FileBasicObservationConstructor implements IBasicObservationConstructor
 {
 	private String fileName = null;
 	private String ob_id = null;	// id of generated observation
@@ -28,7 +28,7 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 	 * 
 	 * @param fileName file to be read
 	 */
-	public FileRawObservationConstructor(String fileName)
+	public FileBasicObservationConstructor(String fileName)
 	{
 		this.fileName = fileName;
 		GlobalData.VARSET = new HashSet<String>();
@@ -45,7 +45,7 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 		
 		BufferedReader reader = null;
 
-		String process = null;
+		String procStr = null;
 		StringTokenizer st = null;
 		String token = null;
 
@@ -56,17 +56,17 @@ public class FileRawObservationConstructor implements IRawObservationConstructor
 
 			bob = new BasicObservation();
 			int pid = 0;
-			while((process = reader.readLine()) != null)
+			while((procStr = reader.readLine()) != null)
 			{
-				BasicProcess rp = new BasicProcess(pid);
-				st = new StringTokenizer(process);
+				BasicProcess proc = new BasicProcess(pid);
+				st = new StringTokenizer(procStr);
 				while(st.hasMoreTokens())
 				{
 					token = st.nextToken();
 					BasicOperation bop = new BasicOperation(token);
-					rp.addOperation(bop);
+					proc.addOperation(bop);
 				}
-				bob.addProcess(pid, rp);
+				bob.addProcess(pid, proc);
 				pid++;
 			}
 			reader.close();

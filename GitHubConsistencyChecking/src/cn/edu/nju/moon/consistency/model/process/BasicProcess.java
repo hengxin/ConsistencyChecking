@@ -7,6 +7,7 @@ import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.ClosureOperation;
 import cn.edu.nju.moon.consistency.model.operation.RawOperation;
+import cn.edu.nju.moon.consistency.model.operation.factory.IOperationTransformer;
 
 /**
  * @author hengxin
@@ -40,6 +41,9 @@ public class BasicProcess
 		this.opList.add(op);
 	}
 	
+	/**
+	 * @return {@link #pid}
+	 */
 	public int getPid()
 	{
 		return this.pid;
@@ -73,9 +77,9 @@ public class BasicProcess
 	}
 	
 	/**
-	 * @return number of {@link BasicOperation} in this {@link BasicProcess}
+	 * @return number of {@link BasicOperation}s in this {@link BasicProcess}
 	 */
-	public int size()
+	public int getOpNum()
 	{
 		return this.opList.size();
 	}
@@ -141,6 +145,30 @@ public class BasicProcess
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * filter <code>this</code> {@link BasicProcess}, 
+	 * transform the remaining operations, and
+	 * fill them into other process: @param proc
+	 *   
+	 * @param masterPid process with masterPid will keep its READ operations
+	 * @param proc process to be constructed (filled)
+	 * @param op_trans used to transform operations into appropriate type
+	 */
+	public void filter_fill(int masterPid, BasicProcess proc, IOperationTransformer op_trans)
+	{
+		for (BasicOperation bop : this.getOpListCopy())
+		{	
+			BasicOperation op = null; 
+			
+			if (bop.isWriteOp() || (bop.isReadOp() && proc.getPid() == masterPid) )
+			{
+				op = op_trans.transform(bop);
+				op.setIndex(proc.getOpNum());
+				proc.addOperation(op);
+			}
+		}
 	}
 	
 }

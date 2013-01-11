@@ -4,9 +4,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import cn.edu.nju.moon.consistency.model.GlobalData;
-import cn.edu.nju.moon.consistency.model.observation.constructor.FileRawObservationConstructor;
-import cn.edu.nju.moon.consistency.model.observation.constructor.IRawObservationConstructor;
-import cn.edu.nju.moon.consistency.model.observation.constructor.RandomRawObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.constructor.FileBasicObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.constructor.IBasicObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.constructor.RandomBasicObservationConstructor;
 
 public class ReadIncCheckerTest
 {
@@ -26,7 +26,7 @@ public class ReadIncCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor frobcons_fig4_2b = new FileRawObservationConstructor("./test/testset/obfig4case2b");
+		IBasicObservationConstructor frobcons_fig4_2b = new FileBasicObservationConstructor("./test/testset/obfig4case2b");
 		Checker ri_checker_fig4_2b = new ReadIncChecker(frobcons_fig4_2b.construct(), frobcons_fig4_2b.get_ob_id());
 		ri_checker_fig4_2b.check();
 	}
@@ -41,7 +41,7 @@ public class ReadIncCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor frobcons_fig5_1b = new FileRawObservationConstructor("./test/testset/obfig5case1b");
+		IBasicObservationConstructor frobcons_fig5_1b = new FileBasicObservationConstructor("./test/testset/obfig5case1b");
 		Checker ri_checker_fig5_1b = new ReadIncChecker(frobcons_fig5_1b.construct(), frobcons_fig5_1b.get_ob_id());
 		ri_checker_fig5_1b.check();
 	}
@@ -56,7 +56,7 @@ public class ReadIncCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor frobcons_fig6 = new FileRawObservationConstructor("./test/testset/obfig6");
+		IBasicObservationConstructor frobcons_fig6 = new FileBasicObservationConstructor("./test/testset/obfig6");
 		Checker ri_checker_fig6 = new ReadIncChecker(frobcons_fig6.construct(), frobcons_fig6.get_ob_id());
 		ri_checker_fig6.check();
 	}
@@ -71,7 +71,7 @@ public class ReadIncCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor frobcons_fig7 = new FileRawObservationConstructor("./test/testset/obfig7");
+		IBasicObservationConstructor frobcons_fig7 = new FileBasicObservationConstructor("./test/testset/obfig7");
 		Checker ri_checker_fig7 = new ReadIncChecker(frobcons_fig7.construct(), frobcons_fig7.get_ob_id());
 		ri_checker_fig7.check();
 	}
@@ -86,7 +86,7 @@ public class ReadIncCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor frobcons = new FileRawObservationConstructor("./test/testset/readinc/wwprimer");
+		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/readinc/wwprimer");
 		Checker ri_checker = new ReadIncChecker(frobcons.construct(), frobcons.get_ob_id());
 		ri_checker.check();
 	}
@@ -101,7 +101,7 @@ public class ReadIncCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor randcons_0 = new RandomRawObservationConstructor(10, 8, 15, 200);
+		IBasicObservationConstructor randcons_0 = new RandomBasicObservationConstructor(10, 8, 15, 200);
 		Checker ri_checker_rand0 = new ReadIncChecker(randcons_0.construct(), randcons_0.get_ob_id());
 		ri_checker_rand0.check();
 	}
@@ -111,7 +111,7 @@ public class ReadIncCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor randcons_0 = new FileRawObservationConstructor("./test/testset/randomclosure/1549");
+		IBasicObservationConstructor randcons_0 = new FileBasicObservationConstructor("./test/testset/randomclosure/1549");
 		Checker ri_checker_rand0 = new ReadIncChecker(randcons_0.construct(), randcons_0.get_ob_id());
 		ri_checker_rand0.check();
 	}
@@ -123,7 +123,7 @@ public class ReadIncCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor frobcons = new FileRawObservationConstructor("./test/testset/readinc/jt_50_420");
+		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/readinc/jt_50_420");
 		Checker ri_checker = new ReadIncChecker(frobcons.construct(), frobcons.get_ob_id());
 		ri_checker.check();
 	}

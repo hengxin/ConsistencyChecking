@@ -16,12 +16,12 @@ import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.RawOperation;
 
 /**
+ * @description construct a basic observation {@link BasicObservation} randomly
+ * 
  * @author hengxin
  * @date 2012-12-6
- * 
- * @description construct a raw observation (RawObservation) randomly
  */
-public class RandomRawObservationConstructor implements IRawObservationConstructor
+public class RandomBasicObservationConstructor implements IBasicObservationConstructor
 {
 	// number of processes (RawProcess)
 	private int processNum = 5;
@@ -41,12 +41,12 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 	 * opNum = 30; (number of processes)
 	 * processNum = 5;
 	 */
-	public RandomRawObservationConstructor()
+	public RandomBasicObservationConstructor()
 	{
 		
 	}
 
-	public RandomRawObservationConstructor(int processNum, int variableNum, int valueRange, int opNum)
+	public RandomBasicObservationConstructor(int processNum, int variableNum, int valueRange, int opNum)
 	{
 		this.processNum = processNum;
 		this.variableNum = variableNum;
@@ -67,7 +67,7 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 	@Override
 	public BasicObservation construct()
 	{
-		BasicObservation bob = new BasicObservation();
+		BasicObservation bob = new BasicObservation(this.processNum);
 
 		// distribute a list of Operation (s) into #processNum processes randomly
 		Random pRandom = new Random();
@@ -77,10 +77,6 @@ public class RandomRawObservationConstructor implements IRawObservationConstruct
 			BasicOperation bop = new BasicOperation(iter.next());
 			bob.addOperation(pRandom.nextInt(this.processNum),bop);
 		}
-		
-		for (int pid = 0; pid < this.processNum; pid++)
-			if (bob.getProcess(pid) == null)
-				return null;
 		
 //		this.record(rob);
 		

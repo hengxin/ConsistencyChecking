@@ -10,9 +10,9 @@ import org.junit.Test;
 
 import cn.edu.nju.moon.consistency.model.GlobalData;
 import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
-import cn.edu.nju.moon.consistency.model.observation.constructor.FileRawObservationConstructor;
-import cn.edu.nju.moon.consistency.model.observation.constructor.IRawObservationConstructor;
-import cn.edu.nju.moon.consistency.model.observation.constructor.RandomRawObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.constructor.FileBasicObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.constructor.IBasicObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.constructor.RandomBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.schedule.WeakSchedule;
 
 /**
@@ -33,7 +33,7 @@ public class ClosureGraphCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 		
-		IRawObservationConstructor frobcons_fig4_2b = new FileRawObservationConstructor("./test/testset/operationgraph/obfig4case2b");
+		IBasicObservationConstructor frobcons_fig4_2b = new FileBasicObservationConstructor("./test/testset/operationgraph/obfig4case2b");
 		Checker og_checker_fig4_2b = new ClosureGraphChecker(frobcons_fig4_2b.construct(), frobcons_fig4_2b.get_ob_id());
 		og_checker_fig4_2b.check();
 	}
@@ -43,7 +43,7 @@ public class ClosureGraphCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 		
-		IRawObservationConstructor frobcons_fig4_2b = new FileRawObservationConstructor("./test/testset/operationgraph/obfig5case1b");
+		IBasicObservationConstructor frobcons_fig4_2b = new FileBasicObservationConstructor("./test/testset/operationgraph/obfig5case1b");
 		Checker og_checker_fig4_2b = new ClosureGraphChecker(frobcons_fig4_2b.construct(), frobcons_fig4_2b.get_ob_id());
 		og_checker_fig4_2b.check();
 	}
@@ -53,7 +53,7 @@ public class ClosureGraphCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 		
-		IRawObservationConstructor frobcons_fig4_2b = new FileRawObservationConstructor("./test/testset/operationgraph/obfig6");
+		IBasicObservationConstructor frobcons_fig4_2b = new FileBasicObservationConstructor("./test/testset/operationgraph/obfig6");
 		Checker og_checker_fig4_2b = new ClosureGraphChecker(frobcons_fig4_2b.construct(), frobcons_fig4_2b.get_ob_id());
 		og_checker_fig4_2b.check();
 	}
@@ -63,7 +63,7 @@ public class ClosureGraphCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 		
-		IRawObservationConstructor frobcons = new FileRawObservationConstructor("./test/testset/operationgraph/obfig7");
+		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/operationgraph/obfig7");
 		Checker og_checker = new ClosureGraphChecker(frobcons.construct(), frobcons.get_ob_id());
 		og_checker.check();
 	}
@@ -76,7 +76,7 @@ public class ClosureGraphCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 		
-		IRawObservationConstructor frobcons = new FileRawObservationConstructor("./test/testset/operationgraph/obfig7");
+		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/operationgraph/obfig7");
 		BasicObservation bob = frobcons.construct();
 		Checker og_checker = new ClosureGraphChecker(bob, frobcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
 		
@@ -95,7 +95,7 @@ public class ClosureGraphCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor randcons_0 = new RandomRawObservationConstructor(10, 8, 15, 200);
+		IBasicObservationConstructor randcons_0 = new RandomBasicObservationConstructor(10, 8, 15, 200);
 		Checker og_checker_rand0 = new ClosureGraphChecker(randcons_0.construct(), randcons_0.get_ob_id());
 		og_checker_rand0.check();
 	}
@@ -105,7 +105,7 @@ public class ClosureGraphCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor randcons = new FileRawObservationConstructor("./test/testset/randomclosure/1549");
+		IBasicObservationConstructor randcons = new FileBasicObservationConstructor("./test/testset/randomclosure/1549");
 		BasicObservation bob = randcons.construct();
 
 		Checker cl_checker_rand = new ClosureGraphChecker(bob, randcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
@@ -122,7 +122,7 @@ public class ClosureGraphCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 		
-		IRawObservationConstructor frobcons = new FileRawObservationConstructor("./test/testset/operationgraph/jt_50_420");
+		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/operationgraph/jt_50_420");
 		Checker og_checker = new ClosureGraphChecker(frobcons.construct(), frobcons.get_ob_id());
 		og_checker.check();
 	}

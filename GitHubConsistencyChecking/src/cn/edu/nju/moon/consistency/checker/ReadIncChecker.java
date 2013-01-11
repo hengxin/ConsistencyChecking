@@ -82,7 +82,7 @@ public class ReadIncChecker extends Checker
 		this.riob = (ReadIncObservation) rob;
 		
 		ReadIncProcess master_proc = this.riob.getMasterProcess();
-		int master_size = master_proc.size();
+		int master_size = master_proc.getOpNum();
 		ReadIncOperation master_cur_rriop = null;
 		BasicOperation bop = null;	
 		boolean consistent = true;

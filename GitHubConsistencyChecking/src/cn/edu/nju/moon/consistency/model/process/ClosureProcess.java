@@ -7,6 +7,7 @@ import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.observation.ClosureObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.ClosureOperation;
+import cn.edu.nju.moon.consistency.model.operation.factory.ClosureOperationTransfomer;
 
 /**
  * @description {@link ClosureProcess} consists of {@link ClosureOperation}
@@ -25,31 +26,30 @@ public class ClosureProcess extends BasicProcess
 	 * @param bob		{@link BasicObservation} from which 
 	 * 		{@link ClosureProcess} is constructed
 	 */
-	public ClosureProcess(int masterPid, int pid, BasicObservation bob /** BasicProcess proc */)
+	public ClosureProcess(int masterPid, BasicProcess proc)
 	{
-		super(pid);
-		BasicProcess proc = bob.getProcess(pid);
+		super(proc.getPid());
 		
-		List<BasicOperation> opListTemp = proc.getOpListCopy();
-
-		for (BasicOperation bop : opListTemp)
-		{	
-			if (bop.isReadOp())	// READ {@link ClosureOperation}
-			{
-				if (this.pid == masterPid)	// the {@link ClosureProcess} with masterPid	
-				{
-					ClosureOperation rclop = new ClosureOperation(bop);
-					rclop.setIndex(this.opList.size());
-					this.addOperation(rclop);
-				}
-			}
-			else	// WRITE {@link ReadIncOperation}
-			{
-				ClosureOperation wclop = new ClosureOperation(bop);
-				wclop.setIndex(this.opList.size());
-				this.addOperation(wclop);
-			}
-		}
+		proc.filter_fill(masterPid, this, new ClosureOperationTransfomer());
+		
+//		for (BasicOperation bop : proc.getOpListCopy())
+//		{	
+//			if (bop.isReadOp())	// READ {@link ClosureOperation}
+//			{
+//				if (this.pid == masterPid)	// the {@link ClosureProcess} with masterPid	
+//				{
+//					ClosureOperation rclop = new ClosureOperation(bop);
+//					rclop.setIndex(this.opList.size());
+//					this.addOperation(rclop);
+//				}
+//			}
+//			else	// WRITE {@link ReadIncOperation}
+//			{
+//				ClosureOperation wclop = new ClosureOperation(bop);
+//				wclop.setIndex(this.opList.size());
+//				this.addOperation(wclop);
+//			}
+//		}
 	}
 
 }

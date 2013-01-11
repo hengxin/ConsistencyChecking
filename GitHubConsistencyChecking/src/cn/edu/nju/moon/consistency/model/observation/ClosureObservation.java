@@ -44,14 +44,17 @@ public class ClosureObservation extends BasicObservation
 	 */
 	public ClosureObservation(int masterPid, BasicObservation rob)
 	{
+		/** initialize to avoid {@link NullPointerException} */
+		super(rob.getProcNum());
+		
 		this.masterPid = masterPid;
 		
 		for (int pid : rob.getProcMap().keySet())
-			this.procMap.put(pid, new ClosureProcess(masterPid, pid, rob));
+			this.procMap.put(pid, new ClosureProcess(masterPid, rob.getProcess(pid)));
 
 		this.storeWrite2Pool();
 		
-		this.totalOpNum = this.getOpNum();
+		this.totalOpNum = this.getTotalOpNum();
 		this.opArray = new ClosureOperation[this.totalOpNum];	/** initialize {#opArray} */
 		this.opMatrix = new boolean[this.totalOpNum][this.totalOpNum];	/** initialize the matrix of {@link ClosureOperation}s */
 		

@@ -8,9 +8,9 @@ import org.junit.Test;
 
 import cn.edu.nju.moon.consistency.model.GlobalData;
 import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
-import cn.edu.nju.moon.consistency.model.observation.constructor.FileRawObservationConstructor;
-import cn.edu.nju.moon.consistency.model.observation.constructor.IRawObservationConstructor;
-import cn.edu.nju.moon.consistency.model.observation.constructor.RandomRawObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.constructor.FileBasicObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.constructor.IBasicObservationConstructor;
+import cn.edu.nju.moon.consistency.model.observation.constructor.RandomBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.schedule.WeakSchedule;
 
 /**
@@ -35,19 +35,17 @@ public class JointCheckerTest
 	{
 //		GlobalData.VISUALIZATION = true;
 
-		IRawObservationConstructor randcons = null;
+		IBasicObservationConstructor randcons = null;
 		BasicObservation bob = null;
 		Checker cl_checker = null;
 		Checker ri_checker = null;
 		int i = 0;
 		try
 		{
-			for ( ; i < 1000000; i++)
+			for ( ; i < 100000; i++)
 			{
-				randcons = new RandomRawObservationConstructor(5, 8, 15, 50);
+				randcons = new RandomBasicObservationConstructor(8, 10, 20, 100);
 			    bob = randcons.construct();
-			    if (bob == null)
-			    	continue;
 			    
 //			    System.out.println("Original observation: \n" + bob.toString());
 			    System.out.println(i);
@@ -78,7 +76,7 @@ public class JointCheckerTest
 //	@Test
 	public void testCheck_file_jt_50_420()
 	{
-		IRawObservationConstructor fcons = new FileRawObservationConstructor("./test/testset/readinc/jt_50_420");
+		IBasicObservationConstructor fcons = new FileBasicObservationConstructor("./test/testset/readinc/jt_50_420");
 		BasicObservation bob = fcons.construct();
 		
 		Checker cl_checker = new ClosureGraphChecker(bob, fcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
@@ -95,7 +93,7 @@ public class JointCheckerTest
 //	@Test
 	public void testCheck_file_jt_50_10_1720()
 	{
-		IRawObservationConstructor fcons = new FileRawObservationConstructor("./test/testset/joint/jt_50_10_1720");
+		IBasicObservationConstructor fcons = new FileBasicObservationConstructor("./test/testset/joint/jt_50_10_1720");
 		BasicObservation bob = fcons.construct();
 		
 		Checker cl_checker = new ClosureGraphChecker(bob, fcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
@@ -112,7 +110,7 @@ public class JointCheckerTest
 //	@Test
 	public void testCheck_file_jt_50_10_1726()
 	{
-		IRawObservationConstructor fcons = new FileRawObservationConstructor("./test/testset/joint/jt_50_10_1726");
+		IBasicObservationConstructor fcons = new FileBasicObservationConstructor("./test/testset/joint/jt_50_10_1726");
 		BasicObservation bob = fcons.construct();
 		
 		Checker cl_checker = new ClosureGraphChecker(bob, fcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
