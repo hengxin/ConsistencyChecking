@@ -2,8 +2,13 @@ package cn.edu.nju.moon.consistency.model.observation;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import cn.edu.nju.moon.consistency.checker.ReadIncChecker;
 import cn.edu.nju.moon.consistency.model.observation.constructor.FileBasicObservationConstructor;
@@ -204,7 +209,7 @@ public class BasicObservation
 		return this.totalOpNum;
 	}
 	
-	/** ############### {@link #write_pool} related ################ */
+	/** ############### BEGIN: {@link #write_pool} related ################ */
 	
 	/**
 	 * store all WRITEs into {@link #write_pool}
@@ -247,6 +252,34 @@ public class BasicObservation
 	public Map<String, BasicOperation> getWritePool()
 	{
 		return this.write_pool;
+	}
+	/** ############### END: {@link #write_pool} related ################ */
+
+	
+	/**
+	 * @description record the {@link BasicObservation} generated randomly
+	 * @date 2013-1-7
+	 * 
+	 * @param rob {@link BasicObservation} to record 
+	 * 
+	 *   For random observation: fileName maybe 
+	 * 		this.random_id = this.procNum + "_" + this.varNum + "_" + 
+	 *		this.valRange + "_" + this.opNum + "_" + new Random().nextInt();
+	 */
+	public void record(String fileName)
+	{
+		try
+		{
+			FileWriter fw = new FileWriter("data/randomtest/" + fileName + ".txt");
+			BufferedWriter out = new BufferedWriter(fw);
+			out.write(this.toString());
+			out.close();
+		}
+		catch (IOException ioe)
+		{
+			System.err.println("Failure with storage of randomly generated observation");
+			ioe.printStackTrace();
+		}
 	}
 	
 	/**

@@ -1,5 +1,9 @@
 package cn.edu.nju.moon.consistency.model.operation;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.Random;
+
 import cn.edu.nju.moon.consistency.model.GlobalData;
 
 
@@ -17,9 +21,9 @@ public class RawOperation
 	/**
 	 * constructor for Operation
 	 *
-	 * @param type type of Operation (READ or WRITE)
-	 * @param var variable
-	 * @param val value
+	 * @param type 	type of Operation (READ or WRITE)
+	 * @param var 	variable
+	 * @param val 	value
 	 */
 	public RawOperation(int type, String var, int val)
 	{
@@ -64,6 +68,54 @@ public class RawOperation
 	}
 
 	/**
+	 * constructor: generate random {@link RawOperation}
+	 * @param varNum 	possible variables
+	 * @param valRange 	possible values
+	 */
+	public static RawOperation generateRandOperation(int varNum, int valRange)
+	{
+		Random rand = new Random();
+
+		// generate a random operation
+		int type = 0;
+		if(rand.nextBoolean())
+			type = GlobalData.READ;
+		else
+			type = GlobalData.WRITE;
+
+		String var = String.valueOf((char) ('a' + rand.nextInt(varNum)));
+		int val = rand.nextInt(valRange);
+		
+		return new RawOperation(type, var, val);
+	}
+	
+	/**
+	 * constructor: generate random {@link RawOperation} with @param specific type
+	 * @param type 		type of operation: READ or WRITE
+	 * @param varNum 	possible variables
+	 * @param valRange 	possible values
+	 * @return 
+	 */
+	public static RawOperation generateRawOperation(int type, int varNum, int valRange)
+	{
+		Random rand = new Random();
+
+		String var = String.valueOf((char) ('a' + rand.nextInt(varNum)));
+		int val = rand.nextInt(valRange);
+		
+		return new RawOperation(type, var, val);
+	}
+	
+	/**
+	 * @return dictating WRITE of some READ operation
+	 */
+	public RawOperation getDictatingWrite()
+	{
+		assertTrue("Only READ has dictating WRITE", this.isReadOp());
+		return new RawOperation(this.toString().replaceFirst("r", "w"));
+	}
+	
+	/**
 	 * copy constructor
 	 *
 	 * @param otherOp {@link RawOperation} to be copied
@@ -96,15 +148,6 @@ public class RawOperation
 	public int getValue()
 	{
 		return this.val;
-	}
-
-	/**
-	 * reset data structures in {@link RawOperation}
-	 * for reuse
-	 */
-	public void resetOp()
-	{
-		// do noting for general {@link Operation} object
 	}
 
 	/**

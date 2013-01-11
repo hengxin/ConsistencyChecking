@@ -1,15 +1,19 @@
 package cn.edu.nju.moon.consistency.schedule;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import cn.edu.nju.moon.consistency.model.GlobalData;
 import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
+import cn.edu.nju.moon.consistency.model.operation.RawOperation;
 
 /**
- * @description A {@link View} is a total order of all the {@link BasicOperation}s 
+ * @description A {@link View} is a total order of all the {@link RawOperation}s 
  *   relevant to the particular Consistency Condition.
  *   
  * @author hengxin
@@ -17,9 +21,13 @@ import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
  */
 public class View
 {
-	private List<BasicOperation> view = new ArrayList<BasicOperation>();	/** a total order of {@link BasicOperation}s */
+	private List<RawOperation> view = new ArrayList<RawOperation>();	/** a total order of {@link RawOperation}s */
 	
-	public View(List<BasicOperation> opList)
+	/**
+	 * constructor
+	 * @param list of operations as a view 
+	 */
+	public View(List<RawOperation> opList)
 	{
 		this.view = opList;
 	}
@@ -51,6 +59,128 @@ public class View
 	}
 	
 	/**
+	 * @return {@link #view}
+	 */
+	public List<RawOperation> getView()
+	{
+		return this.view;
+	}
+	
+	/**
+	 * generate a {@link View} randomly
+	 * @param varNum number of variables
+	 * @param valRange range of values of variables
+	 * @param opNum number of operations
+	 * @return a {@link View} which contains @param opNum {@link RawOperation}
+	 */
+	public static View generateRandomView(int varNum, int valRange, int opNum)
+	{
+		List<RawOperation> opList = new ArrayList<RawOperation>();
+		Random random = new Random();
+		RawOperation rop = null;
+		int loop = 0;
+
+		for(int i = 0;i < opNum;)
+		{
+			loop++;
+
+			rop = RawOperation.generateRandOperation(varNum, valRange);
+			
+			// if it is a Read operation, generate a corresponding Write operation
+			if(rop.isReadOp())
+			{
+				opList.add(rop);
+				i++;
+
+				RawOperation wop = new RawOperation(GlobalData.WRITE, rop.getVariable(), rop.getValue());
+
+				if(i == opNum)
+				{
+					if(! opList.contains(wop))
+					{
+						opList.remove(rop);
+						i--;
+					}
+				}
+				else
+				{
+					if(! opList.contains(wop))
+					{
+						opList.add(wop);
+						i++;
+					}
+				}
+			}
+			else // Write Operation
+			{
+				if(! opList.contains(rop) && random.nextInt(3) == 0)
+				{
+					opList.add(rop);
+					i++;
+				}
+			}
+		}
+		Collections.shuffle(opList);
+		
+		return new View(opList);
+	}
+	
+	/**
+	 * generate a valid {@link View} randomly
+	 *  
+	 * @param varNum number of variables
+	 * @param valRange range of values of variables
+	 * @param opNum number of operations
+	 * @return a {@link View} which contains @param opNum {@link RawOperation}
+	 * 
+	 * @author hengxin
+	 * @date 2013-1-11
+	 */
+	public static View generateValidView(int varNum, int valRange, int opNum)
+	{
+		Map<String, RawOperation> activeWriteMap = new HashMap<String, RawOperation>();	/** <var, op> pair */
+		Map<String, RawOperation> writePool = new HashMap<String, RawOperation>();		/** <opStr, op> pair */
+		
+		int count = 0;
+		Random rand = new Random();
+		int ratio = 3;
+		List<RawOperation> opList = new ArrayList<RawOperation>();
+		
+		while (count < opNum)
+		{
+			if (rand.nextInt(ratio) % ratio == 0)	// generate WRITE operation
+			{
+				while (true)
+				{
+					RawOperation wop = RawOperation.generateRawOperation(GlobalData.WRITE, varNum, valRange);
+					if (! writePool.containsKey(wop.toString()))	// unique WRITE requirement
+					{
+						activeWriteMap.put(wop.getVariable(), wop);
+						writePool.put(wop.toString(), wop);
+						opList.add(wop);
+						count++;
+						break;
+					}
+				}
+			}
+			else	// generate READ operation according to activeWriteMap
+			{
+				if (activeWriteMap.size() != 0)
+				{
+					int index = rand.nextInt(activeWriteMap.size());
+					String var = (String) activeWriteMap.keySet().toArray()[index];
+					RawOperation rop = new RawOperation(GlobalData.READ, var, activeWriteMap.get(var).getValue());
+					opList.add(rop);
+					count++;
+				}
+			}
+		}
+		
+		return new View(opList);
+	}
+	
+	
+	/**
 	 * performing DFS to give a topological sorting
 	 * @param bop root operation from which DFS starts
 	 */
@@ -74,16 +204,16 @@ public class View
 	 */
 	public boolean self_check()
 	{
-		Map<String, BasicOperation> activeWriteMap = new HashMap<String, BasicOperation>();
-		for (BasicOperation bop : this.view)
+		Map<String, RawOperation> activeWriteMap = new HashMap<String, RawOperation>();
+		for (RawOperation op : this.view)
 		{
-			if (bop.isReadOp())
+			if (op.isReadOp())
 			{	
-				if (! activeWriteMap.get(bop.getVariable()).equals(bop.getReadfromWrite()))
+				if (! activeWriteMap.get(op.getVariable()).equals(op.getDictatingWrite()))
 					return false;
 			}
 			else
-				activeWriteMap.put(bop.getVariable(), bop);
+				activeWriteMap.put(op.getVariable(), op);
 		}
 		
 		return true;
@@ -96,8 +226,9 @@ public class View
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
-		for (BasicOperation bop : this.view)
-			sb.append(bop.toString()).append(' ');
+		for (RawOperation rop : this.view)
+			sb.append(rop.toString()).append(' ');
 		return sb.toString();
 	}
+	
 }
