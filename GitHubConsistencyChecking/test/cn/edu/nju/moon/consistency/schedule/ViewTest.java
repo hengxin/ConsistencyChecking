@@ -7,10 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Test;
 
-import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.RawOperation;
+import cn.edu.nju.moon.consistency.schedule.constructor.RandomValidViewFactory;
 
 /**
  * @description  test for {@link View}
@@ -63,11 +62,12 @@ public class ViewTest
 		assertFalse("The view is not valid.", v1.self_check());
 	}
 	
-	@Test
+//	@Test
 	public void testGenerateValidView()
 	{
-		View v = View.generateValidView(10, 20, 100);
+		View v = new RandomValidViewFactory().generateView(10, 20, 100);
 		System.out.println(v);
 		assertTrue("The generated valid view is valid indeed", v.self_check());
 	}
+	
 }

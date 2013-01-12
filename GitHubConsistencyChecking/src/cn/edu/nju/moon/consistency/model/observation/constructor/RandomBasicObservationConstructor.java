@@ -1,13 +1,6 @@
 package cn.edu.nju.moon.consistency.model.observation.constructor;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 import cn.edu.nju.moon.consistency.model.GlobalData;
@@ -15,6 +8,7 @@ import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.operation.BasicOperation;
 import cn.edu.nju.moon.consistency.model.operation.RawOperation;
 import cn.edu.nju.moon.consistency.schedule.View;
+import cn.edu.nju.moon.consistency.schedule.constructor.IViewFactory;
 
 /**
  * @description construct a basic observation {@link BasicObservation} randomly
@@ -35,24 +29,35 @@ public class RandomBasicObservationConstructor implements IBasicObservationConst
 	
 	private String random_id = null;	// id for generated observation
 
+	private IViewFactory vf = null;	/** indicating which kind of {@link View} to be constructed */
+	
 	/**
 	 * Default value:
 	 * variableNum = 5;
 	 * valueRange = [0,10);
 	 * opNum = 30; (number of processes)
 	 * processNum = 5;
+	 * valid = false;
 	 */
 	public RandomBasicObservationConstructor()
 	{
 		
 	}
 
-	public RandomBasicObservationConstructor(int procNum, int varNum, int valRange, int opNum)
+	/**
+	 * Constructor with {@link #valid} = false
+	 * @param procNum 	number of processes
+	 * @param varNum	number of variables
+	 * @param valRange	range of values
+	 * @param opNum		number of operations
+	 */
+	public RandomBasicObservationConstructor(int procNum, int varNum, int valRange, int opNum, IViewFactory vf)
 	{
 		this.procNum = procNum;
 		this.varNum = varNum;
 		this.valRange = valRange;
 		this.opNum = opNum;
+		this.vf = vf;
 		
 		GlobalData.VARSET = new HashSet<String>();
 	}
@@ -73,8 +78,9 @@ public class RandomBasicObservationConstructor implements IBasicObservationConst
 		// distribute a list of Operation (s) into #processNum processes randomly
 		Random pRand = new Random();
 		
-		for (RawOperation rop : View.generateRandomView(this.varNum, this.valRange, this.opNum).getView())
-			bob.addOperation(pRand.nextInt(this.procNum), new BasicOperation(rop));
+//		for (RawOperation rop : View.generateRandomView(this.varNum, this.valRange, this.opNum).getView())
+		for (RawOperation op : this.vf.generateView(this.varNum, this.valRange, this.opNum).getView())
+			bob.addOperation(pRand.nextInt(this.procNum), new BasicOperation(op));
 		
 		return bob;
 	}

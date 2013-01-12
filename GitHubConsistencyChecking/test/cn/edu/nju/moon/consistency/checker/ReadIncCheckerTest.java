@@ -7,6 +7,7 @@ import cn.edu.nju.moon.consistency.model.GlobalData;
 import cn.edu.nju.moon.consistency.model.observation.constructor.FileBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.model.observation.constructor.IBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.model.observation.constructor.RandomBasicObservationConstructor;
+import cn.edu.nju.moon.consistency.schedule.constructor.RandomViewFactory;
 
 public class ReadIncCheckerTest
 {
@@ -101,7 +102,7 @@ public class ReadIncCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IBasicObservationConstructor randcons_0 = new RandomBasicObservationConstructor(10, 8, 15, 200);
+		IBasicObservationConstructor randcons_0 = new RandomBasicObservationConstructor(10, 8, 15, 200, new RandomViewFactory());
 		Checker ri_checker_rand0 = new ReadIncChecker(randcons_0.construct(), randcons_0.get_ob_id());
 		ri_checker_rand0.check();
 	}

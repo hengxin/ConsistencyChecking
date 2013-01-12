@@ -14,6 +14,7 @@ import cn.edu.nju.moon.consistency.model.observation.constructor.FileBasicObserv
 import cn.edu.nju.moon.consistency.model.observation.constructor.IBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.model.observation.constructor.RandomBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.schedule.WeakSchedule;
+import cn.edu.nju.moon.consistency.schedule.constructor.RandomViewFactory;
 
 /**
  * @description test for {@link ClosureGraphChecker}
@@ -95,7 +96,7 @@ public class ClosureGraphCheckerTest
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IBasicObservationConstructor randcons_0 = new RandomBasicObservationConstructor(10, 8, 15, 200);
+		IBasicObservationConstructor randcons_0 = new RandomBasicObservationConstructor(10, 8, 15, 200, new RandomViewFactory());
 		Checker og_checker_rand0 = new ClosureGraphChecker(randcons_0.construct(), randcons_0.get_ob_id());
 		og_checker_rand0.check();
 	}
