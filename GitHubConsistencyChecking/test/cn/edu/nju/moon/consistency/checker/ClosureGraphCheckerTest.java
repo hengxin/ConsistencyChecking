@@ -29,6 +29,18 @@ public class ClosureGraphCheckerTest
 	{
 	}
 
+	@Test
+	public void testCheck_part_fig3()
+	{
+		GlobalData.VISUALIZATION = true;
+		
+		IBasicObservationConstructor frobcons_fig3 = new FileBasicObservationConstructor("./test/testset/operationgraph/obfig3");
+		BasicObservation ob_fig3 = frobcons_fig3.construct();
+		Checker og_checker_fig3 = new ClosureGraphChecker(ob_fig3, frobcons_fig3.get_ob_id(), new WeakSchedule(ob_fig3.getProcNum()));
+		og_checker_fig3.check();
+		System.out.println(((WeakSchedule) og_checker_fig3.getSchedule()).toString());
+	}
+	
 //	@Test
 	public void testCheck_part_fig4()
 	{

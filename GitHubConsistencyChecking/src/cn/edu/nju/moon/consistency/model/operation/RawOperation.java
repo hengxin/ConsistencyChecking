@@ -83,7 +83,7 @@ public class RawOperation
 		else
 			type = GlobalData.WRITE;
 
-		String var = String.valueOf((char) ('a' + rand.nextInt(varNum)));
+		String var = String.valueOf((char) ('!' + rand.nextInt(varNum)));
 		int val = rand.nextInt(valRange);
 		
 		return new RawOperation(type, var, val);
@@ -100,7 +100,7 @@ public class RawOperation
 	{
 		Random rand = new Random();
 
-		String var = String.valueOf((char) ('a' + rand.nextInt(varNum)));
+		String var = String.valueOf((char) ('!' + rand.nextInt(varNum)));
 		int val = rand.nextInt(valRange);
 		
 		return new RawOperation(type, var, val);

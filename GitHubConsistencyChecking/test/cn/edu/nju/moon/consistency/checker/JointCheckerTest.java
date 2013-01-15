@@ -46,13 +46,13 @@ public class JointCheckerTest
 		int i = 0;
 		try
 		{
-			for ( ; i < 100; i++)
+			for ( ; i < 10000; i++)
 			{
-				randcons = new RandomBasicObservationConstructor(20, 50, 400, 5000, new RandomValidViewFactory());
+				randcons = new RandomBasicObservationConstructor(15, 100, 500, 5000, new RandomValidViewFactory());
 			    bob = randcons.construct();
 			    
 //			    System.out.println("Original observation: \n" + bob.toString());
-			    System.out.println(i);
+			    System.err.println(i);
 			    
 			    cl_checker = new ClosureGraphChecker(bob, randcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
 			    ri_checker = new ReadIncChecker(bob, randcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
@@ -70,9 +70,9 @@ public class JointCheckerTest
 			    ri_total += ri_time;
 			    System.out.println(ri_time);
 			    
-			    /** no oracle for single test */
-	//		    assertTrue("Closure algorithm goes wrong.", cl_checker.getSchedule().valid());
-	//		    assertTrue("ReadInc algorithm goes wrong.", ri_checker.getSchedule().valid());
+			    /** oracles only for test on valid view */
+//			    assertTrue("Closure algorithm goes wrong.", cl_checker.getSchedule().valid());
+//			    assertTrue("ReadInc algorithm goes wrong.", ri_checker.getSchedule().valid());
 			    
 			    if (! cl_checker.getSchedule().compare(ri_checker.getSchedule()))
 			    	System.out.println(i + ":" + bob);
