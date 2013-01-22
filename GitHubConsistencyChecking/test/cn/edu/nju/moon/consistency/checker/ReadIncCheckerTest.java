@@ -78,6 +78,21 @@ public class ReadIncCheckerTest
 	}
 
 	/**
+	 * @description file: testset/readinc/obfigreschedulecycle
+	 * @author hengxin
+	 * @date 2013-1-22
+	 */
+//	@Test
+	public void testCheck_part_reschedule_cycle()
+	{
+		GlobalData.VISUALIZATION = true;
+
+		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/readinc/obfigreschedulecycle");
+		Checker ri_checker = new ReadIncChecker(frobcons.construct(), frobcons.get_ob_id());
+		ri_checker.check();
+	}
+	
+	/**
 	 * @description simple execution: wx1 wx2 ry1 rx1; wy1 
 	 * @author hengxin
 	 * @date 2013-1-9
