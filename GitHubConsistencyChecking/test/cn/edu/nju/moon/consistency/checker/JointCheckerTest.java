@@ -11,6 +11,7 @@ import cn.edu.nju.moon.consistency.model.observation.constructor.IBasicObservati
 import cn.edu.nju.moon.consistency.model.observation.constructor.RandomBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.schedule.WeakSchedule;
 import cn.edu.nju.moon.consistency.schedule.constructor.RandomValidViewFactory;
+import cn.edu.nju.moon.consistency.schedule.constructor.RandomViewFactory;
 
 /**
  * joint tests for both {@link ClosureGraphChecker} and {@link ReadIncChecker}
@@ -48,7 +49,7 @@ public class JointCheckerTest
 		{
 			for ( ; i < 10000; i++)
 			{
-				randcons = new RandomBasicObservationConstructor(15, 100, 500, 5000, new RandomValidViewFactory());
+				randcons = new RandomBasicObservationConstructor(15, 100, 100, 5000, new RandomValidViewFactory());
 			    bob = randcons.construct();
 			    
 //			    System.out.println("Original observation: \n" + bob.toString());

@@ -298,11 +298,12 @@ public class ReadIncChecker extends Checker
 					if (wprime_riop.apply_wprimew_order(wriop, this.riob))
 						return true;	/** cycle **/
 				
-				if (wriop != null && wriop.isCandidate())
+				// depending on UNDONE operation
+				if (wriop != null && wriop.isCandidate() && ! wriop.isDone())
 				{
-					// depending on UNDONE operation
-					if (! wriop.isDone())
-					{
+					
+//					if (! wriop.isDone())
+//					{
 						/**
 						 * @modified hengxin on 2013-1-9
 						 * @modification the update of predecessors and successors 
@@ -312,11 +313,11 @@ public class ReadIncChecker extends Checker
 //						wprime_riop.getSuccessors().add(wriop);
 //						wriop.getPredecessors().add(wprime_riop);
 						wprime_riop.incCount();
-					}
-					else
-					{
-						wprime_riop.getEarliestRead().updateEarliestRead(wriop);
-					}
+//					}
+//					else
+//					{
+//						wprime_riop.getEarliestRead().updateEarliestRead(wriop);
+//					}
 				}
 			}
 			

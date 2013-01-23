@@ -52,12 +52,12 @@ public class ReadIncCheckerTest
 	 * @modified hengxin on 2013-1-5
 	 * @reason refactor IChecker to Checker using Template Method design pattern
 	 */
-//	@Test
+	@Test
 	public void testCheck_part_fig6()
 	{
 		GlobalData.VISUALIZATION = true;
 
-		IBasicObservationConstructor frobcons_fig6 = new FileBasicObservationConstructor("./test/testset/obfig6");
+		IBasicObservationConstructor frobcons_fig6 = new FileBasicObservationConstructor("./test/testset/readinc/obfig6");
 		Checker ri_checker_fig6 = new ReadIncChecker(frobcons_fig6.construct(), frobcons_fig6.get_ob_id());
 		ri_checker_fig6.check();
 	}
@@ -97,7 +97,7 @@ public class ReadIncCheckerTest
 	 * @author hengxin
 	 * @date 2013-1-23
 	 */
-	@Test
+//	@Test
 	public void testCheck_part_inrounds()
 	{
 		GlobalData.VISUALIZATION = true;
