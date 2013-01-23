@@ -82,7 +82,7 @@ public class ReadIncCheckerTest
 	 * @author hengxin
 	 * @date 2013-1-22
 	 */
-//	@Test
+	@Test
 	public void testCheck_part_reschedule_cycle()
 	{
 		GlobalData.VISUALIZATION = true;

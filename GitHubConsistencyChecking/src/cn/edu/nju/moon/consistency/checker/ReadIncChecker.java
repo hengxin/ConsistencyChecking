@@ -287,7 +287,7 @@ public class ReadIncChecker extends Checker
 			 * @modified hengxin on 2013-1-7
 			 * @reason wprime_riop maybe READ (e.g., R and D(R) are in the same process)
 			 */
-			if (wprime_riop.isWriteOp())
+			if (wprime_riop.isWriteOp() && ! wprime_riop.isDone())
 			{
 				// identify the possible W'WR order
 				int oldEarlistRead = wprime_riop.getEarliestRead().updateEarliestRead(wprime_riop.getSuccessors());
