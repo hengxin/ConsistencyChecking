@@ -82,12 +82,27 @@ public class ReadIncCheckerTest
 	 * @author hengxin
 	 * @date 2013-1-22
 	 */
-	@Test
+//	@Test
 	public void testCheck_part_reschedule_cycle()
 	{
 		GlobalData.VISUALIZATION = true;
 
 		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/readinc/obfigreschedulecycle");
+		Checker ri_checker = new ReadIncChecker(frobcons.construct(), frobcons.get_ob_id());
+		ri_checker.check();
+	}
+	
+	/**
+	 * @description file: testset/readinc/inrounds
+	 * @author hengxin
+	 * @date 2013-1-23
+	 */
+	@Test
+	public void testCheck_part_inrounds()
+	{
+		GlobalData.VISUALIZATION = true;
+
+		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/readinc/inrounds");
 		Checker ri_checker = new ReadIncChecker(frobcons.construct(), frobcons.get_ob_id());
 		ri_checker.check();
 	}
