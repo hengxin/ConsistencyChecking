@@ -52,7 +52,7 @@ public class ReadIncCheckerTest
 	 * @modified hengxin on 2013-1-5
 	 * @reason refactor IChecker to Checker using Template Method design pattern
 	 */
-	@Test
+//	@Test
 	public void testCheck_part_fig6()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -155,6 +155,36 @@ public class ReadIncCheckerTest
 		GlobalData.VISUALIZATION = true;
 
 		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/readinc/jt_50_420");
+		Checker ri_checker = new ReadIncChecker(frobcons.construct(), frobcons.get_ob_id());
+		ri_checker.check();
+	}
+	
+//	@Test
+	public void testCheck_part_4_40()
+	{
+		GlobalData.VISUALIZATION = true;
+
+		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/randomreadinc/4_40");
+		Checker ri_checker = new ReadIncChecker(frobcons.construct(), frobcons.get_ob_id());
+		ri_checker.check();
+	}
+	
+//	@Test
+	public void testCheck_part_4_40_1()
+	{
+		GlobalData.VISUALIZATION = true;
+
+		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/randomreadinc/4_40_1");
+		Checker ri_checker = new ReadIncChecker(frobcons.construct(), frobcons.get_ob_id());
+		ri_checker.check();
+	}
+	
+	@Test
+	public void testCheck_part_4_40_2()
+	{
+		GlobalData.VISUALIZATION = true;
+
+		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/randomreadinc/4_40_2");
 		Checker ri_checker = new ReadIncChecker(frobcons.construct(), frobcons.get_ob_id());
 		ri_checker.check();
 	}

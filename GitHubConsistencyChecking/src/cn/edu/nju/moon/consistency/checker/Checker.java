@@ -83,21 +83,27 @@ public abstract class Checker
 
 		for (int pid = 0; pid < pids; pid++)
 		{
+			boolean partial_consistent = true;
 			mob = this.getMasterObservation(pid);
+			
 			if (this.trivial_check(mob))	/** pass the simple check */
 			{	
 				if (! this.check_part(mob))	/** process with pid does not satisfy consistency condition **/
-//					return false;
+				{
 					consistent = false;
+					partial_consistent = false;
+				}
 			}
 			else
-//				return false;
+			{
 				consistent = false;
-			if (this.schedule != null)
+				partial_consistent = false;
+			}
+			
+			if (this.schedule != null && partial_consistent)
 				this.schedule.constructView(mob);	/** the process with pid satisfies consistency condition; construct a view for it */
 		}
 		
-//		return true;
 		return consistent;
 	}
 	

@@ -220,21 +220,22 @@ public class ReadIncChecker extends Checker
 				dw_pre_wriop = ww_wriop;	// iterate over the next WRITE
 			}
 			this.riob.getGlobalActiveWritesMap().addActiveWriteMap(last_wriop_map);	/** add active WRITE for each variable **/
+			master_cur_rriop.getLatestWriteMap().updateLatestWrite(dw_pre_wriop);
 			
 			if (dw_index <= dw_pre_wriop_index)	// r and D(r) are in different processes and D(r) is in r'-downset
 				dominated = true;
 			else
 				dw_proc.advance_pre_wriop(dw_pre_wriop);	// advance the previous WRITE forward to the new one
 		}
-		/**
-		 *  (3) dealing with @param master_cur_rriop and "dw" separately and specially:
-		 *  	@param master_cur_rriop reads value from "dw", causing other WRITEs with
-		 *  	the same variable are scheduled before "dw" and LatestWrite are updated 
-		 *  	accordingly 
-		 */
-		ReadIncOperation temp_riop = new ReadIncOperation(new RawOperation(GlobalData.WRITE, GlobalData.DUMMYVAR, -1));	// temp 
-		for (ReadIncOperation active_wriop : this.riob.getGlobalActiveWritesMap().getActiveWrites(master_cur_rriop.getVariable()))
-			temp_riop.getLatestWriteMap().updateLatestWrite(active_wriop);
+//		/**
+//		 *  (3) dealing with @param master_cur_rriop and "dw" separately and specially:
+//		 *  	@param master_cur_rriop reads value from "dw", causing other WRITEs with
+//		 *  	the same variable are scheduled before "dw" and LatestWrite are updated 
+//		 *  	accordingly 
+//		 */
+//		ReadIncOperation temp_riop = new ReadIncOperation(new RawOperation(GlobalData.WRITE, GlobalData.DUMMYVAR, -1));	// temp 
+//		for (ReadIncOperation active_wriop : this.riob.getGlobalActiveWritesMap().getActiveWrites(master_cur_rriop.getVariable()))
+//			temp_riop.getLatestWriteMap().updateLatestWrite(active_wriop);
 		
 		return dominated;
 	}

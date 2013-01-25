@@ -56,7 +56,13 @@ public class LatestWriteMap
 		}
 		
 		if (riop.isWriteOp() && ! riop.getWritetoOrder().isEmpty())	// there is some READ reads from @param riop
-			this.latestWriteMap.put(riop.getVariable(), riop);
+		{
+			String var = riop.getVariable();
+			if (this.getLatestWrite(var) == null)
+				this.latestWriteMap.put(var, riop);
+			else if (this.getLatestWrite(var).getWid() < riop.getWid())
+				this.latestWriteMap.put(var, riop);
+		}
 	}
 	
 	/**

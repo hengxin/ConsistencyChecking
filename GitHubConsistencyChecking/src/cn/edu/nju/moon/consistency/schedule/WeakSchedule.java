@@ -19,7 +19,7 @@ public class WeakSchedule implements ISchedule
 
 	private int procNum = -1;	/** number of processes */
 	private View[] views = null;	/** one {@link View} for each Process */
-	
+	private Boolean[] binaryViews = null;
 	/**
 	 * Constructor: allocate one view for each process 
 	 * @param procNum number of processes
@@ -28,6 +28,7 @@ public class WeakSchedule implements ISchedule
 	{
 		this.procNum = procNum;
 		this.views = new View[procNum];
+		this.binaryViews = new Boolean[procNum];
 	}
 	
 	/**
@@ -63,19 +64,17 @@ public class WeakSchedule implements ISchedule
 	 * get the binary schedule in the sense that the concrete {@link View}
 	 * is not significant, but its existence is.
 	 * 
-	 * @return binary schedule: 1 for consistent; 0 for not consistent.
+	 * @return binary schedule: 1 for consistent; 0 for inconsistent.
 	 */
-	public boolean[] getBinarySchedule()
+	public Boolean[] constructBinarySchedule()
 	{
-		boolean[] bs = new boolean[this.procNum];
-		
 		for (int index = 0; index < this.procNum; index++)
 			if (this.views[index] == null)
-				bs[index] = false;
+				this.binaryViews[index] = false;
 			else
-				bs[index] = true;
+				this.binaryViews[index] = true;
 		
-		return bs;
+		return this.binaryViews;
 	}
 	
 	/**
@@ -89,7 +88,7 @@ public class WeakSchedule implements ISchedule
 		if ( ! (ws instanceof WeakSchedule))
 			return false;
 		
-		return Arrays.equals(this.getBinarySchedule(), ((WeakSchedule) ws).getBinarySchedule());
+		return Arrays.equals(this.constructBinarySchedule(), ((WeakSchedule) ws).constructBinarySchedule());
 	}
 	
 	/**

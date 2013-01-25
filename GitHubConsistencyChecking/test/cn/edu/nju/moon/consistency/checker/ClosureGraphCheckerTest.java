@@ -29,7 +29,7 @@ public class ClosureGraphCheckerTest
 	{
 	}
 
-	@Test
+//	@Test
 	public void testCheck_part_fig3()
 	{
 		GlobalData.VISUALIZATION = true;
@@ -95,7 +95,7 @@ public class ClosureGraphCheckerTest
 		
 		assertFalse("Fig7 observation does not satisfy PRAM Consistency", og_checker.check());
 		assertTrue("None of the three processes satisfies PRAM Consistnecy", 
-				Arrays.equals( ((WeakSchedule) og_checker.getSchedule()).getBinarySchedule(), new boolean[] {false, false, false}));
+				Arrays.equals( ((WeakSchedule) og_checker.getSchedule()).constructBinarySchedule(), new Boolean[] {false, false, false}));
 	}
 	
 	/**
@@ -124,8 +124,8 @@ public class ClosureGraphCheckerTest
 		Checker cl_checker_rand = new ClosureGraphChecker(bob, randcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
 		assertFalse("Random 1459 does not satisfy PRAM Consistency", cl_checker_rand.check());
 		assertTrue("Process 0 and Process 1 has legal view for PRAM Consistency",
-				Arrays.equals(((WeakSchedule) cl_checker_rand.getSchedule()).getBinarySchedule(),
-						new boolean[] {true, false, false, false, false, false, false, false, false, false}));
+				Arrays.equals(((WeakSchedule) cl_checker_rand.getSchedule()).constructBinarySchedule(),
+						new Boolean[] {true, false, false, false, false, false, false, false, false, false}));
 		assertFalse("The views in schedule are all valid", cl_checker_rand.getSchedule().valid());
 		System.out.println(cl_checker_rand.getSchedule());
 	}
@@ -140,4 +140,13 @@ public class ClosureGraphCheckerTest
 		og_checker.check();
 	}
 	
+//	@Test
+	public void testCheck_part_4_40()
+	{
+		GlobalData.VISUALIZATION = true;
+		
+		IBasicObservationConstructor frobcons = new FileBasicObservationConstructor("./test/testset/randomclosure/4_40");
+		Checker og_checker = new ClosureGraphChecker(frobcons.construct(), frobcons.get_ob_id());
+		og_checker.check();
+	}
 }

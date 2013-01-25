@@ -192,10 +192,12 @@ public class ReadIncOperation extends BasicOperation
 			coveredSet.add(riop);	// for reset
 			
 			// propagation until the current ReadIncOperation being checked
-			if (! riob.getMasterProcess().get_cur_rriop().equals(riop))
+			ReadIncOperation cur_riop = riob.getMasterProcess().get_cur_rriop(); 
+			if (! cur_riop.equals(riop))
 			{
 				for (BasicOperation op : riop.getSuccessors())	// rule out the Write -> (unchecked) Read case
-					if (! ((ReadIncOperation) op).isCovered() && (riop.isWriteOp() || op.getIndex() <= riop.getIndex()))
+//					if (! ((ReadIncOperation) op).isCovered() && (riop.isWriteOp() || op.getIndex() <= riop.getIndex()))
+					if (! ((ReadIncOperation) op).isCovered() && ! (op.getPid() == cur_riop.getPid() && op.getIndex() > cur_riop.getIndex()))
 						propQueue.add((ReadIncOperation) op);
 			}
 		}

@@ -30,7 +30,7 @@ public class JointCheckerTest
 	/**
 	 * joint tests for random observation
 	 */
-	@Test
+//	@Test
 	public void testCheck_random()
 	{
 //		GlobalData.VISUALIZATION = true;
@@ -47,9 +47,9 @@ public class JointCheckerTest
 		int i = 0;
 		try
 		{
-			for ( ; i < 10000; i++)
+			for ( ; i < 1000; i++)
 			{
-				randcons = new RandomBasicObservationConstructor(15, 100, 100, 5000, new RandomValidViewFactory());
+				randcons = new RandomBasicObservationConstructor(5, 10, 40, 200, new RandomViewFactory());
 			    bob = randcons.construct();
 			    
 //			    System.out.println("Original observation: \n" + bob.toString());
@@ -89,7 +89,7 @@ public class JointCheckerTest
 		}
 	}
 
-//	@Test
+	@Test
 	public void testCheck_file_jt_50_420()
 	{
 		IBasicObservationConstructor fcons = new FileBasicObservationConstructor("./test/testset/readinc/jt_50_420");
@@ -106,7 +106,7 @@ public class JointCheckerTest
 	    assertTrue("Two checking algorithms should give the same result: ", cl_checker.getSchedule().compare(ri_checker.getSchedule()));
 	}
 	
-//	@Test
+	@Test
 	public void testCheck_file_jt_50_10_1720()
 	{
 		IBasicObservationConstructor fcons = new FileBasicObservationConstructor("./test/testset/joint/jt_50_10_1720");
@@ -123,7 +123,7 @@ public class JointCheckerTest
 	    assertTrue("Two checking algorithms should give the same result: ", cl_checker.getSchedule().compare(ri_checker.getSchedule()));
 	}
 	
-//	@Test
+	@Test
 	public void testCheck_file_jt_50_10_1726()
 	{
 		IBasicObservationConstructor fcons = new FileBasicObservationConstructor("./test/testset/joint/jt_50_10_1726");
@@ -139,4 +139,56 @@ public class JointCheckerTest
 	    /** joint test */
 	    assertTrue("Two checking algorithms should give the same result: ", cl_checker.getSchedule().compare(ri_checker.getSchedule()));
 	}
+	
+	@Test
+	public void testCheck_file_jt_4_40()
+	{
+		IBasicObservationConstructor fcons = new FileBasicObservationConstructor("./test/testset/joint/jt_4_40");
+		BasicObservation bob = fcons.construct();
+		
+		Checker cl_checker = new ClosureGraphChecker(bob, fcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
+		Checker ri_checker = new ReadIncChecker(bob, fcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
+	    
+	    /** run the checking algorithms */
+	    cl_checker.check();
+	    ri_checker.check();
+	    
+	    /** joint test */
+	    assertTrue("Two checking algorithms should give the same result: ", cl_checker.getSchedule().compare(ri_checker.getSchedule()));
+	}
+	
+	@Test
+	public void testCheck_file_jt_4_40_1()
+	{
+		IBasicObservationConstructor fcons = new FileBasicObservationConstructor("./test/testset/joint/jt_4_40_1");
+		BasicObservation bob = fcons.construct();
+		
+		Checker cl_checker = new ClosureGraphChecker(bob, fcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
+		Checker ri_checker = new ReadIncChecker(bob, fcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
+	    
+	    /** run the checking algorithms */
+	    cl_checker.check();
+	    ri_checker.check();
+	    
+	    /** joint test */
+	    assertTrue("Two checking algorithms should give the same result: ", cl_checker.getSchedule().compare(ri_checker.getSchedule()));
+	}
+	
+	@Test
+	public void testCheck_file_jt_4_40_2()
+	{
+		IBasicObservationConstructor fcons = new FileBasicObservationConstructor("./test/testset/joint/jt_4_40_2");
+		BasicObservation bob = fcons.construct();
+		
+		Checker cl_checker = new ClosureGraphChecker(bob, fcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
+		Checker ri_checker = new ReadIncChecker(bob, fcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
+	    
+	    /** run the checking algorithms */
+	    cl_checker.check();
+	    ri_checker.check();
+	    
+	    /** joint test */
+	    assertTrue("Two checking algorithms should give the same result: ", cl_checker.getSchedule().compare(ri_checker.getSchedule()));
+	}
+	
 }
