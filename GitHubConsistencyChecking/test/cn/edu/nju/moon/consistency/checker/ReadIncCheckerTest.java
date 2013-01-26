@@ -179,7 +179,7 @@ public class ReadIncCheckerTest
 		ri_checker.check();
 	}
 	
-	@Test
+//	@Test
 	public void testCheck_part_4_40_2()
 	{
 		GlobalData.VISUALIZATION = true;

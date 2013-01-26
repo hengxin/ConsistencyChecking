@@ -12,7 +12,7 @@ import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.observation.constructor.IBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.model.observation.constructor.RandomBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.schedule.WeakSchedule;
-import cn.edu.nju.moon.consistency.schedule.constructor.RandomValidViewFactory;
+import cn.edu.nju.moon.consistency.schedule.constructor.RandomViewFactory;
 
 public class PerfEvalTest
 {
@@ -33,7 +33,7 @@ public class PerfEvalTest
 		for (ExpTestCase testCase : testSuite.getTestCases())
 		{
 			this.testCheck_random(testCase);
-			testCase.store("./statistics/validstat");
+			testCase.store("./statistics/randomstat");
 		}
 	}
 
@@ -57,7 +57,7 @@ public class PerfEvalTest
 		{
 			for ( ; i < loops; i++)
 			{
-				randcons = new RandomBasicObservationConstructor(procNum, 100, 500, opNum, new RandomValidViewFactory());
+				randcons = new RandomBasicObservationConstructor(procNum, 100, 500, opNum, new RandomViewFactory());
 			    bob = randcons.construct();
 			    
 			    System.err.println(i);
