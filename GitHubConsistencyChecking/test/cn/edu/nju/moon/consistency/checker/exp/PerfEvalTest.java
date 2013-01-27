@@ -12,6 +12,7 @@ import cn.edu.nju.moon.consistency.model.observation.BasicObservation;
 import cn.edu.nju.moon.consistency.model.observation.constructor.IBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.model.observation.constructor.RandomBasicObservationConstructor;
 import cn.edu.nju.moon.consistency.schedule.WeakSchedule;
+import cn.edu.nju.moon.consistency.schedule.constructor.RandomValidViewFactory;
 import cn.edu.nju.moon.consistency.schedule.constructor.RandomViewFactory;
 
 public class PerfEvalTest
@@ -26,7 +27,7 @@ public class PerfEvalTest
 	/**
 	 * joint tests for random observation
 	 */
-	@Test
+//	@Test
 	public void perfEvalTest()
 	{
 		ExpTestSuite testSuite = new ExpTestSuite();
@@ -37,6 +38,54 @@ public class PerfEvalTest
 		}
 	}
 
+	/**
+	 * Read-Centric & ValidView
+	 */
+	@Test
+	public void perfEvalRCValidTest()
+	{
+		ExpTestSuite testSuite = new ExpTestSuite();
+		
+		testSuite.addTestCase(new ExpTestCase(5, 10000, 20));
+		testSuite.addTestCase(new ExpTestCase(5, 15000, 20));
+		testSuite.addTestCase(new ExpTestCase(5, 20000, 20));
+		testSuite.addTestCase(new ExpTestCase(5, 25000, 20));
+		testSuite.addTestCase(new ExpTestCase(5, 30000, 20));
+		
+		testSuite.addTestCase(new ExpTestCase(20, 10000, 20));
+		testSuite.addTestCase(new ExpTestCase(20, 15000, 20));
+		testSuite.addTestCase(new ExpTestCase(20, 20000, 15));
+		testSuite.addTestCase(new ExpTestCase(20, 25000, 15));
+		testSuite.addTestCase(new ExpTestCase(20, 30000, 15));
+		
+		for (ExpTestCase testCase : testSuite.getTestCases())
+		{
+			Long centric_time = 0L;
+			Long centric_total = 0L;
+			IBasicObservationConstructor randcons = null;
+			BasicObservation bob = null;
+			Checker centric_checker = null;
+			for (int i = 0; i < testCase.getLoops(); i++)
+			{
+				randcons = new RandomBasicObservationConstructor(testCase.getProcNum(), 100, 500, testCase.getOpNum(), new RandomValidViewFactory());
+			    bob = randcons.construct();
+			    
+			    System.err.println(i);
+			   
+			    centric_checker = new ReadIncChecker(bob);
+
+			    centric_time = System.currentTimeMillis();
+			    centric_checker.check();
+			    centric_time = System.currentTimeMillis() - centric_time;
+			    centric_total += centric_time;
+			}
+			
+			testCase.setCentricTime(centric_total);
+			
+			testCase.store("./statistics/rcvalidstat");
+		}
+	}
+	
 	private void testCheck_random(ExpTestCase testCase)
 	{
 		int procNum = testCase.getProcNum();
@@ -45,13 +94,13 @@ public class PerfEvalTest
 		
 		Long cl_time = 0L;
 		Long closure_total = 0L;
-		Long ri_time = 0L;
+		Long centric_time = 0L;
 		Long centric_total = 0L;
 		
 		IBasicObservationConstructor randcons = null;
 		BasicObservation bob = null;
 		Checker cl_checker = null;
-		Checker ri_checker = null;
+		Checker centric_checker = null;
 		int i = 0;
 		try
 		{
@@ -63,7 +112,7 @@ public class PerfEvalTest
 			    System.err.println(i);
 			    
 			    cl_checker = new ClosureGraphChecker(bob, randcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
-			    ri_checker = new ReadIncChecker(bob, randcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
+			    centric_checker = new ReadIncChecker(bob, randcons.get_ob_id() + "check", new WeakSchedule(bob.getProcNum()));
 			    
 			    /** run the checking algorithms */
 			    cl_time = System.currentTimeMillis();
@@ -72,17 +121,17 @@ public class PerfEvalTest
 			    closure_total += cl_time;
 //			    System.out.println(cl_time);
 			    
-			    ri_time = System.currentTimeMillis();
-			    ri_checker.check();
-			    ri_time = System.currentTimeMillis() - ri_time;
-			    centric_total += ri_time;
+			    centric_time = System.currentTimeMillis();
+			    centric_checker.check();
+			    centric_time = System.currentTimeMillis() - centric_time;
+			    centric_total += centric_time;
 //			    System.out.println(ri_time);
 			    
-			    if (! cl_checker.getSchedule().compare(ri_checker.getSchedule()))
+			    if (! cl_checker.getSchedule().compare(centric_checker.getSchedule()))
 			    	System.out.println(i + ":" + bob);
 			    
 			    /** joint test */
-			    assertTrue("Two checking algorithms should give the same result: " + i, cl_checker.getSchedule().compare(ri_checker.getSchedule()));
+			    assertTrue("Two checking algorithms should give the same result: " + i, cl_checker.getSchedule().compare(centric_checker.getSchedule()));
 			}
 			
 			testCase.setClosureTime(closure_total);

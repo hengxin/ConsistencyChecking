@@ -47,20 +47,25 @@ public class ExpTestSuite
 //		this.testSuite.add(new ExpTestCase(5, 40000, 50));
 //		this.testSuite.add(new ExpTestCase(5, 50000, 50));
 		
-		this.testSuite.add(new ExpTestCase(20, 1000, 100));
-		this.testSuite.add(new ExpTestCase(20, 1500, 100));
-		this.testSuite.add(new ExpTestCase(20, 1800, 100));
-		this.testSuite.add(new ExpTestCase(20, 2000, 100));
-		this.testSuite.add(new ExpTestCase(20, 2500, 50));
-		this.testSuite.add(new ExpTestCase(20, 3000, 50));
-		this.testSuite.add(new ExpTestCase(20, 5000, 50));
-		this.testSuite.add(new ExpTestCase(20, 10000, 5));
-		this.testSuite.add(new ExpTestCase(20, 15000, 50));
-		this.testSuite.add(new ExpTestCase(20, 20000, 50));
-		this.testSuite.add(new ExpTestCase(20, 25000, 50));
-		this.testSuite.add(new ExpTestCase(20, 30000, 50));
+//		this.testSuite.add(new ExpTestCase(20, 1000, 100));
+//		this.testSuite.add(new ExpTestCase(20, 1500, 100));
+//		this.testSuite.add(new ExpTestCase(20, 1800, 100));
+//		this.testSuite.add(new ExpTestCase(20, 2000, 100));
+//		this.testSuite.add(new ExpTestCase(20, 2500, 50));
+//		this.testSuite.add(new ExpTestCase(20, 3000, 50));
+//		this.testSuite.add(new ExpTestCase(20, 5000, 50));
+//		this.testSuite.add(new ExpTestCase(20, 10000, 5));
+//		this.testSuite.add(new ExpTestCase(20, 15000, 50));
+//		this.testSuite.add(new ExpTestCase(20, 20000, 50));
+//		this.testSuite.add(new ExpTestCase(20, 25000, 50));
+//		this.testSuite.add(new ExpTestCase(20, 30000, 50));
 //		this.testSuite.add(new ExpTestCase(20, 40000, 50));
 //		this.testSuite.add(new ExpTestCase(20, 50000, 50));
+	}
+	
+	public void addTestCase(ExpTestCase testCase)
+	{
+		this.testSuite.add(testCase);
 	}
 	
 	public List<ExpTestCase> getTestCases()
