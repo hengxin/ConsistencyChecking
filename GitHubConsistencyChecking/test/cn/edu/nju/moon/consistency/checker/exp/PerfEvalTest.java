@@ -27,7 +27,7 @@ public class PerfEvalTest
 	/**
 	 * joint tests for random observation
 	 */
-//	@Test
+	@Test
 	public void perfEvalTest()
 	{
 		ExpTestSuite testSuite = new ExpTestSuite();
@@ -41,7 +41,7 @@ public class PerfEvalTest
 	/**
 	 * Read-Centric & ValidView
 	 */
-	@Test
+//	@Test
 	public void perfEvalRCValidTest()
 	{
 		ExpTestSuite testSuite = new ExpTestSuite();
@@ -67,7 +67,7 @@ public class PerfEvalTest
 			Checker centric_checker = null;
 			for (int i = 0; i < testCase.getLoops(); i++)
 			{
-				randcons = new RandomBasicObservationConstructor(testCase.getProcNum(), 100, 500, testCase.getOpNum(), new RandomValidViewFactory());
+				randcons = new RandomBasicObservationConstructor(testCase.getProcNum(), 100, 500, testCase.getOpNum(), new RandomViewFactory());
 			    bob = randcons.construct();
 			    
 			    System.err.println(i);
