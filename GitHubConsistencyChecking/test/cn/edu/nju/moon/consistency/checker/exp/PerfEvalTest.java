@@ -27,36 +27,65 @@ public class PerfEvalTest
 	/**
 	 * joint tests for random observation
 	 */
-	@Test
+//	@Test
 	public void perfEvalTest()
 	{
 		ExpTestSuite testSuite = new ExpTestSuite();
 		for (ExpTestCase testCase : testSuite.getTestCases())
 		{
 			this.testCheck_random(testCase);
-			testCase.store("./statistics/randomstat");
+			testCase.store("./statistics/validstat2");
 		}
 	}
 
 	/**
 	 * Read-Centric & ValidView
 	 */
-//	@Test
+	@Test
 	public void perfEvalRCValidTest()
 	{
 		ExpTestSuite testSuite = new ExpTestSuite();
 		
-		testSuite.addTestCase(new ExpTestCase(5, 10000, 20));
-		testSuite.addTestCase(new ExpTestCase(5, 15000, 20));
-		testSuite.addTestCase(new ExpTestCase(5, 20000, 20));
-		testSuite.addTestCase(new ExpTestCase(5, 25000, 20));
-		testSuite.addTestCase(new ExpTestCase(5, 30000, 20));
+//		testSuite.addTestCase(new ExpTestCase(5, 10000, 20));
+//		testSuite.addTestCase(new ExpTestCase(5, 15000, 20));
+//		testSuite.addTestCase(new ExpTestCase(5, 20000, 20));
+//		testSuite.addTestCase(new ExpTestCase(5, 25000, 20));
+//		testSuite.addTestCase(new ExpTestCase(5, 30000, 20));
+//		
+//		testSuite.addTestCase(new ExpTestCase(20, 10000, 20));
+//		testSuite.addTestCase(new ExpTestCase(20, 15000, 20));
+//		testSuite.addTestCase(new ExpTestCase(20, 20000, 15));
+//		testSuite.addTestCase(new ExpTestCase(20, 25000, 15));
+//		testSuite.addTestCase(new ExpTestCase(20, 30000, 15));
 		
-		testSuite.addTestCase(new ExpTestCase(20, 10000, 20));
-		testSuite.addTestCase(new ExpTestCase(20, 15000, 20));
-		testSuite.addTestCase(new ExpTestCase(20, 20000, 15));
-		testSuite.addTestCase(new ExpTestCase(20, 25000, 15));
-		testSuite.addTestCase(new ExpTestCase(20, 30000, 15));
+		/**
+		 * @date 2013-2-5
+		 * @author hengxin
+		 * @description  more test for scalability ()
+		 */
+		testSuite.addTestCase(new ExpTestCase(5, 40000, 20));
+		testSuite.addTestCase(new ExpTestCase(5, 45000, 20));
+		testSuite.addTestCase(new ExpTestCase(5, 50000, 20));
+		testSuite.addTestCase(new ExpTestCase(5, 55000, 20));
+		testSuite.addTestCase(new ExpTestCase(5, 60000, 20));
+		
+		testSuite.addTestCase(new ExpTestCase(20, 40000, 20));
+		testSuite.addTestCase(new ExpTestCase(20, 45000, 20));
+		testSuite.addTestCase(new ExpTestCase(20, 50000, 15));
+		testSuite.addTestCase(new ExpTestCase(20, 55000, 15));
+		testSuite.addTestCase(new ExpTestCase(20, 60000, 15));
+		
+		testSuite.addTestCase(new ExpTestCase(10, 10000, 20));
+		testSuite.addTestCase(new ExpTestCase(10, 15000, 20));
+		testSuite.addTestCase(new ExpTestCase(10, 20000, 15));
+		testSuite.addTestCase(new ExpTestCase(10, 25000, 15));
+		testSuite.addTestCase(new ExpTestCase(10, 30000, 15));
+		
+		testSuite.addTestCase(new ExpTestCase(10, 40000, 20));
+		testSuite.addTestCase(new ExpTestCase(10, 45000, 20));
+		testSuite.addTestCase(new ExpTestCase(10, 50000, 15));
+		testSuite.addTestCase(new ExpTestCase(10, 55000, 15));
+		testSuite.addTestCase(new ExpTestCase(10, 60000, 15));
 		
 		for (ExpTestCase testCase : testSuite.getTestCases())
 		{
@@ -67,7 +96,7 @@ public class PerfEvalTest
 			Checker centric_checker = null;
 			for (int i = 0; i < testCase.getLoops(); i++)
 			{
-				randcons = new RandomBasicObservationConstructor(testCase.getProcNum(), 100, 500, testCase.getOpNum(), new RandomViewFactory());
+				randcons = new RandomBasicObservationConstructor(testCase.getProcNum(), 100, 500, testCase.getOpNum(), new RandomValidViewFactory());
 			    bob = randcons.construct();
 			    
 			    System.err.println(i);
@@ -106,7 +135,7 @@ public class PerfEvalTest
 		{
 			for ( ; i < loops; i++)
 			{
-				randcons = new RandomBasicObservationConstructor(procNum, 100, 500, opNum, new RandomViewFactory());
+				randcons = new RandomBasicObservationConstructor(procNum, 100, 500, opNum, new RandomValidViewFactory());
 			    bob = randcons.construct();
 			    
 			    System.err.println(i);
